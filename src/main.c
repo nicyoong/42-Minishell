@@ -35,7 +35,7 @@ int	main(int argc, char **argv)
 
 	
 	//free where needed
-}
+}*/
 
 void	execute_command(char **args)
 {
