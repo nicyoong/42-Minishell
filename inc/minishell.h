@@ -75,6 +75,33 @@ typedef struct s_token {
     t_word *word;  // NULL for non-WORD tokens
 } t_token;
 
+//PARSER
+
+typedef enum e_redirect_type {
+    REDIR_IN,
+    REDIR_OUT,
+    REDIR_APPEND,
+    REDIR_HEREDOC
+} t_redirect_type;
+
+typedef struct s_redirect {
+    t_redirect_type type;
+    struct s_word   *filename;  // For HEREDOC, delimiter
+} t_redirect;
+
+typedef struct s_command {
+    t_list          *arguments;  // List of t_word*
+    t_list          *redirects;  // List of t_redirect*
+} t_command;
+
+typedef struct s_pipeline {
+    t_list          *commands;   // List of t_command*
+} t_pipeline;
+
+// Parser functions
+t_pipeline         *parse(t_list *tokens);
+void               free_pipeline(t_pipeline *pipeline);
+
 //TERMINAL
 
 
