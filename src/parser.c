@@ -191,3 +191,50 @@ static void print_pipeline(t_pipeline *pipeline) {
     }
     printf("\n");
 }
+
+int main() {
+    const char *test_cmd = "echo \"Hello $USER\" 'Single Quote $VAR' | cat << EOF > output.txt";
+    
+    printf("Testing parser with command:\n%s\n\n", test_cmd);
+
+    // Lexing stage
+    t_list *tokens = lex_input(test_cmd);
+    if (!tokens) {
+        printf("Lexer error\n");
+        return 1;
+    }
+
+    // Print tokens from lexer
+    printf("Lexer output:\n");
+    int idx = 0;
+    for (t_list *curr = tokens; curr; curr = curr->next) {
+        t_token *t = curr->content;
+        printf("Token %2d: ", ++idx);
+        if (t->type == TOKEN_WORD) {
+            printf("WORD [");
+            print_word(t->word);
+            printf("]\n");
+        } else {
+            const char *types[] = {"PIPE", "REDIR_IN", "REDIR_OUT", 
+                                 "REDIR_APPEND", "REDIR_HEREDOC"};
+            printf("%s\n", types[t->type - 1]);
+        }
+    }
+
+    // Parsing stage
+    t_pipeline *pipeline = parse(tokens);
+    if (!pipeline) {
+        printf("\nParser error!\n");
+        ft_lstclear(&tokens, free_token);
+        return 1;
+    }
+
+    // Print parsed structure
+    printf("\nParser output:");
+    print_pipeline(pipeline);
+
+    // Cleanup
+    ft_lstclear(&tokens, free_token);
+    free_pipeline(pipeline);
+    return 0;
+}
