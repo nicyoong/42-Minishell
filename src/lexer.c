@@ -3,11 +3,11 @@
 // ==============================
 // Helper Functions
 // ==============================
-static int is_whitespace(char c) { return (c == ' ' || c == '\t'); }
+int is_whitespace(char c) { return (c == ' ' || c == '\t'); }
 
-static int is_operator_char(char c) { return (c == '|' || c == '<' || c == '>'); }
+int is_operator_char(char c) { return (c == '|' || c == '<' || c == '>'); }
 
-static int is_valid_var_char(char c) { return (isalnum(c) || c == '_'); }
+int is_valid_var_char(char c) { return (isalnum(c) || c == '_'); }
 
 t_token *create_token(t_token_type type) {
     t_token *token = malloc(sizeof(t_token));
@@ -39,7 +39,7 @@ void free_token(void *token_ptr) {
 // ==============================
 // Lexer Logic
 // ==============================
-static int process_quoted_content(const char *input, int *i, char quote_type, t_word *word) {
+int process_quoted_content(const char *input, int *i, char quote_type, t_word *word) {
     char buffer[1024];  // Simplified fixed buffer (use dynamic in real code)
     int buf_idx = 0;
 
@@ -80,7 +80,7 @@ static int process_quoted_content(const char *input, int *i, char quote_type, t_
     return 1;
 }
 
-static void process_unquoted_word(const char *input, int *i, t_word *word) {
+void process_unquoted_word(const char *input, int *i, t_word *word) {
     char buffer[1024];
     int buf_idx = 0;
 
@@ -114,7 +114,7 @@ static void process_unquoted_word(const char *input, int *i, t_word *word) {
     }
 }
 
-static t_token_type get_operator(const char *input, int *i) {
+t_token_type get_operator(const char *input, int *i) {
     if (input[*i] == '|') {
         (*i)++;
         return TOKEN_PIPE;

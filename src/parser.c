@@ -162,7 +162,7 @@ void print_word(t_word *word) {
     printf("%s", buffer);
 }
 
-static void print_pipeline(t_pipeline *pipeline) {
+void print_pipeline(t_pipeline *pipeline) {
     int cmd_idx = 0;
     for (t_list *cmd_node = pipeline->commands; cmd_node; cmd_node = cmd_node->next) {
         t_command *cmd = cmd_node->content;
