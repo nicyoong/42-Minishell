@@ -22,6 +22,13 @@ typedef enum e_segment_type {
     VAR_EXIT_STATUS
 } t_segment_type;
 
+typedef enum e_redirect_type {
+    REDIR_IN,
+    REDIR_OUT,
+    REDIR_APPEND,
+    REDIR_HEREDOC
+} t_redirect_type;
+
 typedef struct s_segment {
     t_segment_type type;
     char *value;
