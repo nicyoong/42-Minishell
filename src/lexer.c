@@ -20,6 +20,11 @@ typedef enum e_segment_type {
     VAR_EXIT_STATUS
 } t_segment_type;
 
+typedef struct s_segment {
+    t_segment_type type;
+    char *value;
+} t_segment;
+
 // ==============================
 // Helper Functions
 // ==============================
