@@ -201,9 +201,9 @@ t_list *lex_input(const char *input) {
     return tokens;
 }
 
-==============================
-Example Usage & Demonstration
-==============================
+// ==============================
+// Example Usage & Demonstration
+// ==============================
 int main() {
     const char *example_cmd = "echo \"Hello $USER\" 'Single Quote $VAR' | cat << EOF > output.txt";
     printf("Parsing command:\n%s\n\n", example_cmd);
