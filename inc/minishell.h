@@ -30,7 +30,7 @@
 # include <dirent.h>
 // # include <readline/readline.h>
 // # include <readline/history.h>
-# include <curses.h>
+// # include <curses.h>
 
 //DEFINES
 # define MEM_FAIL	"Memory allocation failed."
