@@ -1,4 +1,8 @@
-#include "../inc/minishell.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+#include "../libft/libft.h"
 
 // Helper: Check if token is a redirect
 static int is_redirect(t_token_type type) {
