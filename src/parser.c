@@ -1,13 +1,13 @@
 #include "parser.h"
 
 // Helper: Check if token is a redirect
-static int is_redirect(t_token_type type) {
+int is_redirect(t_token_type type) {
     return (type == TOKEN_REDIRECT_IN || type == TOKEN_REDIRECT_OUT ||
             type == TOKEN_REDIRECT_APPEND || type == TOKEN_REDIRECT_HEREDOC);
 }
 
 // Helper: Convert token type to redirect type
-static t_redirect_type token_to_redirect(t_token_type type) {
+t_redirect_type token_to_redirect(t_token_type type) {
     if (type == TOKEN_REDIRECT_IN) return REDIR_IN;
     if (type == TOKEN_REDIRECT_OUT) return REDIR_OUT;
     if (type == TOKEN_REDIRECT_APPEND) return REDIR_APPEND;
@@ -15,7 +15,7 @@ static t_redirect_type token_to_redirect(t_token_type type) {
 }
 
 // Deep copy a word (for AST ownership)
-static t_word *copy_word(t_word *src) {
+t_word *copy_word(t_word *src) {
     t_word *dst = ft_calloc(1, sizeof(t_word));
     t_list *segments = NULL;
     
@@ -31,21 +31,21 @@ static t_word *copy_word(t_word *src) {
 }
 
 // Free a word and its segments
-static void free_word(void *word_ptr) {
+void free_word(void *word_ptr) {
     t_word *w = word_ptr;
     ft_lstclear(&w->segments, (void (*)(void *))free);
     free(w);
 }
 
 // Free a redirect and its filename
-static void free_redirect(void *redir_ptr) {
+void free_redirect(void *redir_ptr) {
     t_redirect *r = redir_ptr;
     free_word(r->filename);
     free(r);
 }
 
 // Free entire command structure
-static void free_command(void *cmd_ptr) {
+void free_command(void *cmd_ptr) {
     t_command *cmd = cmd_ptr;
     ft_lstclear(&cmd->arguments, free_word);
     ft_lstclear(&cmd->redirects, free_redirect);
@@ -53,7 +53,7 @@ static void free_command(void *cmd_ptr) {
 }
 
 // Parse tokens for a single command
-static t_command *parse_command(t_list **tokens) {
+t_command *parse_command(t_list **tokens) {
     t_command *cmd = ft_calloc(1, sizeof(t_command));
     
     while (*tokens) {
@@ -92,7 +92,7 @@ static t_command *parse_command(t_list **tokens) {
 }
 
 // Split tokens into commands by PIPE
-static t_list *split_commands(t_list *tokens) {
+t_list *split_commands(t_list *tokens) {
     t_list *cmds = NULL;
     t_list *current = NULL;
     
