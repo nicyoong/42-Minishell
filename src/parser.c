@@ -143,6 +143,16 @@ t_pipeline *parse(t_list *tokens) {
     return pipeline;
 }
 
+const char *redirect_type_str(t_redirect_type type) {
+	const char *names[] = {
+		[REDIR_IN] = "INPUT",
+		[REDIR_OUT] = "OUTPUT",
+		[REDIR_APPEND] = "APPEND",
+		[REDIR_HEREDOC] = "HEREDOC"
+	};
+	return names[type];
+}
+
 void free_pipeline(t_pipeline *pipeline) {
     ft_lstclear(&pipeline->commands, free_command);
     free(pipeline);

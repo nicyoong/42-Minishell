@@ -55,7 +55,7 @@ int process_quoted_content(const char *input, int *i, char quote_type, t_word *w
             // Process variable
             (*i)++;
             if (input[*i] == '?') {
-                add_segment(word, VAR_EXIT_STATUS, "$?");
+                add_segment(word, EXIT_STATUS, "$?");
                 (*i)++;
             } else {
                 char var[1024];
@@ -93,7 +93,7 @@ void process_unquoted_word(const char *input, int *i, t_word *word) {
             }
             (*i)++;
             if (input[*i] == '?') {
-                add_segment(word, VAR_EXIT_STATUS, "$?");
+                add_segment(word, EXIT_STATUS, "$?");
                 (*i)++;
             } else {
                 char var[1024];
