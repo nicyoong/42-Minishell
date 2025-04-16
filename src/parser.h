@@ -43,6 +43,11 @@ typedef struct s_token {
     t_word *word;
 } t_token;
 
+typedef struct s_command {
+    char **argv;
+    t_list *redirects;  // List of t_redirect structures
+} t_command;
+
 // lexer.c
 // Token functions
 t_token *create_token(t_token_type type);
