@@ -14,6 +14,12 @@ typedef enum e_token_type {
     TOKEN_REDIRECT_HEREDOC
 } t_token_type;
 
+typedef enum e_segment_type {
+    LITERAL,
+    VARIABLE,
+    VAR_EXIT_STATUS
+} t_segment_type;
+
 // ==============================
 // Helper Functions
 // ==============================
