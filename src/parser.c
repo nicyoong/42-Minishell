@@ -1,4 +1,4 @@
-#include "inc/minishell.h"
+#include "../inc/minishell.h"
 
 // Helper: Check if token is a redirect
 static int is_redirect(t_token_type type) {
