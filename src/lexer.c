@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
-#include "libft.h"  // Assuming 42's libft is available
+#include "libft/libft.h"  // Assuming 42's libft is available
 
 // ==============================
 // Helper Functions
