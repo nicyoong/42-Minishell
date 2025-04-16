@@ -1,8 +1,4 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <ctype.h>
-#include "../libft/libft.h"
+
 
 // Structs
 typedef enum e_token_type {
