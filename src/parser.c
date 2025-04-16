@@ -147,3 +147,17 @@ void free_pipeline(t_pipeline *pipeline) {
     ft_lstclear(&pipeline->commands, free_command);
     free(pipeline);
 }
+
+void print_word(t_word *word) {
+    char buffer[1024] = {0};
+    for (t_list *seg = word->segments; seg; seg = seg->next) {
+        t_segment *s = seg->content;
+        if (s->type == VARIABLE) {
+            strcat(buffer, "$");
+        } else if (s->type == EXIT_STATUS) {
+            strcat(buffer, "$?");
+        }
+        strcat(buffer, s->value);
+    }
+    printf("%s", buffer);
+}
