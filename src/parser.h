@@ -36,6 +36,7 @@ typedef struct s_token {
     t_word *word;
 } t_token;
 
+// lexer.c
 // Helper functions
 int is_whitespace(char c);
 int is_operator_char(char c);
