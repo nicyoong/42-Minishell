@@ -4,6 +4,16 @@
 #include <ctype.h>
 #include "../libft/libft.h"  // Assuming 42's libft is available
 
+// Structs
+typedef enum e_token_type {
+    TOKEN_WORD,
+    TOKEN_PIPE,
+    TOKEN_REDIRECT_IN,
+    TOKEN_REDIRECT_OUT,
+    TOKEN_REDIRECT_APPEND,
+    TOKEN_REDIRECT_HEREDOC
+} t_token_type;
+
 // ==============================
 // Helper Functions
 // ==============================
