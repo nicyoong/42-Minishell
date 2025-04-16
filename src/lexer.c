@@ -25,6 +25,10 @@ typedef struct s_segment {
     char *value;
 } t_segment;
 
+typedef struct s_word {
+    t_list *segments;
+} t_word;
+
 // ==============================
 // Helper Functions
 // ==============================
