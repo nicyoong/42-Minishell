@@ -101,19 +101,24 @@ t_list *split_commands(t_list *tokens) {
         
         if (token->type == TOKEN_PIPE) {
             if (!current) {  // Pipe at start
-                ft_lstclear(&cmds, free_command);
+                ft_lstclear(&cmds, free);
                 return NULL;
             }
-            ft_lstadd_back(&cmds, current);
+            ft_lstadd_back(&cmds, ft_lstnew(current));
             current = NULL;
         } 
         else {
-            if (!current) current = ft_lstnew(NULL);
-            ft_lstadd_back(&current, ft_lstnew(token));
+            t_list *new_node = ft_lstnew(token);
+            if (!current) {
+                current = new_node;
+            } else {
+                ft_lstadd_back(&current, new_node);
+            }
         }
         tokens = tokens->next;
     }
-    if (current) ft_lstadd_back(&cmds, current);
+    if (current) 
+        ft_lstadd_back(&cmds, ft_lstnew(current));
     return cmds;
 }
 
