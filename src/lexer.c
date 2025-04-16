@@ -29,6 +29,11 @@ typedef struct s_word {
     t_list *segments;
 } t_word;
 
+typedef struct s_token {
+    t_token_type type;
+    t_word *word;
+} t_token;
+
 // ==============================
 // Helper Functions
 // ==============================
