@@ -28,7 +28,7 @@
 # include <sys/wait.h>
 # include <sys/types.h>
 # include <dirent.h>
-# include <readline/readline.h>
+// # include <readline/readline.h>
 # include <readline/history.h>
 # include <curses.h>
 
