@@ -53,6 +53,11 @@ typedef struct s_redirect {
     char *filename;
 } t_redirect;
 
+typedef struct s_pipeline {
+    t_list *commands;    // List of t_command
+    t_list *pipes;       // Number of pipes
+} t_pipeline;
+
 // lexer.c
 // Token functions
 t_token *create_token(t_token_type type);
