@@ -161,3 +161,33 @@ void print_word(t_word *word) {
     }
     printf("%s", buffer);
 }
+
+static void print_pipeline(t_pipeline *pipeline) {
+    int cmd_idx = 0;
+    for (t_list *cmd_node = pipeline->commands; cmd_node; cmd_node = cmd_node->next) {
+        t_command *cmd = cmd_node->content;
+        printf("\nCommand %d:\n", ++cmd_idx);
+
+        // Print arguments
+        printf("  Arguments: [");
+        for (t_list *arg_node = cmd->arguments; arg_node; arg_node = arg_node->next) {
+            t_word *word = arg_node->content;
+            printf("\"");
+            print_word(word);
+            printf("\"%s", arg_node->next ? ", " : "");
+        }
+        printf("]\n");
+
+        // Print redirects
+        if (cmd->redirects) {
+            printf("  Redirects:\n");
+            for (t_list *redir_node = cmd->redirects; redir_node; redir_node = redir_node->next) {
+                t_redirect *r = redir_node->content;
+                printf("    %s -> \"", redirect_type_str(r->type));
+                print_word(r->filename);
+                printf("\"\n");
+            }
+        }
+    }
+    printf("\n");
+}
