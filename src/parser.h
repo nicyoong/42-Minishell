@@ -37,11 +37,6 @@ typedef struct s_token {
 } t_token;
 
 // lexer.c
-// Helper functions
-int is_whitespace(char c);
-int is_operator_char(char c);
-int is_valid_var_char(char c);
-
 // Token functions
 t_token *create_token(t_token_type type);
 void add_segment(t_word *word, t_segment_type seg_type, const char *value);
