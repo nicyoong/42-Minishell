@@ -48,6 +48,11 @@ typedef struct s_command {
     t_list *redirects;  // List of t_redirect structures
 } t_command;
 
+typedef struct s_redirect {
+    t_redirect_type type;
+    char *filename;
+} t_redirect;
+
 // lexer.c
 // Token functions
 t_token *create_token(t_token_type type);
