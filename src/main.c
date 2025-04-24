@@ -25,7 +25,7 @@
 int	main(int argc, char **argv)
 {
 	//data structs for initialization
-
+gcc
 	//init data struct
 
 	int	init_flag; //check if initialisation error
@@ -36,7 +36,7 @@ int	main(int argc, char **argv)
 	
 	//free where needed
 }*/
-
+/*
 void	execute_command(char **args)
 {
 	pid_t	pid;
@@ -179,4 +179,47 @@ int	main()
 		free(cmd);
 	}
 	return (0);
-}	
+}	*/
+
+#include "parser.h"
+#include "executor.h"
+#include <readline/readline.h>
+#include <readline/history.h>
+#include "../libft/libft.h"
+
+int main(void) 
+{
+    char *line;
+    t_list *tokens;
+    t_pipeline *pipeline;
+
+    while (1) 
+	{
+        line = readline("minishell$ ");
+        if (!line)
+            break;
+        if (*line)
+            add_history(line);
+        tokens = lex_input(line);
+        if (!tokens) 
+		{
+            free(line);
+            continue;
+        }
+        pipeline = parse(tokens);
+        if (!pipeline)
+		{
+            printf("Parser error (e.g., bad syntax)\n");
+            ft_lstclear(&tokens, free_token);
+            free(line);
+            continue;
+        }
+        execute_pipeline(pipeline); //CORE EXECUTION
+        ft_lstclear(&tokens, free_token);
+        free_pipeline(pipeline);
+        free(line);
+    }
+    return (0);
+}
+
+
