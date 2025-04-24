@@ -52,6 +52,29 @@ void free_command(void *cmd_ptr) {
     free(cmd);
 }
 
+int handle_redirect(t_list **tokens, t_cmd *cmd)
+{
+    t_token *token = (t_token *)(*tokens)->content;
+    t_redirect *redir = ft_calloc(1, sizeof(t_redirect));
+
+    redir->type = token_to_redirect(token->type);
+    *tokens = (*tokens)->next;  // Move to filename token
+
+    if (!*tokens || ((t_token *)(*tokens)->content)->type != TOKEN_WORD)
+    {
+        free(redir);
+        return 0;  // Syntax error: missing filename
+    }
+
+    // Copy filename word
+    t_word *filename = copy_word(((t_token *)(*tokens)->content)->word);
+    redir->filename = filename;
+    ft_lstadd_back(&cmd->redirects, ft_lstnew(redir));
+
+    *tokens = (*tokens)->next;  // Consume filename token
+    return 1;
+}
+
 // Parse tokens for a single command
 t_command *parse_command(t_list **tokens) {
     t_command *cmd = ft_calloc(1, sizeof(t_command));
@@ -60,22 +83,10 @@ t_command *parse_command(t_list **tokens) {
         t_token *token = (*tokens)->content;
         
         if (is_redirect(token->type)) {
-            // Handle redirect: expect next token as filename
-            t_redirect *redir = ft_calloc(1, sizeof(t_redirect));
-            redir->type = token_to_redirect(token->type);
-            
-            *tokens = (*tokens)->next;  // Move to filename token
-            if (!*tokens || ((t_token*)(*tokens)->content)->type != TOKEN_WORD) {
-                free_command(cmd); free(redir);
-                return NULL;  // Syntax error: missing filename
+            if (!handle_redirect(tokens, cmd)) {
+                free_command(cmd);
+                return NULL;  // Propagate syntax error
             }
-            
-            // Copy filename word
-            t_word *filename = copy_word(((t_token*)(*tokens)->content)->word);
-            redir->filename = filename;
-            ft_lstadd_back(&cmd->redirects, ft_lstnew(redir));
-            
-            *tokens = (*tokens)->next;  // Consume filename token
         } 
         else if (token->type == TOKEN_WORD) {
             // Add argument (copy the word)
