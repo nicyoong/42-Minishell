@@ -52,7 +52,7 @@ void free_command(void *cmd_ptr) {
     free(cmd);
 }
 
-int handle_redirect(t_list **tokens, t_cmd *cmd)
+int handle_redirect(t_list **tokens, t_command *cmd)
 {
     t_token *token = (t_token *)(*tokens)->content;
     t_redirect *redir = ft_calloc(1, sizeof(t_redirect));
