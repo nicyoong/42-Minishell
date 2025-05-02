@@ -121,6 +121,45 @@ int setup_redirections(t_list *redirects)
     return 0;
 }
 
+void handle_cd(char **argv, t_list *redirects)
+{
+    int save_stdin = dup(STDIN_FILENO);
+    int save_stdout = dup(STDOUT_FILENO);
+    int save_stderr = dup(STDERR_FILENO);
+
+    if (setup_redirections(redirects) < 0)
+    {
+        dup2(save_stdin, STDIN_FILENO);
+        dup2(save_stdout, STDOUT_FILENO);
+        dup2(save_stderr, STDERR_FILENO);
+        close(save_stdin);
+        close(save_stdout);
+        close(save_stderr);
+        return;
+    }
+    int ret = 0;
+    if (!argv[1])
+    {
+        char *home = getenv("HOME");
+        if (!home)
+            fprintf(stderr, "cd: HOME not set\n");
+        else
+            ret = chdir(home);
+    }
+    else if (argv[2])
+        fprintf(stderr, "cd: too many arguments\n");
+    else
+        ret = chdir(argv[1]);
+    if (ret != 0)
+        perror("cd");
+    dup2(save_stdin, STDIN_FILENO);
+    dup2(save_stdout, STDOUT_FILENO);
+    dup2(save_stderr, STDERR_FILENO);
+    close(save_stdin);
+    close(save_stdout);
+    close(save_stderr);
+}
+
 // Main execution
 void execute_pipeline(t_pipeline *pipeline)
 {
