@@ -45,7 +45,7 @@ char *resolve_binary(char *cmd)
     return (NULL);
 }
 
-char **convert_arguments(t_list *args) 
+char **convert_arguments(t_list *args)
 {
     int count = ft_lstsize(args);
     char **argv = ft_calloc(count + 1, sizeof(char *));
@@ -57,14 +57,14 @@ char **convert_arguments(t_list *args)
         for (t_list *seg = word->segments; seg; seg = seg->next)
         {
             t_segment *s = seg->content;
-            strcat(buffer, s->value);  // Variable expansion assumed done earlier
+            strcat(buffer, s->value);
         }
         argv[i++] = ft_strdup(buffer);
     }
     return (argv);
 }
 
-int process_heredoc(t_word *delimiter_word) 
+int process_heredoc(t_word *delimiter_word)
 {
     int fds[2];
     pipe(fds);
@@ -87,7 +87,7 @@ int process_heredoc(t_word *delimiter_word)
     return (fds[0]);
 }
 
-int setup_redirections(t_list *redirects) 
+int setup_redirections(t_list *redirects)
 {
     for (t_list *node = redirects; node; node = node->next) 
     {
