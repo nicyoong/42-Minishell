@@ -24,7 +24,7 @@
 #include <readline/history.h>
 #include "../libft/libft.h"
 
-int main(void) 
+int main(void)
 {
     char *line;
     t_list *tokens;
@@ -37,7 +37,7 @@ int main(void)
             break;
         if (*line)
             add_history(line);
-	if (ft_strcmp(line, "exit) == 0)
+	if (ft_strcmp(line, "exit") == 0)
 	{
 		free (line);
 		break;
@@ -56,12 +56,10 @@ int main(void)
             free(line);
             continue;
         }
-        execute_pipeline(pipeline); //CORE EXECUTION
+        execute_pipeline(pipeline);
         ft_lstclear(&tokens, free_token);
         free_pipeline(pipeline);
         free(line);
     }
     return (0);
 }
-
-
