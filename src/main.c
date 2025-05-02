@@ -200,6 +200,11 @@ int main(void)
             break;
         if (*line)
             add_history(line);
+	if (ft_strcmp(line, "exit) == 0)
+	{
+		free (line);
+		break;
+	}
         tokens = lex_input(line);
         if (!tokens) 
 		{
