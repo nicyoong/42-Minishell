@@ -9,7 +9,8 @@ int is_operator_char(char c) { return (c == '|' || c == '<' || c == '>'); }
 
 int is_valid_var_char(char c) { return (isalnum(c) || c == '_'); }
 
-t_token *create_token(t_token_type type) {
+t_token *create_token(t_token_type type)
+{
     t_token *token = malloc(sizeof(t_token));
     token->type = type;
     token->word = NULL;
@@ -20,14 +21,16 @@ t_token *create_token(t_token_type type) {
     return token;
 }
 
-void add_segment(t_word *word, t_segment_type seg_type, const char *value) {
+void add_segment(t_word *word, t_segment_type seg_type, const char *value)
+{
     t_segment *seg = malloc(sizeof(t_segment));
     seg->type = seg_type;
     seg->value = ft_strdup(value);
     ft_lstadd_back(&word->segments, ft_lstnew(seg));
 }
 
-void free_token(void *token_ptr) {
+void free_token(void *token_ptr)
+{
     t_token *token = (t_token *)token_ptr;
     if (token->word) {
         ft_lstclear(&token->word->segments, (void (*)(void *))free);
@@ -40,24 +43,22 @@ void free_token(void *token_ptr) {
 // Lexer Logic
 // ==============================
 
-void handle_variable_expansion(const char *input, int *i, t_word *word, char *buffer, int *buf_idx) {
-    // Finalize the current literal segment if any
-    if (*buf_idx > 0) {
+void handle_variable_expansion(const char *input, int *i, t_word *word, char *buffer, int *buf_idx)
+{
+    if (*buf_idx > 0)
+    {
         buffer[*buf_idx] = '\0';
         add_segment(word, LITERAL, buffer);
         *buf_idx = 0;
     }
-    
-    // Skip the '$' character
     (*i)++;
-    
-    if (input[*i] == '?') {  // Handle $? case
+    if (input[*i] == '?')
+    {
         add_segment(word, EXIT_STATUS, "$?");
         (*i)++;
     } else {
         char var[1024];
         int var_idx = 0;
-        // Collect variable name characters
         while (is_valid_var_char(input[*i])) {
             var[var_idx++] = input[(*i)++];
         }
@@ -66,11 +67,12 @@ void handle_variable_expansion(const char *input, int *i, t_word *word, char *bu
     }
 }
 
-int process_quoted_content(const char *input, int *i, char quote_type, t_word *word) {
-    char buffer[1024];  // Simplified fixed buffer (use dynamic in real code)
+int process_quoted_content(const char *input, int *i, char quote_type, t_word *word)
+{
+    char buffer[1024];
     int buf_idx = 0;
 
-    (*i)++;  // Skip opening quote
+    (*i)++;
     while (input[*i] && input[*i] != quote_type) {
         if (quote_type == '"' && input[*i] == '$') {
             handle_variable_expansion(input, i, word, buffer, &buf_idx);
@@ -78,17 +80,17 @@ int process_quoted_content(const char *input, int *i, char quote_type, t_word *w
             buffer[buf_idx++] = input[(*i)++];
         }
     }
-    // Add remaining literal
     if (buf_idx > 0) {
         buffer[buf_idx] = '\0';
         add_segment(word, LITERAL, buffer);
     }
-    if (input[*i] != quote_type) return 0;  // Unterminated quote
-    (*i)++;  // Skip closing quote
+    if (input[*i] != quote_type) return 0;
+    (*i)++;
     return 1;
 }
 
-void process_unquoted_word(const char *input, int *i, t_word *word) {
+void process_unquoted_word(const char *input, int *i, t_word *word)
+{
     char buffer[1024];
     int buf_idx = 0;
 
@@ -122,7 +124,8 @@ void process_unquoted_word(const char *input, int *i, t_word *word) {
     }
 }
 
-t_token_type get_operator(const char *input, int *i) {
+t_token_type get_operator(const char *input, int *i)
+{
     if (input[*i] == '|') {
         (*i)++;
         return TOKEN_PIPE;
@@ -141,10 +144,11 @@ t_token_type get_operator(const char *input, int *i) {
         (*i)++;
         return TOKEN_REDIRECT_OUT;
     }
-    return TOKEN_WORD;  // Shouldn't happen
+    return TOKEN_WORD;
 }
 
-t_list *lex_input(const char *input) {
+t_list *lex_input(const char *input)
+{
     t_list *tokens = NULL;
     int i = 0;
     int len = strlen(input);
