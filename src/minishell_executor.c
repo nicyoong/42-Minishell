@@ -124,6 +124,65 @@ int setup_redirections(t_list *redirects)
 // Main execution
 void execute_pipeline(t_pipeline *pipeline)
 {
+    // Handle single built-in command (e.g., cd)
+    if (ft_lstsize(pipeline->commands) == 1)
+    {
+        t_command *cmd = pipeline->commands->content;
+        char **argv = convert_arguments(cmd->arguments);
+        if (argv && argv[0] && strcmp(argv[0], "cd") == 0)
+        {
+            // Save original file descriptors
+            int save_stdin = dup(STDIN_FILENO);
+            int save_stdout = dup(STDOUT_FILENO);
+            int save_stderr = dup(STDERR_FILENO);
+
+            // Apply redirections
+            if (setup_redirections(cmd->redirects) < 0)
+            {
+                // Restore FDs on error
+                dup2(save_stdin, STDIN_FILENO);
+                dup2(save_stdout, STDOUT_FILENO);
+                dup2(save_stderr, STDERR_FILENO);
+                close(save_stdin);
+                close(save_stdout);
+                close(save_stderr);
+                ft_split_free(argv);
+                return;
+            }
+
+            // Execute cd
+            int ret = 0;
+            if (!argv[1])
+            { // cd with no arguments
+                char *home = getenv("HOME");
+                if (!home)
+                    fprintf(stderr, "cd: HOME not set\n");
+                else
+                    ret = chdir(home);
+            }
+            else if (argv[2])
+                fprintf(stderr, "cd: too many arguments\n");
+            else
+                ret = chdir(argv[1]);
+
+            if (ret != 0)
+                perror("cd");
+
+            // Restore original file descriptors
+            dup2(save_stdin, STDIN_FILENO);
+            dup2(save_stdout, STDOUT_FILENO);
+            dup2(save_stderr, STDERR_FILENO);
+            close(save_stdin);
+            close(save_stdout);
+            close(save_stderr);
+
+            ft_split_free(argv);
+            return;
+        }
+        ft_split_free(argv);
+    }
+
+    // Original pipeline execution code for non-built-in commands
     int prev_fd = -1;
     int pipe_fd[2];
 
@@ -139,35 +198,37 @@ void execute_pipeline(t_pipeline *pipeline)
         pid_t pid = fork();
         if (pid == 0)
         {
-            // --- CHILD ---
-            if (prev_fd != -1) 
+            // Child process
+            if (prev_fd != -1)
             {
                 dup2(prev_fd, STDIN_FILENO);
                 close(prev_fd);
             }
-            if (!is_last) 
+            if (!is_last)
             {
                 close(pipe_fd[0]);
                 dup2(pipe_fd[1], STDOUT_FILENO);
                 close(pipe_fd[1]);
             }
-            setup_redirections(cmd->redirects);
+            if (setup_redirections(cmd->redirects) < 0)
+                exit(1); // Exit child on redirection error
             char **argv = convert_arguments(cmd->arguments);
             char *path = resolve_binary(argv[0]);
-            if (!path) 
+            if (!path)
             {
                 printf("Command not found: %s\n", argv[0]);
                 exit(127);
             }
             execve(path, argv, environ);
             perror("execve"); exit(127);
-        } 
-        else if (pid < 0) 
+        }
+        else if (pid < 0)
         {
             perror("fork");
             return;
         }
-        if (prev_fd != -1) close(prev_fd);
+        if (prev_fd != -1)
+            close(prev_fd);
         if (!is_last)
         {
             close(pipe_fd[1]);
