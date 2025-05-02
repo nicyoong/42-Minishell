@@ -1,13 +1,15 @@
 #include "parser.h"
 
 // Helper: Check if token is a redirect
-int is_redirect(t_token_type type) {
+int is_redirect(t_token_type type)
+{
     return (type == TOKEN_REDIRECT_IN || type == TOKEN_REDIRECT_OUT ||
             type == TOKEN_REDIRECT_APPEND || type == TOKEN_REDIRECT_HEREDOC);
 }
 
 // Helper: Convert token type to redirect type
-t_redirect_type token_to_redirect(t_token_type type) {
+t_redirect_type token_to_redirect(t_token_type type)
+{
     if (type == TOKEN_REDIRECT_IN) return REDIR_IN;
     if (type == TOKEN_REDIRECT_OUT) return REDIR_OUT;
     if (type == TOKEN_REDIRECT_APPEND) return REDIR_APPEND;
@@ -15,7 +17,8 @@ t_redirect_type token_to_redirect(t_token_type type) {
 }
 
 // Deep copy a word (for AST ownership)
-t_word *copy_word(t_word *src) {
+t_word *copy_word(t_word *src)
+{
     t_word *dst = ft_calloc(1, sizeof(t_word));
     t_list *segments = NULL;
     
@@ -31,21 +34,24 @@ t_word *copy_word(t_word *src) {
 }
 
 // Free a word and its segments
-void free_word(void *word_ptr) {
+void free_word(void *word_ptr)
+{
     t_word *w = word_ptr;
     ft_lstclear(&w->segments, (void (*)(void *))free);
     free(w);
 }
 
 // Free a redirect and its filename
-void free_redirect(void *redir_ptr) {
+void free_redirect(void *redir_ptr)
+{
     t_redirect *r = redir_ptr;
     free_word(r->filename);
     free(r);
 }
 
 // Free entire command structure
-void free_command(void *cmd_ptr) {
+void free_command(void *cmd_ptr)
+{
     t_command *cmd = cmd_ptr;
     ft_lstclear(&cmd->arguments, free_word);
     ft_lstclear(&cmd->redirects, free_redirect);
@@ -58,25 +64,22 @@ int handle_redirect(t_list **tokens, t_command *cmd)
     t_redirect *redir = ft_calloc(1, sizeof(t_redirect));
 
     redir->type = token_to_redirect(token->type);
-    *tokens = (*tokens)->next;  // Move to filename token
+    *tokens = (*tokens)->next;
 
     if (!*tokens || ((t_token *)(*tokens)->content)->type != TOKEN_WORD)
     {
         free(redir);
-        return 0;  // Syntax error: missing filename
+        return 0;
     }
-
-    // Copy filename word
     t_word *filename = copy_word(((t_token *)(*tokens)->content)->word);
     redir->filename = filename;
     ft_lstadd_back(&cmd->redirects, ft_lstnew(redir));
-
-    *tokens = (*tokens)->next;  // Consume filename token
+    *tokens = (*tokens)->next;
     return 1;
 }
 
-// Parse tokens for a single command
-t_command *parse_command(t_list **tokens) {
+t_command *parse_command(t_list **tokens)
+{
     t_command *cmd = ft_calloc(1, sizeof(t_command));
     
     while (*tokens) {
@@ -85,33 +88,34 @@ t_command *parse_command(t_list **tokens) {
         if (is_redirect(token->type)) {
             if (!handle_redirect(tokens, cmd)) {
                 free_command(cmd);
-                return NULL;  // Propagate syntax error
+                return NULL;
             }
         } 
         else if (token->type == TOKEN_WORD) {
-            // Add argument (copy the word)
             t_word *arg = copy_word(token->word);
             ft_lstadd_back(&cmd->arguments, ft_lstnew(arg));
             *tokens = (*tokens)->next;
         } 
         else {
             free_command(cmd);
-            return NULL;  // Invalid token in command
+            return NULL;
         }
     }
     return cmd;
 }
 
-// Split tokens into commands by PIPE
-t_list *split_commands(t_list *tokens) {
+t_list *split_commands(t_list *tokens)
+{
     t_list *cmds = NULL;
     t_list *current = NULL;
     
     while (tokens) {
         t_token *token = tokens->content;
         
-        if (token->type == TOKEN_PIPE) {
-            if (!current) {  // Pipe at start
+        if (token->type == TOKEN_PIPE)
+        {
+            if (!current)
+            {
                 ft_lstclear(&cmds, free);
                 return NULL;
             }
@@ -134,17 +138,19 @@ t_list *split_commands(t_list *tokens) {
 }
 
 // Main parser function
-t_pipeline *parse(t_list *tokens) {
+t_pipeline *parse(t_list *tokens)
+{
     t_pipeline *pipeline = ft_calloc(1, sizeof(t_pipeline));
     t_list *cmd_groups = split_commands(tokens);
     
-    if (!cmd_groups) {
+    if (!cmd_groups)
+    {
         free(pipeline);
         return NULL;
     }
-    
     t_list *curr_group = cmd_groups;
-    while (curr_group) {
+    while (curr_group)
+    {
         t_list **cmd_tokens = (t_list **)&curr_group->content;
         t_command *cmd = parse_command(cmd_tokens);
         
@@ -165,20 +171,19 @@ t_pipeline *parse(t_list *tokens) {
         ft_lstadd_back(&pipeline->commands, ft_lstnew(cmd));
         curr_group = curr_group->next;
     }
-    
-    // Free command group containers (don't free token content)
     t_list *temp = cmd_groups;
-    while (temp) {
+    while (temp)
+    {
         t_list *tokens = temp->content;
         ft_lstclear(&tokens, NULL);
         temp = temp->next;
     }
     ft_lstclear(&cmd_groups, NULL);
-    
     return pipeline;
 }
 
-const char *redirect_type_str(t_redirect_type type) {
+const char *redirect_type_str(t_redirect_type type)
+{
 	const char *names[] = {
 		[REDIR_IN] = "INPUT",
 		[REDIR_OUT] = "OUTPUT",
@@ -188,12 +193,14 @@ const char *redirect_type_str(t_redirect_type type) {
 	return names[type];
 }
 
-void free_pipeline(t_pipeline *pipeline) {
+void free_pipeline(t_pipeline *pipeline)
+{
     ft_lstclear(&pipeline->commands, free_command);
     free(pipeline);
 }
 
-void print_word(t_word *word) {
+void print_word(t_word *word)
+{
     char buffer[1024] = {0};
     for (t_list *seg = word->segments; seg; seg = seg->next) {
         t_segment *s = seg->content;
@@ -207,13 +214,12 @@ void print_word(t_word *word) {
     printf("%s", buffer);
 }
 
-void print_pipeline(t_pipeline *pipeline) {
+void print_pipeline(t_pipeline *pipeline)
+{
     int cmd_idx = 0;
     for (t_list *cmd_node = pipeline->commands; cmd_node; cmd_node = cmd_node->next) {
         t_command *cmd = cmd_node->content;
         printf("\nCommand %d:\n", ++cmd_idx);
-
-        // Print arguments
         printf("  Arguments: [");
         for (t_list *arg_node = cmd->arguments; arg_node; arg_node = arg_node->next) {
             t_word *word = arg_node->content;
@@ -222,8 +228,6 @@ void print_pipeline(t_pipeline *pipeline) {
             printf("\"%s", arg_node->next ? ", " : "");
         }
         printf("]\n");
-
-        // Print redirects
         if (cmd->redirects) {
             printf("  Redirects:\n");
             for (t_list *redir_node = cmd->redirects; redir_node; redir_node = redir_node->next) {
