@@ -87,7 +87,7 @@ int process_heredoc(t_word *delimiter_word)
     return (fds[0]);
 }
 
-void setup_redirections(t_list *redirects) 
+int setup_redirections(t_list *redirects) 
 {
     for (t_list *node = redirects; node; node = node->next) 
     {
@@ -107,12 +107,18 @@ void setup_redirections(t_list *redirects)
         if (fd < 0)
         {
             perror("redirection error");
-            exit(1);
+            return -1;
         }
-        int target = (r->type == REDIR_IN || r->type == REDIR_HEREDOC) ? STDIN_FILENO : STDOUT_FILENO; // to revisit this.
-        dup2(fd, target);
+        int target = (r->type == REDIR_IN || r->type == REDIR_HEREDOC) ? STDIN_FILENO : STDOUT_FILENO;
+        if (dup2(fd, target) < 0)
+        {
+            perror("dup2 error");
+            close(fd);
+            return -1;
+        }
         close(fd);
     }
+    return 0;
 }
 
 // Main execution
