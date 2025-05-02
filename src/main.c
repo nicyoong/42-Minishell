@@ -23,6 +23,7 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 #include "../libft/libft.h"
+#include "utils.h"
 
 int main(void)
 {
