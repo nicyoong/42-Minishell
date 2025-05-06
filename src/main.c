@@ -24,7 +24,7 @@
 #include <readline/history.h>
 #include "../libft/libft.h"
 #include "utils.h"
-
+/*
 int main(void)
 {
     char *line;
@@ -52,6 +52,52 @@ int main(void)
         pipeline = parse(tokens);
         if (!pipeline)
 		{
+            printf("Parser error (e.g., bad syntax)\n");
+            ft_lstclear(&tokens, free_token);
+            free(line);
+            continue;
+        }
+        execute_pipeline(pipeline);
+        ft_lstclear(&tokens, free_token);
+        free_pipeline(pipeline);
+        free(line);
+    }
+    return (0);
+}*/
+
+int main(void)
+{
+    char *line;
+    t_list *tokens;
+    t_pipeline *pipeline;
+
+    while (1) 
+    {
+        char cwd[PATH_MAX];
+        getcwd(cwd, sizeof(cwd));
+        
+        char prompt[PATH_MAX + 16]; // add space for shell prompt label
+        snprintf(prompt, sizeof(prompt), "%s$ ", cwd); // will need to rebuild this, make mem safe.
+
+        line = readline(prompt);
+        if (!line)
+            break;
+        if (*line)
+            add_history(line);
+        if (ft_strcmp(line, "exit") == 0)
+        {
+            free(line);
+            break;
+        }
+        tokens = lex_input(line);
+        if (!tokens)
+        {
+            free(line);
+            continue;
+        }
+        pipeline = parse(tokens);
+        if (!pipeline)
+        {
             printf("Parser error (e.g., bad syntax)\n");
             ft_lstclear(&tokens, free_token);
             free(line);
