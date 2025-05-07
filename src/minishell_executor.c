@@ -1,5 +1,3 @@
-
-
 #include "parser.h"
 #include <unistd.h>
 #include <fcntl.h>
@@ -8,6 +6,9 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 #include <limits.h>
+#include "executor.h"
+#include <stdio.h>
+#include <stdlib.h>
 
 extern char **environ;
 
@@ -19,6 +20,120 @@ void ft_split_free(char **arr)
     for (int i = 0; arr[i]; i++)
         free(arr[i]);
     free(arr);
+}
+
+int process_heredoc(t_word *delimiter_word)
+{
+    int fds[2];
+    pipe(fds);
+    char *delim = NULL;
+    char buffer[1024] = {0};
+    for (t_list *seg = delimiter_word->segments; seg; seg = seg->next)
+        strcat(buffer, ((t_segment *)seg->content)->value);
+    delim = buffer;
+    while (1)
+    {
+        char *line = readline("> ");
+        if (!line || strcmp(line, delim) == 0)
+            break;
+        write(fds[1], line, strlen(line));
+        write(fds[1], "\n", 1);
+        free(line);
+    }
+    close(fds[1]);
+    return (fds[0]);
+}
+
+int setup_redirections(t_list *redirects)
+{
+    for (t_list *node = redirects; node; node = node->next) 
+    {
+        t_redirect *r = node->content;
+        char path[1024] = {0};
+        for (t_list *seg = r->filename->segments; seg; seg = seg->next)
+            strcat(path, ((t_segment *)seg->content)->value);
+        int fd = -1;
+        if (r->type == REDIR_IN)
+            fd = open(path, O_RDONLY);
+        else if (r->type == REDIR_OUT)
+            fd = open(path, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+        else if (r->type == REDIR_APPEND)
+            fd = open(path, O_WRONLY | O_CREAT | O_APPEND, 0644);
+        else if (r->type == REDIR_HEREDOC)
+            fd = process_heredoc(r->filename);
+        if (fd < 0)
+        {
+            perror("redirection error");
+            return -1;
+        }
+        int target = (r->type == REDIR_IN || r->type == REDIR_HEREDOC) ? STDIN_FILENO : STDOUT_FILENO;
+        if (dup2(fd, target) < 0)
+        {
+            perror("dup2 error");
+            close(fd);
+            return -1;
+        }
+        close(fd);
+    }
+    return 0;
+}
+
+void execute_export(char **argv, t_list *redirects)
+{
+    int save_stdin = dup(STDIN_FILENO);
+    int save_stdout = dup(STDOUT_FILENO);
+    int save_stderr = dup(STDERR_FILENO);
+
+    if (setup_redirections(redirects) < 0)
+    {
+        // restore
+        dup2(save_stdin, STDIN_FILENO);
+        dup2(save_stdout, STDOUT_FILENO);
+        dup2(save_stderr, STDERR_FILENO);
+        close(save_stdin);
+        close(save_stdout);
+        close(save_stderr);
+        return;
+    }
+
+    int i = 1;
+    if (!argv[1])
+    {
+        char **env = environ;
+        while (*env)
+        {
+            printf("%s\n", *env);
+            env++;
+        }
+    }
+    else
+    {
+        while (argv[i])
+        {
+            if (putenv(argv[i]) != 0)
+                perror("export");
+            i++;
+        }
+    }
+
+    dup2(save_stdin, STDIN_FILENO);
+    dup2(save_stdout, STDOUT_FILENO);
+    dup2(save_stderr, STDERR_FILENO);
+    close(save_stdin);
+    close(save_stdout);
+    close(save_stderr);
+}
+
+void	execute_unset(char **argv, t_list *redirects)
+{
+	int i = 1;
+
+	while (argv[i])
+	{
+		if (unsetenv(argv[i]) != 0)
+			perror("unset");
+		i++;
+	}
 }
 
 char *resolve_binary(char *cmd)
@@ -60,65 +175,9 @@ char **convert_arguments(t_list *args)
             strcat(buffer, s->value);
         }
         argv[i++] = ft_strdup(buffer);
+        memset(buffer, 0, sizeof(buffer));
     }
     return (argv);
-}
-
-int process_heredoc(t_word *delimiter_word)
-{
-    int fds[2];
-    pipe(fds);
-    char *delim = NULL;
-    char buffer[PATH_MAX] = {0};
-
-    for (t_list *seg = delimiter_word->segments; seg; seg = seg->next)
-        strcat(buffer, ((t_segment *)seg->content)->value);
-    delim = buffer;
-    while (1)
-    {
-        char *line = readline("> ");
-        if (!line || strcmp(line, delim) == 0)
-            break;
-        write(fds[1], line, strlen(line));
-        write(fds[1], "\n", 1);
-        free(line);
-    }
-    close(fds[1]);
-    return (fds[0]);
-}
-
-int setup_redirections(t_list *redirects)
-{
-    for (t_list *node = redirects; node; node = node->next) 
-    {
-        t_redirect *r = node->content;
-        char path[PATH_MAX] = {0};
-        for (t_list *seg = r->filename->segments; seg; seg = seg->next)
-            strcat(path, ((t_segment *)seg->content)->value);
-        int fd = -1;
-        if (r->type == REDIR_IN)
-            fd = open(path, O_RDONLY);
-        else if (r->type == REDIR_OUT)
-            fd = open(path, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-        else if (r->type == REDIR_APPEND)
-            fd = open(path, O_WRONLY | O_CREAT | O_APPEND, 0644);
-        else if (r->type == REDIR_HEREDOC)
-            fd = process_heredoc(r->filename);
-        if (fd < 0)
-        {
-            perror("redirection error");
-            return -1;
-        }
-        int target = (r->type == REDIR_IN || r->type == REDIR_HEREDOC) ? STDIN_FILENO : STDOUT_FILENO;
-        if (dup2(fd, target) < 0)
-        {
-            perror("dup2 error");
-            close(fd);
-            return -1;
-        }
-        close(fd);
-    }
-    return 0;
 }
 
 void handle_cd(char **argv, t_list *redirects)
@@ -173,6 +232,18 @@ void execute_pipeline(t_pipeline *pipeline)
             ft_split_free(argv);
             return;
         }
+        else if (argv && argv[0] && strcmp(argv[0], "export") == 0)
+        {
+            execute_export(argv, cmd->redirects);
+            ft_split_free(argv);
+            return;
+        }
+        else if (argv && argv[0] && strcmp(argv[0], "unset") == 0)
+        {
+            execute_unset(argv, cmd->redirects);
+            ft_split_free(argv);
+            return;
+        }
         ft_split_free(argv);
     }
     int prev_fd = -1;
@@ -207,6 +278,7 @@ void execute_pipeline(t_pipeline *pipeline)
             if (!path)
             {
                 printf("Command not found: %s\n", argv[0]);
+                free (path);
                 exit(127);
             }
             execve(path, argv, environ);
