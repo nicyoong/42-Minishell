@@ -483,6 +483,57 @@ void execute_child(t_command *cmd, t_executor_ctx *ctx) {
     exit(127);
 }
 
+void execute_pipeline_commands(t_pipeline *pipeline, t_executor_ctx *ctx) {
+    int prev_fd = -1;
+    pid_t last_pid = -1;
+
+    for (t_list *node = pipeline->commands; node; node = node->next) {
+        t_command *cmd = node->content;
+        int is_last = (node->next == NULL);
+        int pipe_fd[2];
+
+        if (!is_last && pipe(pipe_fd) < 0) {
+            perror("pipe");
+            ctx->last_exit_status = 1;
+            return;
+        }
+
+        pid_t pid = fork();
+        if (pid == 0) {
+            // Child process
+            if (prev_fd != -1) {
+                dup2(prev_fd, STDIN_FILENO);
+                close(prev_fd);
+            }
+            if (!is_last) {
+                close(pipe_fd[0]);
+                dup2(pipe_fd[1], STDOUT_FILENO);
+                close(pipe_fd[1]);
+            }
+            if (setup_redirections(cmd->redirects, ctx) < 0) exit(1);
+            execute_child(cmd, ctx);
+        } else if (pid < 0) {
+            perror("fork");
+            ctx->last_exit_status = 1;
+            return;
+        }
+
+        // Parent cleanup
+        if (prev_fd != -1) close(prev_fd);
+        if (!is_last) {
+            close(pipe_fd[1]);
+            prev_fd = pipe_fd[0];
+        }
+        last_pid = pid;
+    }
+
+    // Wait for completion
+    int status;
+    waitpid(last_pid, &status, 0);
+    if (WIFEXITED(status)) ctx->last_exit_status = WEXITSTATUS(status);
+    while (wait(NULL) > 0);
+}
+
 void execute_pipeline(t_pipeline *pipeline, t_executor_ctx *ctx)
 {
     if (ft_lstsize(pipeline->commands) == 1) {
