@@ -244,82 +244,107 @@ int handle_cd(char **argv, t_list *redirects, t_executor_ctx *ctx)
 }
 
 // Main execution
-void execute_pipeline(t_pipeline *pipeline)
+void execute_pipeline(t_pipeline *pipeline, t_exec_ctx *ctx)
 {
-    if (ft_lstsize(pipeline->commands) == 1)
-    {
+    int status;
+    pid_t last_pid = -1;
+
+    if (ft_lstsize(pipeline->commands) == 1) {
         t_command *cmd = pipeline->commands->content;
-        char **argv = convert_arguments(cmd->arguments);
-        if (argv && argv[0] && strcmp(argv[0], "cd") == 0)
-        {
-            handle_cd(argv, cmd->redirects);
-            ft_split_free(argv);
-            return;
-        }
-        else if (argv && argv[0] && strcmp(argv[0], "export") == 0)
-        {
-            execute_export(argv, cmd->redirects);
-            ft_split_free(argv);
-            return;
-        }
-        else if (argv && argv[0] && strcmp(argv[0], "unset") == 0)
-        {
-            execute_unset(argv, cmd->redirects);
-            ft_split_free(argv);
-            return;
+        char **argv = convert_arguments(cmd->arguments, ctx);
+        
+        // Built-in commands
+        if (argv && argv[0]) {
+            if (strcmp(argv[0], "cd") == 0) {
+                handle_cd(argv, cmd->redirects);
+                ctx->last_exit_status = 0; // Update based on actual success
+                ft_split_free(argv);
+                return;
+            }
+            else if (strcmp(argv[0], "export") == 0) {
+                execute_export(argv, cmd->redirects);
+                ctx->last_exit_status = 0;
+                ft_split_free(argv);
+                return;
+            }
+            else if (strcmp(argv[0], "unset") == 0) {
+                execute_unset(argv, cmd->redirects);
+                ctx->last_exit_status = 0;
+                ft_split_free(argv);
+                return;
+            }
         }
         ft_split_free(argv);
     }
+
     int prev_fd = -1;
     int pipe_fd[2];
-    for (t_list *node = pipeline->commands; node; node = node->next)
-    {
+    t_list *node = pipeline->commands;
+
+    while (node) {
         t_command *cmd = node->content;
         int is_last = (node->next == NULL);
-        if (!is_last && pipe(pipe_fd) < 0)
-        {
+
+        if (!is_last && pipe(pipe_fd) < 0) {
             perror("pipe");
+            ctx->last_exit_status = 1;
             return;
         }
+
         pid_t pid = fork();
-        if (pid == 0)
-        {
-            if (prev_fd != -1)
-            {
+        if (pid == 0) { // Child process
+            // Handle pipe redirections
+            if (prev_fd != -1) {
                 dup2(prev_fd, STDIN_FILENO);
                 close(prev_fd);
             }
-            if (!is_last)
-            {
+            if (!is_last) {
                 close(pipe_fd[0]);
                 dup2(pipe_fd[1], STDOUT_FILENO);
                 close(pipe_fd[1]);
             }
+
+            // Handle command redirections
             if (setup_redirections(cmd->redirects) < 0)
                 exit(1);
-            char **argv = convert_arguments(cmd->arguments);
+
+            // Execute command
+            char **argv = convert_arguments(cmd->arguments, ctx);
             char *path = resolve_binary(argv[0]);
-            if (!path)
-            {
-                printf("Command not found: %s\n", argv[0]);
-                free (path);
+            
+            if (!path) {
+                fprintf(stderr, "Command not found: %s\n", argv[0]);
+                ft_split_free(argv);
                 exit(127);
             }
+            
             execve(path, argv, environ);
-            perror("execve"); exit(127);
+            perror("execve");
+            exit(127);
         }
-        else if (pid < 0)
-        {
+        else if (pid < 0) {
             perror("fork");
+            ctx->last_exit_status = 1;
             return;
         }
-        if (prev_fd != -1)
-            close(prev_fd);
-        if (!is_last)
-        {
+
+        // Parent process
+        if (prev_fd != -1) close(prev_fd);
+        if (!is_last) {
             close(pipe_fd[1]);
             prev_fd = pipe_fd[0];
         }
+        
+        last_pid = pid;
+        node = node->next;
     }
+
+    // Wait for last command and capture exit status
+    waitpid(last_pid, &status, 0);
+    if (WIFEXITED(status)) {
+        ctx->last_exit_status = WEXITSTATUS(status);
+    }
+    
+    // Cleanup remaining processes
     while (wait(NULL) > 0);
 }
