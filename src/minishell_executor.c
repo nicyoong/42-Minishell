@@ -44,6 +44,23 @@ int process_heredoc(t_word *delimiter_word)
     return (fds[0]);
 }
 
+char *resolve_segment(t_segment *seg)
+{
+    if (seg->type == VARIABLE)
+    {
+        char *value = getenv(seg->value);
+        return value ? ft_strdup(value) : ft_strdup("");
+    }
+    else if (seg->type == EXIT_STATUS)
+    {
+        return ft_itoa(g_exit_status);
+    }
+    else
+    {
+        return ft_strdup(seg->value);
+    }
+}
+
 int setup_redirections(t_list *redirects)
 {
     for (t_list *node = redirects; node; node = node->next) 
