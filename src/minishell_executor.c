@@ -28,6 +28,17 @@ int is_builtin(const char *cmd) {
                    ft_strcmp(cmd, "unset") == 0));
 }
 
+int execute_builtin(char **argv, t_list *redirects, t_executor_ctx *ctx) {
+    if (ft_strcmp(argv[0], "cd") == 0) {
+        return handle_cd(argv, redirects, ctx);
+    } else if (ft_strcmp(argv[0], "export") == 0) {
+        return execute_export(argv, redirects, ctx);
+    } else if (ft_strcmp(argv[0], "unset") == 0) {
+        return execute_unset(argv, redirects, ctx);
+    }
+    return -1; // Not a builtin
+}
+
 int process_heredoc(t_word *delimiter_word, t_executor_ctx *ctx)
 {
     int fds[2];
