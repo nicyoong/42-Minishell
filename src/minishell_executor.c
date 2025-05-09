@@ -170,17 +170,33 @@ char *resolve_binary(char *cmd)
     return (NULL);
 }
 
-char **convert_arguments(t_list *args, t_executor_ctx *ctx) {
-    char **argv = ft_calloc(ft_lstsize(args) + 1, sizeof(char *));
+char **convert_arguments(t_list *args, t_executor_ctx *ctx)
+{
+    int count = ft_lstsize(args);
+    char **argv = ft_calloc(count + 1, sizeof(char *));
     int i = 0;
+    
     for (t_list *node = args; node; node = node->next) {
         t_word *word = node->content;
         char buffer[1024] = {0};
+        
         for (t_list *seg = word->segments; seg; seg = seg->next) {
             t_segment *s = seg->content;
-            char *resolved = resolve_segment(s, ctx);
-            strcat(buffer, resolved);
-            free(resolved);
+            char *value = NULL;
+            
+            if (s->type == VARIABLE) {
+                value = getenv(s->value);
+                if (!value) value = "";
+            }
+            else if (s->type == EXIT_STATUS) {
+                value = ft_itoa(ctx->last_exit_status);
+            }
+            else { // LITERAL
+                value = s->value;
+            }
+            
+            strcat(buffer, value);
+            if (s->type == EXIT_STATUS) free(value);
         }
         argv[i++] = ft_strdup(buffer);
     }
