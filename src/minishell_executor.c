@@ -22,26 +22,45 @@ void ft_split_free(char **arr)
     free(arr);
 }
 
-int process_heredoc(t_word *delimiter_word)
+int process_heredoc(t_word *delimiter_word, t_exec_ctx *ctx)
 {
     int fds[2];
     pipe(fds);
-    char *delim = NULL;
+    
     char buffer[1024] = {0};
-    for (t_list *seg = delimiter_word->segments; seg; seg = seg->next)
-        strcat(buffer, ((t_segment *)seg->content)->value);
-    delim = buffer;
-    while (1)
-    {
-        char *line = readline("> ");
-        if (!line || strcmp(line, delim) == 0)
-            break;
+    for (t_list *seg = delimiter_word->segments; seg; seg = seg->next) {
+        t_segment *s = seg->content;
+        char *resolved = NULL;
+
+        if (s->type == VARIABLE) {
+            resolved = getenv(s->value);
+            if (!resolved) resolved = "";
+        } 
+        else if (s->type == EXIT_STATUS) {
+            resolved = ft_itoa(ctx->last_exit_status);
+        } 
+        else {
+            resolved = s->value;
+        }
+        
+        strcat(buffer, resolved);
+        
+        if (s->type == EXIT_STATUS) {
+            free(resolved);
+        }
+    }
+    char *delim = buffer;
+
+    char *line;
+    while (1) {
+        line = readline("> ");
+        if (!line || strcmp(line, delim) == 0) break;
         write(fds[1], line, strlen(line));
         write(fds[1], "\n", 1);
         free(line);
     }
     close(fds[1]);
-    return (fds[0]);
+    return fds[0];
 }
 
 char *resolve_segment(t_segment *seg, t_executor_ctx *ctx) {
@@ -54,31 +73,70 @@ char *resolve_segment(t_segment *seg, t_executor_ctx *ctx) {
     return ft_strdup(seg->value);
 }
 
-int setup_redirections(t_list *redirects)
+int setup_redirections(t_list *redirects, t_exec_ctx *ctx)
 {
     for (t_list *node = redirects; node; node = node->next) 
     {
         t_redirect *r = node->content;
         char path[1024] = {0};
-        for (t_list *seg = r->filename->segments; seg; seg = seg->next)
-            strcat(path, ((t_segment *)seg->content)->value);
+
+        // Resolve filename segments (variables and exit status)
+        for (t_list *seg = r->filename->segments; seg; seg = seg->next) {
+            t_segment *s = seg->content;
+            char *resolved = NULL;
+            
+            if (s->type == VARIABLE) {
+                resolved = getenv(s->value);
+                if (!resolved) resolved = "";
+            } 
+            else if (s->type == EXIT_STATUS) {
+                resolved = ft_itoa(ctx->last_exit_status);
+            } 
+            else { // LITERAL
+                resolved = s->value;
+            }
+            
+            strcat(path, resolved);
+            
+            // Cleanup dynamically allocated exit status
+            if (s->type == EXIT_STATUS) {
+                free(resolved);
+            }
+        }
+
         int fd = -1;
-        if (r->type == REDIR_IN)
-            fd = open(path, O_RDONLY);
-        else if (r->type == REDIR_OUT)
-            fd = open(path, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-        else if (r->type == REDIR_APPEND)
-            fd = open(path, O_WRONLY | O_CREAT | O_APPEND, 0644);
-        else if (r->type == REDIR_HEREDOC)
-            fd = process_heredoc(r->filename);
-        if (fd < 0)
-        {
+        int flags = 0;
+        mode_t mode = 0644;
+
+        switch (r->type) {
+            case REDIR_IN:
+                fd = open(path, O_RDONLY);
+                break;
+            case REDIR_OUT:
+                flags = O_WRONLY | O_CREAT | O_TRUNC;
+                fd = open(path, flags, mode);
+                break;
+            case REDIR_APPEND:
+                flags = O_WRONLY | O_CREAT | O_APPEND;
+                fd = open(path, flags, mode);
+                break;
+            case REDIR_HEREDOC:
+                fd = process_heredoc(r->filename, ctx);  // Updated heredoc handler
+                break;
+            default:
+                fprintf(stderr, "Unknown redirection type\n");
+                return -1;
+        }
+
+        if (fd < 0) {
             perror("redirection error");
             return -1;
         }
-        int target = (r->type == REDIR_IN || r->type == REDIR_HEREDOC) ? STDIN_FILENO : STDOUT_FILENO;
-        if (dup2(fd, target) < 0)
-        {
+
+        int target = (r->type == REDIR_IN || r->type == REDIR_HEREDOC) 
+                   ? STDIN_FILENO : STDOUT_FILENO;
+        
+        if (dup2(fd, target) < 0) {
             perror("dup2 error");
             close(fd);
             return -1;
@@ -140,7 +198,7 @@ void execute_export(char **argv, t_list *redirects)
     int save_stdout = dup(STDOUT_FILENO);
     int save_stderr = dup(STDERR_FILENO);
 
-    if (setup_redirections(redirects) < 0)
+    if (setup_redirections(cmd->redirects, ctx) < 0)
     {
         // restore
         dup2(save_stdin, STDIN_FILENO);
@@ -264,7 +322,7 @@ int handle_cd(char **argv, t_list *redirects, t_executor_ctx *ctx)
     int save_stderr = dup(STDERR_FILENO);
     int ret = 0;
 
-    if (setup_redirections(redirects) < 0)
+    if (setup_redirections(redirects, ctx) < 0)
     {
         dup2(save_stdin, STDIN_FILENO);
         dup2(save_stdout, STDOUT_FILENO);
@@ -365,7 +423,7 @@ void execute_pipeline(t_pipeline *pipeline, t_executor_ctx *ctx)
                 dup2(pipe_fd[1], STDOUT_FILENO);
                 close(pipe_fd[1]);
             }
-            if (setup_redirections(cmd->redirects) < 0)
+            if (setup_redirections(cmd->redirects, ctx) < 0)
                 exit(1);
             char **argv = convert_arguments(cmd->arguments, ctx);
             char *path = resolve_binary(argv[0]);
