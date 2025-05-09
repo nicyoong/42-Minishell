@@ -9,6 +9,7 @@
 #include "executor.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include "utils.h"
 
 extern char **environ;
 
@@ -26,17 +27,6 @@ int is_builtin(const char *cmd) {
     return (cmd && (ft_strcmp(cmd, "cd") == 0 || 
                    ft_strcmp(cmd, "export") == 0 || 
                    ft_strcmp(cmd, "unset") == 0));
-}
-
-int execute_builtin(char **argv, t_list *redirects, t_executor_ctx *ctx) {
-    if (ft_strcmp(argv[0], "cd") == 0) {
-        return handle_cd(argv, redirects, ctx);
-    } else if (ft_strcmp(argv[0], "export") == 0) {
-        return execute_export(argv, redirects, ctx);
-    } else if (ft_strcmp(argv[0], "unset") == 0) {
-        return execute_unset(argv, redirects, ctx);
-    }
-    return -1; // Not a builtin
 }
 
 int process_heredoc(t_word *delimiter_word, t_executor_ctx *ctx)
@@ -343,6 +333,18 @@ int handle_cd(char **argv, t_list *redirects, t_executor_ctx *ctx)
     close(save_stderr);\
     ctx->last_exit_status = ret;
     return ret;
+}
+
+
+int execute_builtin(char **argv, t_list *redirects, t_executor_ctx *ctx) {
+    if (ft_strcmp(argv[0], "cd") == 0) {
+        return handle_cd(argv, redirects, ctx);
+    } else if (ft_strcmp(argv[0], "export") == 0) {
+        return execute_export(argv, redirects, ctx);
+    } else if (ft_strcmp(argv[0], "unset") == 0) {
+        return execute_unset(argv, redirects, ctx);
+    }
+    return -1; // Not a builtin
 }
 
 // Main execution
