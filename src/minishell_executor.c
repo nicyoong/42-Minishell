@@ -192,7 +192,7 @@ int setup_redirections(t_list *redirects, t_executor_ctx *ctx)
 //     close(save_stderr);
 // }
 
-void execute_export(char **argv, t_list *redirects, t_exec_ctx *ctx)
+void execute_export(char **argv, t_list *redirects, t_executor_ctx *ctx)
 {
     int save_stdin = dup(STDIN_FILENO);
     int save_stdout = dup(STDOUT_FILENO);
