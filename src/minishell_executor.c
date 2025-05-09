@@ -13,22 +13,6 @@
 
 extern char **environ;
 
-// Utilities
-void ft_split_free(char **arr)
-{
-    if (!arr)
-        return;
-    for (int i = 0; arr[i]; i++)
-        free(arr[i]);
-    free(arr);
-}
-
-int is_builtin(const char *cmd) {
-    return (cmd && (ft_strcmp(cmd, "cd") == 0 || 
-                   ft_strcmp(cmd, "export") == 0 || 
-                   ft_strcmp(cmd, "unset") == 0));
-}
-
 int process_heredoc(t_word *delimiter_word, t_executor_ctx *ctx)
 {
     int fds[2];
