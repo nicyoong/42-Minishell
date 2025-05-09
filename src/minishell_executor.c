@@ -153,67 +153,66 @@ int setup_redirections(t_list *redirects, t_executor_ctx *ctx)
     return 0;
 }
 
-void execute_export(char **argv, t_list *redirects, t_executor_ctx *ctx)
+int execute_export(char **argv, t_list *redirects, t_executor_ctx *ctx)
 {
     int save_stdin = dup(STDIN_FILENO);
     int save_stdout = dup(STDOUT_FILENO);
     int save_stderr = dup(STDERR_FILENO);
+    int ret = 0;  // Track overall success (0) vs failure (1)
 
-    // Use redirects parameter instead of cmd->redirects
-    if (setup_redirections(redirects, ctx) < 0)  // Now using ctx parameter
+    if (setup_redirections(redirects, ctx) < 0)
     {
-        // Restore standard streams
+        // Restore and cleanup
         dup2(save_stdin, STDIN_FILENO);
         dup2(save_stdout, STDOUT_FILENO);
         dup2(save_stderr, STDERR_FILENO);
         close(save_stdin);
         close(save_stdout);
         close(save_stderr);
-        ctx->last_exit_status = 1;  // Set error status
-        return;
+        ctx->last_exit_status = 1;
+        return 1;  // Explicit return
     }
 
-    int i = 1;
     if (!argv[1]) {
-        // Print all environment variables
+        // Print environment (always succeeds)
         extern char **environ;
         for (char **env = environ; *env; env++) {
             printf("%s\n", *env);
         }
-        ctx->last_exit_status = 0;  // Success
     } else {
         for (int i = 1; argv[i]; i++) {
             char *arg = argv[i];
             char *eq = strchr(arg, '=');
             
             if (eq) {
-                // Handle VAR=value format
                 *eq = '\0';
                 char *name = arg;
                 char *value = eq + 1;
                 
                 if (setenv(name, value, 1) != 0) {
                     perror("export");
-                    ctx->last_exit_status = 1;
+                    ret = 1;  // Mark failure
                 }
             } else {
-                // Handle VAR (export existing variable)
-                char *current_value = getenv(arg);
-                if (setenv(arg, current_value ? current_value : "", 1) != 0) {
+                char *current = getenv(arg);
+                if (setenv(arg, current ? current : "", 1) != 0) {
                     perror("export");
-                    ctx->last_exit_status = 1;
+                    ret = 1;  // Mark failure
                 }
             }
         }
     }
 
-    // Restore standard streams
+    // Restore streams
     dup2(save_stdin, STDIN_FILENO);
     dup2(save_stdout, STDOUT_FILENO);
     dup2(save_stderr, STDERR_FILENO);
     close(save_stdin);
     close(save_stdout);
     close(save_stderr);
+
+    ctx->last_exit_status = ret;
+    return ret;
 }
 
 int execute_unset(char **argv, t_list *redirects, t_executor_ctx *ctx)
