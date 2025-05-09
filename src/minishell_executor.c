@@ -227,35 +227,34 @@ char *resolve_binary(char *cmd)
 
 char **convert_arguments(t_list *args, t_executor_ctx *ctx)
 {
-    int count = ft_lstsize(args);
-    char **argv = ft_calloc(count + 1, sizeof(char *));
+    char **argv = ft_calloc(ft_lstsize(args) + 1, sizeof(char *));
     int i = 0;
-    
+
     for (t_list *node = args; node; node = node->next) {
         t_word *word = node->content;
         char buffer[1024] = {0};
-        
+
         for (t_list *seg = word->segments; seg; seg = seg->next) {
             t_segment *s = seg->content;
-            char *value = NULL;
-            
+            char *resolved = NULL;
+
             if (s->type == VARIABLE) {
-                value = getenv(s->value);
-                if (!value) value = "";
+                resolved = getenv(s->value);  // Get value from environment
+                if (!resolved) resolved = ""; // Handle unset variables
+            } else if (s->type == EXIT_STATUS) {
+                resolved = ft_itoa(ctx->last_exit_status);  // Resolve $?
+            } else {
+                resolved = s->value;  // Literal
             }
-            else if (s->type == EXIT_STATUS) {
-                value = ft_itoa(ctx->last_exit_status);
-            }
-            else { // LITERAL
-                value = s->value;
-            }
-            
-            strcat(buffer, value);
-            if (s->type == EXIT_STATUS) free(value);
+
+            strcat(buffer, resolved);
+            if (s->type == EXIT_STATUS) free(resolved); // Cleanup itoa
         }
+
         argv[i++] = ft_strdup(buffer);
     }
-    return (argv);
+
+    return argv;
 }
 
 int handle_cd(char **argv, t_list *redirects, t_executor_ctx *ctx)
