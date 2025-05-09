@@ -442,3 +442,30 @@ int execute_single_command(t_pipeline *pipeline, t_exec_ctx *ctx) {
     ft_split_free(argv);
     return -1;
 }
+
+execute_child(t_command *cmd, int prev_fd, int pipe_fd[2], 
+	int is_last, t_exec_ctx *ctx) {
+// Setup redirections
+if (setup_redirections(cmd->redirects, ctx) < 0)
+exit(1);
+
+// Check for built-in
+char **argv = convert_arguments(cmd->arguments, ctx);
+t_builtin_func builtin = get_builtin(argv[0]);
+if (builtin) {
+int status = builtin(argv, cmd->redirects, ctx);
+ft_split_free(argv);
+exit(status);
+}
+
+// Otherwise, execute external command
+char *path = resolve_binary(argv[0]);
+if (!path) {
+fprintf(stderr, "Command not found: %s\n", argv[0]);
+ft_split_free(argv);
+exit(127);
+}
+execve(path, argv, environ);
+perror("execve");
+exit(127);
+}
