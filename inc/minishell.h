@@ -133,6 +133,11 @@ void               free_pipeline(t_pipeline *pipeline);
 
 //EXIT
 
+//HEREDOC
+
+//UTILS
+void   ft_split_free(char **arr);
+int    is_builtin(const char *cmd);
 
 
 
