@@ -153,22 +153,31 @@ void execute_export(char **argv, t_list *redirects)
     }
 
     int i = 1;
-    if (!argv[1])
-    {
-        char **env = environ;
-        while (*env)
-        {
+    if (!argv[1]) {
+        // Print all environment variables
+        extern char **environ;
+        for (char **env = environ; *env; env++) {
             printf("%s\n", *env);
-            env++;
         }
-    }
-    else
-    {
-        while (argv[i])
-        {
-            if (putenv(argv[i]) != 0)
-                perror("export");
-            i++;
+    } else {
+        for (int i = 1; argv[i]; i++) {
+            char *arg = argv[i];
+            char *eq = strchr(arg, '=');
+            
+            if (eq) {
+                // Case: VAR=value
+                *eq = '\0';  // Split into name and value
+                char *name = arg;
+                char *value = eq + 1;
+                
+                if (setenv(name, value, 1) != 0) {  // Overwrite if exists
+                    perror("export");
+                }
+            } else {
+                // Case: VAR (export existing variable or set empty)
+                char *current_value = getenv(arg);
+                setenv(arg, current_value ? current_value : "", 1);
+            }
         }
     }
 
