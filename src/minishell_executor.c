@@ -146,52 +146,6 @@ int setup_redirections(t_list *redirects, t_executor_ctx *ctx)
     return 0;
 }
 
-// void execute_export(char **argv, t_list *redirects)
-// {
-//     int save_stdin = dup(STDIN_FILENO);
-//     int save_stdout = dup(STDOUT_FILENO);
-//     int save_stderr = dup(STDERR_FILENO);
-
-//     if (setup_redirections(redirects) < 0)
-//     {
-//         // restore
-//         dup2(save_stdin, STDIN_FILENO);
-//         dup2(save_stdout, STDOUT_FILENO);
-//         dup2(save_stderr, STDERR_FILENO);
-//         close(save_stdin);
-//         close(save_stdout);
-//         close(save_stderr);
-//         return;
-//     }
-
-//     int i = 1;
-//     if (!argv[1])
-//     {
-//         char **env = environ;
-//         while (*env)
-//         {
-//             printf("%s\n", *env);
-//             env++;
-//         }
-//     }
-//     else
-//     {
-//         while (argv[i])
-//         {
-//             if (putenv(argv[i]) != 0)
-//                 perror("export");
-//             i++;
-//         }
-//     }
-
-//     dup2(save_stdin, STDIN_FILENO);
-//     dup2(save_stdout, STDOUT_FILENO);
-//     dup2(save_stderr, STDERR_FILENO);
-//     close(save_stdin);
-//     close(save_stdout);
-//     close(save_stderr);
-// }
-
 void execute_export(char **argv, t_list *redirects, t_executor_ctx *ctx)
 {
     int save_stdin = dup(STDIN_FILENO);
