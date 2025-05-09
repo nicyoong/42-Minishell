@@ -426,4 +426,19 @@ int handle_cd(char **argv, t_list *redirects, t_executor_ctx *ctx)
 //     while (wait(NULL) > 0);
 // }
 
+int execute_single_command(t_pipeline *pipeline, t_exec_ctx *ctx) {
+    t_command *cmd = pipeline->commands->content;
+    char **argv = convert_arguments(cmd->arguments, ctx);
+    int status = 0;
 
+    if (argv && argv[0]) {
+        t_builtin_func builtin = get_builtin(argv[0]);
+        if (builtin) {
+            status = builtin(argv, cmd->redirects, ctx);
+            ft_split_free(argv);
+            return status;
+        }
+    }
+    ft_split_free(argv);
+    return -1;
+}
