@@ -218,16 +218,18 @@ void execute_export(char **argv, t_list *redirects, t_executor_ctx *ctx)
 
 int execute_unset(char **argv, t_list *redirects, t_executor_ctx *ctx)
 {
-	int i = 1;
+    int ret = 0;
+    int i = 1;
 
-	while (argv[i])
-	{
-		if (unsetenv(argv[i]) != 0)
-			perror("unset");
-		i++;
-	}
-	ctx->last_exit_status = (ret == 0) ? 0 : 1;
-    return ctx->last_exit_status;
+    while (argv[i]) {
+        if (unsetenv(argv[i]) != 0) {
+            perror("unset");
+            ret = 1;
+        }
+        i++;
+    }
+    ctx->last_exit_status = ret;
+    return ret;
 }
 
 char *resolve_binary(char *cmd)
