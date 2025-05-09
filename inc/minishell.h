@@ -98,6 +98,12 @@ typedef struct s_pipeline {
     t_list          *commands;   // List of t_command*
 } t_pipeline;
 
+// Datastruct EXECUTION
+typedef struct s_executor_ctx
+{
+    int    last_exit_status;
+}    t_executor_ctx;
+
 // Parser functions
 t_pipeline         *parse(t_list *tokens);
 void               free_pipeline(t_pipeline *pipeline);
@@ -115,7 +121,6 @@ void               free_pipeline(t_pipeline *pipeline);
 
 
 //EXECUTION
-
 
 //SIGNALS
 
