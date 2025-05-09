@@ -426,7 +426,8 @@ int handle_cd(char **argv, t_list *redirects, t_executor_ctx *ctx)
 //     while (wait(NULL) > 0);
 // }
 
-int execute_single_command(t_pipeline *pipeline, t_executor_ctx *ctx) {
+int execute_single_command(t_pipeline *pipeline, t_executor_ctx *ctx)
+{
     t_command *cmd = pipeline->commands->content;
     char **argv = convert_arguments(cmd->arguments, ctx);
     int status = 0;
@@ -443,8 +444,9 @@ int execute_single_command(t_pipeline *pipeline, t_executor_ctx *ctx) {
     return -1;
 }
 
-execute_child(t_command *cmd, int prev_fd, int pipe_fd[2], 
-	int is_last, t_executor_ctx *ctx) {
+void execute_child(t_command *cmd, int prev_fd, int pipe_fd[2], 
+	int is_last, t_executor_ctx *ctx)
+{
 	// Setup redirections
 	if (setup_redirections(cmd->redirects, ctx) < 0)
 	exit(1);
@@ -470,7 +472,8 @@ execute_child(t_command *cmd, int prev_fd, int pipe_fd[2],
 	exit(127);
 }
 
-execute_pipeline(t_pipeline *pipeline, t_executor_ctx *ctx) {
+void execute_pipeline(t_pipeline *pipeline, t_executor_ctx *ctx)
+{
     if (ft_lstsize(pipeline->commands) == 1) {
         if (execute_single_command(pipeline, ctx) != -1)
             return;
