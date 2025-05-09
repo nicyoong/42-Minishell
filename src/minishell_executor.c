@@ -265,7 +265,7 @@ void execute_pipeline(t_pipeline *pipeline, t_executor_ctx *ctx)
         // Built-in commands
         if (argv && argv[0]) {
             if (strcmp(argv[0], "cd") == 0) {
-                handle_cd(argv, cmd->redirects);
+                handle_cd(argv, cmd->redirects, ctx);
                 ctx->last_exit_status = 0; // Update based on actual success
                 ft_split_free(argv);
                 return;
@@ -301,8 +301,7 @@ void execute_pipeline(t_pipeline *pipeline, t_executor_ctx *ctx)
         }
 
         pid_t pid = fork();
-        if (pid == 0) { // Child process
-            // Handle pipe redirections
+        if (pid == 0) {
             if (prev_fd != -1) {
                 dup2(prev_fd, STDIN_FILENO);
                 close(prev_fd);
@@ -312,12 +311,8 @@ void execute_pipeline(t_pipeline *pipeline, t_executor_ctx *ctx)
                 dup2(pipe_fd[1], STDOUT_FILENO);
                 close(pipe_fd[1]);
             }
-
-            // Handle command redirections
             if (setup_redirections(cmd->redirects) < 0)
                 exit(1);
-
-            // Execute command
             char **argv = convert_arguments(cmd->arguments, ctx);
             char *path = resolve_binary(argv[0]);
             
