@@ -22,7 +22,7 @@ void ft_split_free(char **arr)
     free(arr);
 }
 
-int process_heredoc(t_word *delimiter_word, t_exec_ctx *ctx)
+int process_heredoc(t_word *delimiter_word, t_executor_ctx *ctx)
 {
     int fds[2];
     pipe(fds);
@@ -73,7 +73,7 @@ char *resolve_segment(t_segment *seg, t_executor_ctx *ctx) {
     return ft_strdup(seg->value);
 }
 
-int setup_redirections(t_list *redirects, t_exec_ctx *ctx)
+int setup_redirections(t_list *redirects, t_executor_ctx *ctx)
 {
     for (t_list *node = redirects; node; node = node->next) 
     {
@@ -192,21 +192,23 @@ int setup_redirections(t_list *redirects, t_exec_ctx *ctx)
 //     close(save_stderr);
 // }
 
-void execute_export(char **argv, t_list *redirects)
+void execute_export(char **argv, t_list *redirects, t_exec_ctx *ctx)
 {
     int save_stdin = dup(STDIN_FILENO);
     int save_stdout = dup(STDOUT_FILENO);
     int save_stderr = dup(STDERR_FILENO);
 
-    if (setup_redirections(cmd->redirects, ctx) < 0)
+    // Use redirects parameter instead of cmd->redirects
+    if (setup_redirections(redirects, ctx) < 0)  // Now using ctx parameter
     {
-        // restore
+        // Restore standard streams
         dup2(save_stdin, STDIN_FILENO);
         dup2(save_stdout, STDOUT_FILENO);
         dup2(save_stderr, STDERR_FILENO);
         close(save_stdin);
         close(save_stdout);
         close(save_stderr);
+        ctx->last_exit_status = 1;  // Set error status
         return;
     }
 
@@ -217,28 +219,34 @@ void execute_export(char **argv, t_list *redirects)
         for (char **env = environ; *env; env++) {
             printf("%s\n", *env);
         }
+        ctx->last_exit_status = 0;  // Success
     } else {
         for (int i = 1; argv[i]; i++) {
             char *arg = argv[i];
             char *eq = strchr(arg, '=');
             
             if (eq) {
-                // Case: VAR=value
-                *eq = '\0';  // Split into name and value
+                // Handle VAR=value format
+                *eq = '\0';
                 char *name = arg;
                 char *value = eq + 1;
                 
-                if (setenv(name, value, 1) != 0) {  // Overwrite if exists
+                if (setenv(name, value, 1) != 0) {
                     perror("export");
+                    ctx->last_exit_status = 1;
                 }
             } else {
-                // Case: VAR (export existing variable or set empty)
+                // Handle VAR (export existing variable)
                 char *current_value = getenv(arg);
-                setenv(arg, current_value ? current_value : "", 1);
+                if (setenv(arg, current_value ? current_value : "", 1) != 0) {
+                    perror("export");
+                    ctx->last_exit_status = 1;
+                }
             }
         }
     }
 
+    // Restore standard streams
     dup2(save_stdin, STDIN_FILENO);
     dup2(save_stdout, STDOUT_FILENO);
     dup2(save_stderr, STDERR_FILENO);
@@ -383,8 +391,7 @@ void execute_pipeline(t_pipeline *pipeline, t_executor_ctx *ctx)
                 return;
             }
             else if (strcmp(argv[0], "export") == 0) {
-                execute_export(argv, cmd->redirects);
-                ctx->last_exit_status = 0;
+                execute_export(argv, cmd->redirects, ctx);
                 ft_split_free(argv);
                 return;
             }
