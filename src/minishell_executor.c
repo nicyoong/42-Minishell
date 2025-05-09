@@ -186,13 +186,14 @@ char **convert_arguments(t_list *args)
     {
         t_word *word = node->content;
         char buffer[1024] = {0};
-        for (t_list *seg = word->segments; seg; seg = seg->next)
+        for (t_list *seg_node = word->segments; seg_node; seg_node = seg_node->next)
         {
-            t_segment *s = seg->content;
-            strcat(buffer, s->value);
+            t_segment *s = seg_node->content;
+            char *resolved = resolve_segment(s);
+            strcat(buffer, resolved);
+            free(resolved);
         }
         argv[i++] = ft_strdup(buffer);
-        memset(buffer, 0, sizeof(buffer));
     }
     return (argv);
 }
