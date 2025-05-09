@@ -3,6 +3,10 @@
 
 # include "parser.h"
 
+typedef struct s_executor_ctx {
+    int last_exit_status;
+} t_executor_ctx;
+
 void execute_pipeline(t_pipeline *pipeline);
 //this a placeholder for my future executor lol so i dont contaminate yours.
 
