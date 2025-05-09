@@ -208,6 +208,7 @@ int handle_cd(char **argv, t_list *redirects, t_executor_ctx *ctx)
     int save_stdin = dup(STDIN_FILENO);
     int save_stdout = dup(STDOUT_FILENO);
     int save_stderr = dup(STDERR_FILENO);
+    int ret = 0;
 
     if (setup_redirections(redirects) < 0)
     {
@@ -217,21 +218,28 @@ int handle_cd(char **argv, t_list *redirects, t_executor_ctx *ctx)
         close(save_stdin);
         close(save_stdout);
         close(save_stderr);
-        return;
+        ctx->last_exit_status = 1;
+        return 1;
     }
-    int ret = 0;
     if (!argv[1])
     {
         char *home = getenv("HOME");
         if (!home)
+        {
             fprintf(stderr, "cd: HOME not set\n");
+            ret = 1;
+        }
         else
-            ret = chdir(home);
+            ret = chdir(home) == 0 ? 0 : 1;
     }
     else if (argv[2])
+    {
         fprintf(stderr, "cd: too many arguments\n");
+        ret = 1;
+    }
     else
-        ret = chdir(argv[1]);
+        ret = chdir(argv[1]) == 0 ? 0 : 1;
+
     if (ret != 0)
         perror("cd");
     dup2(save_stdin, STDIN_FILENO);
@@ -239,12 +247,13 @@ int handle_cd(char **argv, t_list *redirects, t_executor_ctx *ctx)
     dup2(save_stderr, STDERR_FILENO);
     close(save_stdin);
     close(save_stdout);
-    close(save_stderr);
-	return (ctx->last_exit_status = ret);
+    close(save_stderr);\
+    ctx->last_exit_status = ret;
+    return ret;
 }
 
 // Main execution
-void execute_pipeline(t_pipeline *pipeline, t_exec_ctx *ctx)
+void execute_pipeline(t_pipeline *pipeline, t_executor_ctx *ctx)
 {
     int status;
     pid_t last_pid = -1;
