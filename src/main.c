@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 
 //#include "minishell.h"
-#include <signals.h>
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
