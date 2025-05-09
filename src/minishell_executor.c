@@ -461,32 +461,26 @@ int execute_single_command(t_pipeline *pipeline, t_executor_ctx *ctx)
     return -1;
 }
 
-void execute_child(t_command *cmd, int prev_fd, int pipe_fd[2], 
-	int is_last, t_executor_ctx *ctx)
-{
-	// Setup redirections
-	if (setup_redirections(cmd->redirects, ctx) < 0)
-	exit(1);
-
-	// Check for built-in
-	char **argv = convert_arguments(cmd->arguments, ctx);
-	t_builtin_func builtin = get_builtin(argv[0]);
-	if (builtin) {
-	int status = builtin(argv, cmd->redirects, ctx);
-	ft_split_free(argv);
-	exit(status);
-	}
-
-	// Otherwise, execute external command
-	char *path = resolve_binary(argv[0]);
-	if (!path) {
-	fprintf(stderr, "Command not found: %s\n", argv[0]);
-	ft_split_free(argv);
-	exit(127);
-	}
-	execve(path, argv, environ);
-	perror("execve");
-	exit(127);
+void execute_child(t_command *cmd, t_executor_ctx *ctx) {
+    char **argv = convert_arguments(cmd->arguments, ctx);
+    
+    // Check for builtin first
+    if (argv && argv[0] && is_builtin(argv[0])) {
+        int status = execute_builtin(argv, cmd->redirects, ctx);
+        ft_split_free(argv);
+        exit(status);
+    }
+    
+    // Handle external commands
+    char *path = resolve_binary(argv[0]);
+    if (!path) {
+        fprintf(stderr, "Command not found: %s\n", argv[0]);
+        ft_split_free(argv);
+        exit(127);
+    }
+    execve(path, argv, environ);
+    perror("execve");
+    exit(127);
 }
 
 void execute_pipeline(t_pipeline *pipeline, t_executor_ctx *ctx)
