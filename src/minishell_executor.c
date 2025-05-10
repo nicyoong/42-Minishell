@@ -142,11 +142,10 @@ int execute_export(char **argv, t_list *redirects, t_executor_ctx *ctx)
     int save_stdin = dup(STDIN_FILENO);
     int save_stdout = dup(STDOUT_FILENO);
     int save_stderr = dup(STDERR_FILENO);
-    int ret = 0;  // Track overall success (0) vs failure (1)
+    int ret = 0;
 
     if (setup_redirections(redirects, ctx) < 0)
     {
-        // Restore and cleanup
         dup2(save_stdin, STDIN_FILENO);
         dup2(save_stdout, STDOUT_FILENO);
         dup2(save_stderr, STDERR_FILENO);
@@ -154,11 +153,10 @@ int execute_export(char **argv, t_list *redirects, t_executor_ctx *ctx)
         close(save_stdout);
         close(save_stderr);
         ctx->last_exit_status = 1;
-        return 1;  // Explicit return
+        return 1;
     }
 
     if (!argv[1]) {
-        // Print environment (always succeeds)
         extern char **environ;
         for (char **env = environ; *env; env++) {
             printf("%s\n", *env);
@@ -175,26 +173,23 @@ int execute_export(char **argv, t_list *redirects, t_executor_ctx *ctx)
                 
                 if (setenv(name, value, 1) != 0) {
                     perror("export");
-                    ret = 1;  // Mark failure
+                    ret = 1;
                 }
             } else {
                 char *current = getenv(arg);
                 if (setenv(arg, current ? current : "", 1) != 0) {
                     perror("export");
-                    ret = 1;  // Mark failure
+                    ret = 1;
                 }
             }
         }
     }
-
-    // Restore streams
     dup2(save_stdin, STDIN_FILENO);
     dup2(save_stdout, STDOUT_FILENO);
     dup2(save_stderr, STDERR_FILENO);
     close(save_stdin);
     close(save_stdout);
     close(save_stderr);
-
     ctx->last_exit_status = ret;
     return ret;
 }
