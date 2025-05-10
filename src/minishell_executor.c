@@ -363,15 +363,12 @@ int execute_builtin(char **argv, t_list *redirects, t_executor_ctx *ctx)
 void execute_child(t_command *cmd, t_executor_ctx *ctx)
 {
     char **argv = convert_arguments(cmd->arguments, ctx);
-    
-    // Check for builtin first
+
     if (argv && argv[0] && is_builtin(argv[0])) {
         int status = execute_builtin(argv, cmd->redirects, ctx);
         ft_split_free(argv);
         exit(status);
     }
-    
-    // Handle external commands
     char *path = resolve_binary(argv[0]);
     if (!path) {
         fprintf(stderr, "Command not found: %s\n", argv[0]);
@@ -401,7 +398,6 @@ void execute_pipeline_commands(t_pipeline *pipeline, t_executor_ctx *ctx)
 
         pid_t pid = fork();
         if (pid == 0) {
-            // Child process
             if (prev_fd != -1) {
                 dup2(prev_fd, STDIN_FILENO);
                 close(prev_fd);
@@ -418,8 +414,6 @@ void execute_pipeline_commands(t_pipeline *pipeline, t_executor_ctx *ctx)
             ctx->last_exit_status = 1;
             return;
         }
-
-        // Parent cleanup
         if (prev_fd != -1) close(prev_fd);
         if (!is_last) {
             close(pipe_fd[1]);
@@ -427,8 +421,6 @@ void execute_pipeline_commands(t_pipeline *pipeline, t_executor_ctx *ctx)
         }
         last_pid = pid;
     }
-
-    // Wait for completion
     int status;
     waitpid(last_pid, &status, 0);
     if (WIFEXITED(status)) ctx->last_exit_status = WEXITSTATUS(status);
@@ -437,7 +429,6 @@ void execute_pipeline_commands(t_pipeline *pipeline, t_executor_ctx *ctx)
 
 void execute_pipeline(t_pipeline *pipeline, t_executor_ctx *ctx)
 {
-    // Handle single builtin commands
     if (ft_lstsize(pipeline->commands) == 1) {
         t_command *cmd = pipeline->commands->content;
         char **argv = convert_arguments(cmd->arguments, ctx);
@@ -449,8 +440,6 @@ void execute_pipeline(t_pipeline *pipeline, t_executor_ctx *ctx)
         }
         ft_split_free(argv);
     }
-    
-    // Handle pipelines and external commands
     execute_pipeline_commands(pipeline, ctx);
 }
 
