@@ -216,6 +216,7 @@ int execute_unset(char **argv, t_list *redirects, t_executor_ctx *ctx)
     int ret = 0;
     int i = 1;
 
+    (void)redirects;
     while (argv[i]) {
         if (unsetenv(argv[i]) != 0) {
             perror("unset");
