@@ -155,7 +155,6 @@ int execute_export(char **argv, t_list *redirects, t_executor_ctx *ctx)
         ctx->last_exit_status = 1;
         return 1;
     }
-
     if (!argv[1]) {
         extern char **environ;
         for (char **env = environ; *env; env++) {
@@ -165,23 +164,40 @@ int execute_export(char **argv, t_list *redirects, t_executor_ctx *ctx)
         for (int i = 1; argv[i]; i++) {
             char *arg = argv[i];
             char *eq = strchr(arg, '=');
-            
+            char *name = NULL;
+            char *error_part = NULL;
+            int name_invalid = 0;
             if (eq) {
-                *eq = '\0';
-                char *name = arg;
+                name = ft_substr(arg, 0, eq - arg);
+                error_part = ft_substr(arg, 0, eq - arg + 1); // Include '='
+            } else {
+                name = ft_strdup(arg);
+                error_part = ft_strdup(arg);
+            }
+            if (!is_valid_identifier(name)) {
+                fprintf(stderr, "export: '%s': not a valid identifier\n", error_part);
+                ret = 1;
+                name_invalid = 1;
+            }
+            free(error_part);
+            if (name_invalid) {
+                free(name);
+                continue;
+            }
+            if (eq) {
                 char *value = eq + 1;
-                
                 if (setenv(name, value, 1) != 0) {
                     perror("export");
                     ret = 1;
                 }
             } else {
-                char *current = getenv(arg);
-                if (setenv(arg, current ? current : "", 1) != 0) {
+                char *current = getenv(name);
+                if (setenv(name, current ? current : "", 1) != 0) {
                     perror("export");
                     ret = 1;
                 }
             }
+            free(name);
         }
     }
     dup2(save_stdin, STDIN_FILENO);
@@ -190,6 +206,7 @@ int execute_export(char **argv, t_list *redirects, t_executor_ctx *ctx)
     close(save_stdin);
     close(save_stdout);
     close(save_stderr);
+
     ctx->last_exit_status = ret;
     return ret;
 }
