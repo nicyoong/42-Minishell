@@ -253,19 +253,22 @@ int execute_export(char **argv, t_list *redirects, t_executor_ctx *ctx)
 
 int execute_unset(char **argv, t_list *redirects, t_executor_ctx *ctx)
 {
-    int ret = 0;
-    int i = 1;
-
-    (void)redirects;
-    while (argv[i]) {
-        if (unsetenv(argv[i]) != 0) {
-            perror("unset");
-            ret = 1;
+    for (int i = 1; argv[i]; i++) {
+        t_list **prev_next = &ctx->env_vars;
+        for (t_list *node = ctx->env_vars; node; node = node->next) {
+            t_var *var = node->content;
+            if (strcmp(var->name, argv[i]) == 0) {
+                *prev_next = node->next;
+                free(var->name);
+                free(var->value);
+                free(var);
+                free(node);
+                break;
+            }
+            prev_next = &node->next;
         }
-        i++;
     }
-    ctx->last_exit_status = ret;
-    return ret;
+    return 0;
 }
 
 char *resolve_binary(char *cmd)
