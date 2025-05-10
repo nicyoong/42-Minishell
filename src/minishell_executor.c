@@ -320,6 +320,31 @@ int handle_cd(char **argv, t_list *redirects, t_executor_ctx *ctx)
     return ret;
 }
 
+int execute_pwd(char **argv, t_list *redirects, t_executor_ctx *ctx)
+{
+	(void)argv;
+  
+	int save_stdout = dup(STDOUT_FILENO);
+	char cwd[PATH_MAX];
+  
+	if (setup_redirections(redirects, ctx) < 0) {
+	  dup2(save_stdout, STDOUT_FILENO);
+	  close(save_stdout);
+	  ctx->last_exit_status = 1;
+	  return 1;
+	}
+	if (getcwd(cwd, sizeof(cwd))) {
+	  printf("%s\n", cwd);
+	  ctx->last_exit_status = 0;
+	} else {
+	  perror("pwd");
+	  ctx->last_exit_status = 1;
+	}
+	dup2(save_stdout, STDOUT_FILENO);
+	close(save_stdout);
+	return ctx->last_exit_status;
+  }
+
 
 int execute_builtin(char **argv, t_list *redirects, t_executor_ctx *ctx) {
     if (ft_strcmp(argv[0], "cd") == 0) {
