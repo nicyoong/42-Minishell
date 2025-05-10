@@ -442,6 +442,27 @@ int execute_builtin(char **argv, t_list *redirects, t_executor_ctx *ctx)
     return -1;
 }
 
+char **build_envp(t_list *env_vars) {
+    int count = 0;
+    for (t_list *node = env_vars; node; node = node->next) {
+        t_var *var = node->content;
+        if (var->exported) count++;
+    }
+
+    char **envp = malloc((count + 1) * sizeof(char *));
+    int i = 0;
+    for (t_list *node = env_vars; node; node = node->next) {
+        t_var *var = node->content;
+        if (var->exported) {
+            envp[i] = malloc(strlen(var->name) + strlen(var->value) + 2);
+            sprintf(envp[i], "%s=%s", var->name, var->value);
+            i++;
+        }
+    }
+    envp[i] = NULL;
+    return envp;
+}
+
 void execute_child(t_command *cmd, t_executor_ctx *ctx)
 {
     char **argv = convert_arguments(cmd->arguments, ctx);
