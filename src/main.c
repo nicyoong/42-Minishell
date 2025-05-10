@@ -72,7 +72,7 @@ int main(void)
     t_pipeline *pipeline;
     t_executor_ctx ctx = {0};
     setup_signal_handlers();
-	
+
     while (1)
 	{
         char cwd[PATH_MAX];
@@ -84,20 +84,12 @@ int main(void)
         line = readline(prompt);
         if (!line) break;
         if (*line) add_history(line);
-        
-        if (ft_strcmp(line, "exit") == 0)
-		{
-            free(line);
-            break;
-        }
-
         tokens = lex_input(line);
         if (!tokens)
 		{
             free(line);
             continue;
         }
-
         pipeline = parse(tokens);
         if (!pipeline) {
             printf("Parser error\n");
@@ -105,12 +97,12 @@ int main(void)
             free(line);
             continue;
         }
-
         execute_pipeline(pipeline, &ctx);
-        
         ft_lstclear(&tokens, free_token);
         free_pipeline(pipeline);
         free(line);
     }
-    return (ctx.last_exit_status);
+    int exit_code = ctx.last_exit_status;
+    printf("exit\n");
+    return exit_code;
 }
