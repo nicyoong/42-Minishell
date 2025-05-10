@@ -343,10 +343,11 @@ int execute_pwd(char **argv, t_list *redirects, t_executor_ctx *ctx)
 	dup2(save_stdout, STDOUT_FILENO);
 	close(save_stdout);
 	return ctx->last_exit_status;
-  }
+}
 
 
-int execute_builtin(char **argv, t_list *redirects, t_executor_ctx *ctx) {
+int execute_builtin(char **argv, t_list *redirects, t_executor_ctx *ctx)
+{
     if (ft_strcmp(argv[0], "cd") == 0) {
         return handle_cd(argv, redirects, ctx);
     } else if (ft_strcmp(argv[0], "export") == 0) {
@@ -355,6 +356,7 @@ int execute_builtin(char **argv, t_list *redirects, t_executor_ctx *ctx) {
         return execute_unset(argv, redirects, ctx);
     } else if (ft_strcmp(argv[0], "pwd") == 0) {
 		return execute_pwd(argv, redirects, ctx);
+	}
     return -1;
 }
 
