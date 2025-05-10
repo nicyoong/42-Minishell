@@ -31,12 +31,3 @@ int	is_valid_var_char(char c)
 	return (ft_isalnum(c)
 		|| c == '_');
 }
-
-char *ft_strjoin3(const char *s1, const char *s2, const char *s3)
-{
-    char *tmp = ft_strjoin(s1, s2);
-    char *result = ft_strjoin(tmp, s3);
-    free(tmp);
-    return result;
-}
-

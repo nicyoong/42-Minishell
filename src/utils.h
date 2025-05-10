@@ -12,6 +12,5 @@ int is_operator_char(char c);
 int is_valid_var_char(char c);
 int is_valid_identifier(const char *str);
 int is_valid_integer(const char *str);
-char *ft_strjoin3(const char *s1, const char *s2, const char *s3);
 
 # endif
