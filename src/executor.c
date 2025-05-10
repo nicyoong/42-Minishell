@@ -13,21 +13,6 @@
 
 extern char **environ;
 
-void init_env_vars(t_executor_ctx *ctx, char **environ) {
-    ctx->env_vars = NULL;
-    for (char **env = environ; *env; env++) {
-        char *eq = strchr(*env, '=');
-        if (!eq) continue;
-        char *name = strndup(*env, eq - *env);
-        char *value = strdup(eq + 1);
-        t_var *var = malloc(sizeof(t_var));
-        var->name = name;
-        var->value = value;
-        var->exported = true;
-        ft_lstadd_back(&ctx->env_vars, ft_lstnew(var));
-    }
-}
-
 int process_heredoc(t_word *delimiter_word, t_executor_ctx *ctx)
 {
     int fds[2];
