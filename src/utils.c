@@ -21,5 +21,6 @@ void ft_split_free(char **arr)
 int is_builtin(const char *cmd) {
     return (cmd && (ft_strcmp(cmd, "cd") == 0 || 
                    ft_strcmp(cmd, "export") == 0 || 
-                   ft_strcmp(cmd, "unset") == 0));
+                   ft_strcmp(cmd, "unset") == 0 ||
+                   ft_strcmp(cmd, "pwd") == 0));
 }
