@@ -375,6 +375,9 @@ int execute_builtin(char **argv, t_list *redirects, t_executor_ctx *ctx)
         return execute_unset(argv, redirects, ctx);
     } else if (ft_strcmp(argv[0], "pwd") == 0) {
 		return execute_pwd(argv, redirects, ctx);
+	} else if (ft_strcmp(argv[0], "exit") == 0) {
+        execute_exit(argv, ctx);
+        return 0;
 	}
     return -1;
 }
