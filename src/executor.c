@@ -152,17 +152,6 @@ int setup_redirections(t_list *redirects, t_executor_ctx *ctx)
     return 0;
 }
 
-t_var *find_var(t_list *env_vars, const char *name)
-{
-    for (t_list *node = env_vars; node; node = node->next) {
-        t_var *var = node->content;
-        if (ft_strcmp(var->name, name) == 0) {
-            return var;
-        }
-    }
-    return NULL;
-}
-
 int execute_export(char **argv, t_list *redirects, t_executor_ctx *ctx)
 {
     int save_stdin = dup(STDIN_FILENO);
@@ -181,14 +170,10 @@ int execute_export(char **argv, t_list *redirects, t_executor_ctx *ctx)
         ctx->last_exit_status = 1;
         return 1;
     }
-
     if (!argv[1]) {
-        // Print only exported variables from custom environment list
-        for (t_list *node = ctx->env_vars; node; node = node->next) {
-            t_var *var = node->content;
-            if (var->exported) {
-                printf("export %s=\"%s\"\n", var->name, var->value);
-            }
+        extern char **environ;
+        for (char **env = environ; *env; env++) {
+            printf("%s\n", *env);
         }
     } else {
         for (int i = 1; argv[i]; i++) {
@@ -197,49 +182,39 @@ int execute_export(char **argv, t_list *redirects, t_executor_ctx *ctx)
             char *name = NULL;
             char *error_part = NULL;
             int name_invalid = 0;
-
-            // Extract name and validate
             if (eq) {
                 name = ft_substr(arg, 0, eq - arg);
-                error_part = ft_substr(arg, 0, eq - arg + 1);
+                error_part = ft_substr(arg, 0, eq - arg + 1); // Include '='
             } else {
                 name = ft_strdup(arg);
                 error_part = ft_strdup(arg);
             }
-
             if (!is_valid_identifier(name)) {
                 fprintf(stderr, "export: '%s': not a valid identifier\n", error_part);
                 ret = 1;
                 name_invalid = 1;
             }
             free(error_part);
-
             if (name_invalid) {
                 free(name);
                 continue;
             }
-
-            // Find existing variable or create new
-            t_var *existing = find_var(ctx->env_vars, name);
-            if (existing) {
-                if (eq) {  // Update value if assignment
-                    free(existing->value);
-                    existing->value = ft_strdup(eq + 1);
+            if (eq) {
+                char *value = eq + 1;
+                if (setenv(name, value, 1) != 0) {
+                    perror("export");
+                    ret = 1;
                 }
-                existing->exported = true;
             } else {
-                t_var *new_var = malloc(sizeof(t_var));
-                new_var->name = ft_strdup(name);
-                new_var->value = eq ? ft_strdup(eq + 1) : ft_strdup("");
-                new_var->exported = true;
-                ft_lstadd_back(&ctx->env_vars, ft_lstnew(new_var));
+                char *current = getenv(name);
+                if (setenv(name, current ? current : "", 1) != 0) {
+                    perror("export");
+                    ret = 1;
+                }
             }
-
             free(name);
         }
     }
-
-    // Restore standard streams
     dup2(save_stdin, STDIN_FILENO);
     dup2(save_stdout, STDOUT_FILENO);
     dup2(save_stderr, STDERR_FILENO);
