@@ -1,4 +1,5 @@
 #include "parser.h"
+#include "utils.h"
 
 t_token *create_token(t_token_type type)
 {
