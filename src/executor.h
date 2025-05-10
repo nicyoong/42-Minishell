@@ -2,6 +2,7 @@
 # define EXECUTOR_H
 
 # include "parser.h"
+# include <readline/readline.h>
 
 typedef struct s_executor_ctx {
     int last_exit_status;
