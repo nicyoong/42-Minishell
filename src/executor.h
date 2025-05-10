@@ -3,7 +3,6 @@
 
 # include "parser.h"
 # include <readline/readline.h>
-# include <stdlib.h>
 
 typedef struct s_var {
     char *name;
