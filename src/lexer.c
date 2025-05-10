@@ -1,14 +1,5 @@
 #include "parser.h"
 
-// ==============================
-// Helper Functions
-// ==============================
-int is_whitespace(char c) { return (c == ' ' || c == '\t'); }
-
-int is_operator_char(char c) { return (c == '|' || c == '<' || c == '>'); }
-
-int is_valid_var_char(char c) { return (isalnum(c) || c == '_'); }
-
 t_token *create_token(t_token_type type)
 {
     t_token *token = malloc(sizeof(t_token));
