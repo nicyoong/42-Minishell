@@ -56,7 +56,7 @@ int	is_valid_identifier(const char *str)
 		return (0);
 	while (str[i])
 	{
-		if (!(ft_isalnum(str[i]) || str[i] != '_'))
+		if (!ft_isalnum(str[i]) && str[i] != '_')
 			return (0);
 		i++;
 	}
