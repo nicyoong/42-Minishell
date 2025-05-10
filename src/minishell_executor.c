@@ -377,7 +377,7 @@ int execute_exit(char **argv, t_executor_ctx *ctx)
         exit_code = ft_atoi(argv[1]);
         exit_code = exit_code % 256;
         if (exit_code < 0)
-            exit_code += 256;=
+            exit_code += 256;
     }
     exit(exit_code);
 }
