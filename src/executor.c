@@ -466,25 +466,20 @@ char **build_envp(t_list *env_vars) {
 void execute_child(t_command *cmd, t_executor_ctx *ctx)
 {
     char **argv = convert_arguments(cmd->arguments, ctx);
-    char **envp = build_envp(ctx->env_vars);
 
     if (argv && argv[0] && is_builtin(argv[0])) {
         int status = execute_builtin(argv, cmd->redirects, ctx);
         ft_split_free(argv);
-        free_envp(envp);
         exit(status);
     }
     char *path = resolve_binary(argv[0]);
     if (!path) {
         fprintf(stderr, "Command not found: %s\n", argv[0]);
         ft_split_free(argv);
-        free_envp(envp);
         exit(127);
     }
-    execve(path, argv, envp);
+    execve(path, argv, environ);
     perror("execve");
-    ft_split_free(argv);
-    free_envp(envp);
     exit(127);
 }
 
