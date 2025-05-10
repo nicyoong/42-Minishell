@@ -442,25 +442,39 @@ int execute_builtin(char **argv, t_list *redirects, t_executor_ctx *ctx)
     return -1;
 }
 
-char **build_envp(t_list *env_vars) {
+char **build_envp(t_list *env_vars)
+{
     int count = 0;
-    for (t_list *node = env_vars; node; node = node->next) {
+    t_list *node = env_vars;
+    
+    while (node) {
         t_var *var = node->content;
         if (var->exported) count++;
+        node = node->next;
     }
-
-    char **envp = malloc((count + 1) * sizeof(char *));
+    char **envp = ft_calloc(count + 1, sizeof(char *));
+    if (!envp) return NULL;
     int i = 0;
-    for (t_list *node = env_vars; node; node = node->next) {
+    node = env_vars;
+    while (node) {
         t_var *var = node->content;
         if (var->exported) {
-            envp[i] = malloc(strlen(var->name) + strlen(var->value) + 2);
-            sprintf(envp[i], "%s=%s", var->name, var->value);
-            i++;
+            char *entry = ft_strjoin3(var->name, "=", var->value);
+            envp[i++] = entry;
         }
+        node = node->next;
     }
-    envp[i] = NULL;
+
     return envp;
+}
+
+void free_envp(char **envp)
+{
+    if (!envp) return;
+    for (int i = 0; envp[i]; i++) {
+        free(envp[i]);
+    }
+    free(envp);
 }
 
 void execute_child(t_command *cmd, t_executor_ctx *ctx)
