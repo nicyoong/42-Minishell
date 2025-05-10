@@ -18,9 +18,21 @@ void ft_split_free(char **arr)
     free(arr);
 }
 
-int is_builtin(const char *cmd) {
+int is_builtin(const char *cmd)
+{
     return (cmd && (ft_strcmp(cmd, "cd") == 0 || 
                    ft_strcmp(cmd, "export") == 0 || 
                    ft_strcmp(cmd, "unset") == 0 ||
                    ft_strcmp(cmd, "pwd") == 0));
+}
+
+int is_valid_identifier(const char *str)
+{
+    if (!str || !*str || !(ft_isalpha(*str) || *str == '_'))
+        return 0;
+    for (int i = 1; str[i]; i++) {
+        if (!ft_isalnum(str[i]) && str[i] != '_')
+            return 0;
+    }
+    return 1;
 }
