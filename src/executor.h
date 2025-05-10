@@ -4,12 +4,6 @@
 # include "parser.h"
 # include <readline/readline.h>
 
-typedef struct s_var {
-    char *name;
-    char *value;
-    bool exported;
-} t_var;
-
 typedef struct s_executor_ctx {
     int last_exit_status;
 } t_executor_ctx;
