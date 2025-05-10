@@ -2,7 +2,7 @@
 # define UTILS_H
 
 # include <stdlib.h>
-# include "libft/libft.h"
+# include "../libft/libft.h"
 
 int ft_strcmp(const char *s1, const char *s2);
 void ft_split_free(char **arr);
