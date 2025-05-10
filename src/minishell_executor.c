@@ -364,7 +364,7 @@ int execute_exit(char **argv, t_executor_ctx *ctx)
 
     while (argv[arg_count])
         arg_count++;
-    arg_count--;=
+    arg_count--;
     if (arg_count > 1) {
         ft_putstr_fd("minishell: exit: too many arguments\n", STDERR_FILENO);
         exit_code = 1;
