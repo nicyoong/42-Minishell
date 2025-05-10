@@ -353,8 +353,9 @@ int execute_builtin(char **argv, t_list *redirects, t_executor_ctx *ctx) {
         return execute_export(argv, redirects, ctx);
     } else if (ft_strcmp(argv[0], "unset") == 0) {
         return execute_unset(argv, redirects, ctx);
-    }
-    return -1; // Not a builtin
+    } else if (ft_strcmp(argv[0], "pwd") == 0) {
+		return execute_pwd(argv, redirects, ctx);
+    return -1;
 }
 
 void execute_child(t_command *cmd, t_executor_ctx *ctx)
