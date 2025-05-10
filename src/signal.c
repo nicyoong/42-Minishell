@@ -12,6 +12,7 @@
 
 //#include "minishell.h"
 #include "executor.h"
+#include <signal.h>
 
 void	sigint_handler(int signo)
 {
