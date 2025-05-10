@@ -12,7 +12,6 @@ typedef struct s_var {
 
 typedef struct s_executor_ctx {
     int last_exit_status;
-    t_list  *env_vars;
 } t_executor_ctx;
 
 void execute_pipeline(t_pipeline *pipeline, t_executor_ctx *ctx);
