@@ -10,5 +10,6 @@ int  is_builtin(const char *cmd);
 int is_whitespace(char c);
 int is_operator_char(char c);
 int is_valid_var_char(char c);
+int is_valid_identifier(const char *str);
 
 # endif
