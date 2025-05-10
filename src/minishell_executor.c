@@ -357,6 +357,13 @@ int execute_pwd(char **argv, t_list *redirects, t_executor_ctx *ctx)
 	return ctx->last_exit_status;
 }
 
+int execute_exit(char **argv, t_executor_ctx *ctx) {
+    int exit_code = ctx->last_exit_status;
+    if (argv[1]) {
+        exit_code = ft_atoi(argv[1]);
+    }
+    exit(exit_code);
+}
 
 int execute_builtin(char **argv, t_list *redirects, t_executor_ctx *ctx)
 {
