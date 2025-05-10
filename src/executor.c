@@ -312,7 +312,7 @@ int handle_cd(char **argv, t_list *redirects, t_executor_ctx *ctx)
         else
             ret = chdir(home) == 0 ? 0 : 1;
     }
-    else if (argv[2])
+    else if (argv[1] && argv[2])
     {
         fprintf(stderr, "cd: too many arguments\n");
         ret = 1;
@@ -327,7 +327,7 @@ int handle_cd(char **argv, t_list *redirects, t_executor_ctx *ctx)
     dup2(save_stderr, STDERR_FILENO);
     close(save_stdin);
     close(save_stdout);
-    close(save_stderr);\
+    close(save_stderr);
     ctx->last_exit_status = ret;
     return ret;
 }
