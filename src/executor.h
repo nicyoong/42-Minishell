@@ -8,6 +8,8 @@ typedef struct s_executor_ctx {
 } t_executor_ctx;
 
 void execute_pipeline(t_pipeline *pipeline, t_executor_ctx *ctx);
+void    sigint_handler(int signo);
+void    setup_signal_handlers(void);
 //this a placeholder for my future executor lol so i dont contaminate yours.
 
 
