@@ -154,25 +154,26 @@ t_list *lex_input(const char *input)
     int len = strlen(input);
 
     while (i < len) {
-        // Skip whitespace
         while (i < len && is_whitespace(input[i])) i++;
         if (i >= len) break;
 
-        // Handle quotes/operators/words
-        if (input[i] == '\'' || input[i] == '"') {
-            t_token *token = create_token(TOKEN_WORD);
-            char quote_type = input[i];
-            if (!process_quoted_content(input, &i, quote_type, token->word)) {
-                ft_lstclear(&tokens, free_token);
-                return NULL;
-            }
-            ft_lstadd_back(&tokens, ft_lstnew(token));
-        } else if (is_operator_char(input[i])) {
+        if (is_operator_char(input[i])) {
             t_token_type type = get_operator(input, &i);
             ft_lstadd_back(&tokens, ft_lstnew(create_token(type)));
         } else {
             t_token *token = create_token(TOKEN_WORD);
-            process_unquoted_word(input, &i, token->word);
+            while (i < len && !is_whitespace(input[i]) && !is_operator_char(input[i])) {
+                if (input[i] == '\'' || input[i] == '"') {
+                    char quote_type = input[i];
+                    if (!process_quoted_content(input, &i, quote_type, token->word)) {
+                        ft_lstclear(&tokens, free_token);
+                        free_token(token);
+                        return NULL;
+                    }
+                } else {
+                    process_unquoted_segment(input, &i, token->word);
+                }
+            }
             ft_lstadd_back(&tokens, ft_lstnew(token));
         }
     }
