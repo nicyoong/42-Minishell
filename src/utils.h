@@ -5,7 +5,7 @@
 # include "../libft/libft.h"
 
 int ft_strcmp(const char *s1, const char *s2);
-void ft_split_free(char **arr);
+void ft_split_free(char **array);
 int  is_builtin(const char *cmd);
 int is_whitespace(char c);
 int is_operator_char(char c);
