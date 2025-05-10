@@ -56,14 +56,24 @@ void handle_variable_expansion(const char *input, int *i, t_word *word, char *bu
     {
         add_segment(word, EXIT_STATUS, "$?");
         (*i)++;
-    } else {
-        char var[1024];
-        int var_idx = 0;
-        while (is_valid_var_char(input[*i])) {
-            var[var_idx++] = input[(*i)++];
+    }
+    else 
+    {
+        if (is_valid_var_char(input[*i])) 
+        {
+            char var[1024];
+            int var_idx = 0;
+            while (is_valid_var_char(input[*i])) 
+            {
+                var[var_idx++] = input[(*i)++];
+            }
+            var[var_idx] = '\0';
+            add_segment(word, VARIABLE, var);
+        } 
+        else 
+        {
+            add_segment(word, LITERAL, "$");
         }
-        var[var_idx] = '\0';
-        add_segment(word, VARIABLE, var);
     }
 }
 
