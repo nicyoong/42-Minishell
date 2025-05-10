@@ -28,6 +28,6 @@ int	is_operator_char(char c)
 
 int	is_valid_var_char(char c)
 {
-	return (isalnum(c)
+	return (ft_isalnum(c)
 		|| c == '_');
 }
