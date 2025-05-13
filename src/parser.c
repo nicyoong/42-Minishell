@@ -88,6 +88,7 @@ int handle_redirect(t_list **tokens, t_command *cmd)
     return 1;
 }
 
+
 t_command *parse_command(t_list **tokens)
 {
     t_command *cmd = ft_calloc(1, sizeof(t_command));
@@ -107,7 +108,8 @@ t_command *parse_command(t_list **tokens)
             *tokens = (*tokens)->next;
         } 
         else {
-            break;
+            free_command(cmd);
+            return NULL;
         }
     }
     return cmd;
