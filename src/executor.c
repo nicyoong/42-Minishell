@@ -46,7 +46,12 @@ int process_heredoc(t_word *delimiter_word, t_executor_ctx *ctx)
     char *line;
     while (1) {
         line = readline("> ");
-        if (!line || strcmp(line, delim) == 0) break;
+        if (!line || strcmp(line, delim) == 0)
+        {
+            if (line)
+                free (line);
+            break;
+        }
         write(fds[1], line, strlen(line));
         write(fds[1], "\n", 1);
         free(line);
