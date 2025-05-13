@@ -90,6 +90,7 @@ t_command *parse_command(t_list **tokens)
                 free_command(cmd);
                 return NULL;
             }
+            continue;
         } 
         else if (token->type == TOKEN_WORD) {
             t_word *arg = copy_word(token->word);
