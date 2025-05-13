@@ -497,9 +497,9 @@ int execute_builtin(char **argv, t_list *redirects, t_executor_ctx *ctx)
 void execute_child(t_command *cmd, t_executor_ctx *ctx)
 {
     char **argv = convert_arguments(cmd->arguments, ctx);
-	int status = 0;
-	
-	if (!argv || !argv[0] || argv[0][0] == '\0') {
+    int status = 0;
+    
+    if (!argv || !argv[0] || argv[0][0] == '\0') {
         ft_split_free(argv);
         exit(status);
     }
@@ -510,9 +510,15 @@ void execute_child(t_command *cmd, t_executor_ctx *ctx)
     }
     char *path = resolve_binary(argv[0]);
     if (!path) {
-        fprintf(stderr, "Command not found: %s\n", argv[0]);
-        ft_split_free(argv);
-        exit(127);
+        if (errno == EACCES) {
+            fprintf(stderr, "minishell: %s: Permission denied\n", argv[0]);
+            ft_split_free(argv);
+            exit(126);
+        } else {
+            fprintf(stderr, "minishell: %s: command not found\n", argv[0]);
+            ft_split_free(argv);
+            exit(127);
+        }
     }
     execve(path, argv, environ);
     perror("execve");
