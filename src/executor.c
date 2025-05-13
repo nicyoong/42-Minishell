@@ -314,6 +314,15 @@ char *resolve_binary(char *cmd)
             errno = ENOENT;
             return NULL;
         }
+
+        // Check if it's a directory
+        struct stat st;
+        if (stat(cmd, &st) == 0 && S_ISDIR(st.st_mode))
+        {
+            errno = EISDIR;
+            return NULL;
+        }
+
         // Check if executable
         if (access(cmd, X_OK) == -1)
         {
@@ -510,12 +519,38 @@ void execute_child(t_command *cmd, t_executor_ctx *ctx)
         exit(status);
     }
     char *path = resolve_binary(argv[0]);
-    if (!path) {
-        if (errno == EACCES) {
+    if (!path)
+    {
+        if (errno == EACCES)
+        {
             fprintf(stderr, "minishell: %s: Permission denied\n", argv[0]);
             ft_split_free(argv);
             exit(126);
-        } else {
+        }
+        else if (errno == EISDIR)
+        {
+            fprintf(stderr, "minishell: %s: Is a directory\n", argv[0]);
+            ft_split_free(argv);
+            exit(126);
+        }
+        else if (errno == ENOENT)
+        {
+            if (strchr(argv[0], '/') != NULL)
+            {
+                // Path specified but file not found
+                fprintf(stderr, "minishell: %s: No such file or directory\n", argv[0]);
+            }
+            else
+            {
+                // Command not found in PATH
+                fprintf(stderr, "minishell: %s: command not found\n", argv[0]);
+            }
+            ft_split_free(argv);
+            exit(127);
+        }
+        else
+        {
+            // Generic fallback
             fprintf(stderr, "minishell: %s: command not found\n", argv[0]);
             ft_split_free(argv);
             exit(127);
