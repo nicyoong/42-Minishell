@@ -62,21 +62,25 @@ int handle_redirect(t_list **tokens, t_command *cmd)
 {
     t_token *token = (t_token *)(*tokens)->content;
     t_redirect *redir = ft_calloc(1, sizeof(t_redirect));
+    t_list *filename_segs = NULL;
 
     redir->type = token_to_redirect(token->type);
     *tokens = (*tokens)->next;
-
-    if (!*tokens || ((t_token *)(*tokens)->content)->type != TOKEN_WORD)
-    {
+    while (*tokens && ((t_token *)(*tokens)->content)->type == TOKEN_WORD) {
+        t_word *segment = copy_word(((t_token *)(*tokens)->content)->word);
+        ft_lstadd_back(&filename_segs, ft_lstnew(segment));
+        *tokens = (*tokens)->next;
+    }
+    if (!filename_segs) {
         free(redir);
         return 0;
     }
-    t_word *filename = copy_word(((t_token *)(*tokens)->content)->word);
-    redir->filename = filename;
+    redir->filename = merge_words(filename_segs);
+    ft_lstclear(&filename_segs, free_word);
     ft_lstadd_back(&cmd->redirects, ft_lstnew(redir));
-    *tokens = (*tokens)->next;
     return 1;
 }
+
 
 t_command *parse_command(t_list **tokens)
 {

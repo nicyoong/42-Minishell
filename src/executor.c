@@ -193,21 +193,21 @@ int execute_env(char **argv, t_list *redirects, t_executor_ctx *ctx)
         cleanup_redirections(save_stdin, save_stdout, save_stderr, ctx, ret);
         return ret;
     }
-
-    // Validate no arguments
-    if (argv[1]) {
+    if (argv[1] != NULL) {
         fprintf(stderr, "env: too many arguments\n");
         ret = 1;
         cleanup_redirections(save_stdin, save_stdout, save_stderr, ctx, ret);
         return ret;
     }
-
-    // Print environment
     extern char **environ;
-    for (char **env = environ; *env; env++) {
+    for (char **env = environ; *env != NULL; env++) {
+        if (strncmp(*env, "_=", 2) == 0 ||
+            strncmp(*env, "COLUMNS=", 8) == 0 ||
+            strncmp(*env, "LINES=", 6) == 0) {
+            continue;
+        }
         printf("%s\n", *env);
     }
-
     cleanup_redirections(save_stdin, save_stdout, save_stderr, ctx, ret);
     return ret;
 }
