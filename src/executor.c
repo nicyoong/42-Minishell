@@ -305,26 +305,44 @@ int execute_unset(char **argv, t_list *redirects, t_executor_ctx *ctx)
 
 char *resolve_binary(char *cmd)
 {
-    if (access(cmd, X_OK) == 0)
-        return ft_strdup(cmd);
-    char *path = getenv("PATH");
-    if (!path)
-        return (NULL);
-    char **dirs = ft_split(path, ':');
-    for (int i = 0; dirs[i]; i++)
+    if (strchr(cmd, '/') != NULL)
     {
-        char *full = ft_strjoin(dirs[i], "/");
-        char *full_cmd = ft_strjoin(full, cmd);
-        free(full);
-        if (access(full_cmd, X_OK) == 0)
+        // Check if the file exists
+        if (access(cmd, F_OK) == -1)
         {
-            ft_split_free(dirs);
-            return (full_cmd);
+            errno = ENOENT;
+            return NULL;
         }
-        free(full_cmd);
+        // Check if executable
+        if (access(cmd, X_OK) == -1)
+        {
+            errno = EACCES;
+            return NULL;
+        }
+        return ft_strdup(cmd);
     }
-    ft_split_free(dirs);
-    return (NULL);
+    else
+    {
+        char *path = getenv("PATH");
+        if (!path)
+            return NULL;
+        char **dirs = ft_split(path, ':');
+        for (int i = 0; dirs[i]; i++)
+        {
+            char *full = ft_strjoin(dirs[i], "/");
+            char *full_cmd = ft_strjoin(full, cmd);
+            free(full);
+            if (access(full_cmd, X_OK) == 0)
+            {
+                ft_split_free(dirs);
+                return full_cmd;
+            }
+            free(full_cmd);
+        }
+        ft_split_free(dirs);
+        errno = ENOENT;
+        return NULL;
+    }
 }
 
 char **convert_arguments(t_list *args, t_executor_ctx *ctx)
