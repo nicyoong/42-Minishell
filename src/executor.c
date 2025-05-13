@@ -416,7 +416,7 @@ void execute_child(t_command *cmd, t_executor_ctx *ctx)
     }
     execve(path, argv, environ);
     perror("execve");
-    exit(127);
+    exit(126);
 }
 
 void execute_pipeline_commands(t_pipeline *pipeline, t_executor_ctx *ctx)
