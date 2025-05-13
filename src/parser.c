@@ -156,10 +156,8 @@ t_pipeline *parse(t_list *tokens)
         t_command *cmd = parse_command(cmd_tokens);
         
         if (!cmd || *cmd_tokens != NULL) {
-            // Cleanup pipeline and command groups
             ft_lstclear(&pipeline->commands, free_command);
             free(pipeline);
-            // Free command group tokens
             t_list *temp = cmd_groups;
             while (temp) {
                 t_list *tokens = temp->content;
