@@ -137,6 +137,17 @@ int setup_redirections(t_list *redirects, t_executor_ctx *ctx)
     return 0;
 }
 
+void cleanup_redirections(int save_stdin, int save_stdout, int save_stderr, t_executor_ctx *ctx, int ret)
+{
+    dup2(save_stdin, STDIN_FILENO);
+    dup2(save_stdout, STDOUT_FILENO);
+    dup2(save_stderr, STDERR_FILENO);
+    close(save_stdin);
+    close(save_stdout);
+    close(save_stderr);
+    ctx->last_exit_status = ret;
+}
+
 int execute_export(char **argv, t_list *redirects, t_executor_ctx *ctx)
 {
     int save_stdin = dup(STDIN_FILENO);
