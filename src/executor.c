@@ -277,8 +277,8 @@ char **convert_arguments(t_list *args, t_executor_ctx *ctx)
             strcat(buffer, resolved);
             if (s->type == EXIT_STATUS) free(resolved); // Cleanup itoa
         }
-
-        argv[i++] = ft_strdup(buffer);
+	    if (buffer[0] != '\0')
+            argv[i++] = ft_strdup(buffer);
     }
 
     return argv;
