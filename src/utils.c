@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tching <tching@student.42kl.edu.my>        +#+  +:+       +#+        */
+/*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/10 18:10:31 by tching            #+#    #+#             */
-/*   Updated: 2025/05/10 18:22:34 by tching           ###   ########.fr       */
+/*   Updated: 2025/05/13 22:45:05 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,13 +38,15 @@ void	ft_split_free(char **array)
 	free(array);
 }
 
-int	is_builtin(const char *cmd)
+int is_builtin(const char *cmd)
 {
-	return (cmd && (ft_strcmp(cmd, "cd") == 0
-			|| ft_strcmp(cmd, "export") == 0
-			|| ft_strcmp(cmd, "unset") == 0
-			|| ft_strcmp(cmd, "pwd") == 0
-			|| ft_strcmp(cmd, "exit") == 0));
+	return (ft_strcmp(cmd, "cd") == 0 ||
+			ft_strcmp(cmd, "export") == 0 ||
+			ft_strcmp(cmd, "unset") == 0 ||
+			ft_strcmp(cmd, "pwd") == 0 ||
+			ft_strcmp(cmd, "exit") == 0 ||
+			ft_strcmp(cmd, "echo") == 0 ||
+			ft_strcmp(cmd, "env") == 0);
 }
 
 int	is_valid_identifier(const char *str)
