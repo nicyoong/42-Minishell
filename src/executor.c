@@ -96,6 +96,15 @@ int setup_redirections(t_list *redirects, t_executor_ctx *ctx)
             }
         }
 
+        char *trimmed = ft_strtrim(path, " \t\n\r"); // Remove leading/trailing whitespace
+        if (!trimmed) {
+            fprintf(stderr, "redirection error: invalid filename\n");
+            return -1;
+        }
+        strncpy(path, trimmed, sizeof(path) - 1); // Copy back to path buffer
+        path[sizeof(path) - 1] = '\0'; // Ensure null-termination
+        free(trimmed);
+
         int fd = -1;
         int flags = 0;
         mode_t mode = 0644;
