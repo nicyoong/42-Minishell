@@ -58,13 +58,6 @@ void free_command(void *cmd_ptr)
     free(cmd);
 }
 
-t_word *merge_words(t_list *segments)
-{
-    t_word *merged = ft_calloc(1, sizeof(t_word));
-    merged->segments = segments;
-    return merged;
-}
-
 int handle_redirect(t_list **tokens, t_command *cmd)
 {
     t_token *token = (t_token *)(*tokens)->content;
