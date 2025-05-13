@@ -1,10 +1,6 @@
 #include "parser.h"
 #include "utils.h"
 
-// ==============================
-// Lexer Logic
-// ==============================
-
 void handle_variable_expansion(const char *input, int *i, t_word *word, char *buffer, int *buf_idx)
 {
     if (*buf_idx > 0)
