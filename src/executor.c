@@ -181,6 +181,37 @@ int execute_echo(char **argv, t_list *redirects, t_executor_ctx *ctx)
     return ret;
 }
 
+int execute_env(char **argv, t_list *redirects, t_executor_ctx *ctx)
+{
+    int save_stdin = dup(STDIN_FILENO);
+    int save_stdout = dup(STDOUT_FILENO);
+    int save_stderr = dup(STDERR_FILENO);
+    int ret = 0;
+
+    if (setup_redirections(redirects, ctx) < 0) {
+        ret = 1;
+        cleanup_redirections(save_stdin, save_stdout, save_stderr, ctx, ret);
+        return ret;
+    }
+
+    // Validate no arguments
+    if (argv[1]) {
+        fprintf(stderr, "env: too many arguments\n");
+        ret = 1;
+        cleanup_redirections(save_stdin, save_stdout, save_stderr, ctx, ret);
+        return ret;
+    }
+
+    // Print environment
+    extern char **environ;
+    for (char **env = environ; *env; env++) {
+        printf("%s\n", *env);
+    }
+
+    cleanup_redirections(save_stdin, save_stdout, save_stderr, ctx, ret);
+    return ret;
+}
+
 int execute_export(char **argv, t_list *redirects, t_executor_ctx *ctx)
 {
     int save_stdin = dup(STDIN_FILENO);
