@@ -470,7 +470,11 @@ int execute_builtin(char **argv, t_list *redirects, t_executor_ctx *ctx)
 	} else if (ft_strcmp(argv[0], "exit") == 0) {
         execute_exit(argv, ctx);
         return 0;
-	}
+	} else if (ft_strcmp(argv[0], "echo") == 0) {
+        return execute_echo(argv, redirects, ctx);
+    } else if (ft_strcmp(argv[0], "env") == 0) {
+        return execute_env(argv, redirects, ctx);
+    }
     return -1;
 }
 
