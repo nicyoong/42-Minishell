@@ -24,25 +24,20 @@ int process_heredoc(t_word *delimiter_word, t_executor_ctx *ctx)
         t_segment *s = seg->content;
         char *resolved = NULL;
 
-        if (s->type == VARIABLE) {
+        if (s->type == VARIABLE)
+        {
             resolved = getenv(s->value);
             if (!resolved) resolved = "";
         } 
-        else if (s->type == EXIT_STATUS) {
+        else if (s->type == EXIT_STATUS)
             resolved = ft_itoa(ctx->last_exit_status);
-        } 
-        else {
+        else
             resolved = s->value;
-        }
-        
         ft_strcat(buffer, resolved);
-        
-        if (s->type == EXIT_STATUS) {
+        if (s->type == EXIT_STATUS)
             free(resolved);
-        }
     }
     char *delim = buffer;
-
     char *line;
     while (1) {
         line = readline("> ");
@@ -61,12 +56,13 @@ int process_heredoc(t_word *delimiter_word, t_executor_ctx *ctx)
 }
 
 char *resolve_segment(t_segment *seg, t_executor_ctx *ctx) {
-    if (seg->type == VARIABLE) {
+    if (seg->type == VARIABLE)
+    {
         char *value = getenv(seg->value);
         return value ? ft_strdup(value) : ft_strdup("");
-    } else if (seg->type == EXIT_STATUS) {
-        return ft_itoa(ctx->last_exit_status);
     }
+    else if (seg->type == EXIT_STATUS)
+        return ft_itoa(ctx->last_exit_status);
     return ft_strdup(seg->value);
 }
 
@@ -82,32 +78,27 @@ int setup_redirections(t_list *redirects, t_executor_ctx *ctx)
             t_segment *s = seg->content;
             char *resolved = NULL;
             
-            if (s->type == VARIABLE) {
+            if (s->type == VARIABLE)
+            {
                 resolved = getenv(s->value);
                 if (!resolved) resolved = "";
             } 
-            else if (s->type == EXIT_STATUS) {
+            else if (s->type == EXIT_STATUS)
                 resolved = ft_itoa(ctx->last_exit_status);
-            } 
-            else { // LITERAL
+            else
                 resolved = s->value;
-            }
-            
             ft_strcat(path, resolved);
-            
-            // Cleanup dynamically allocated exit status
-            if (s->type == EXIT_STATUS) {
+            if (s->type == EXIT_STATUS)
                 free(resolved);
-            }
         }
-
-        char *trimmed = ft_strtrim(path, " \t\n\r"); // Remove leading/trailing whitespace
-        if (!trimmed) {
+        char *trimmed = ft_strtrim(path, " \t\n\r");
+        if (!trimmed)
+        {
             fprintf(stderr, "redirection error: invalid filename\n");
             return -1;
         }
-        strncpy(path, trimmed, sizeof(path) - 1); // Copy back to path buffer
-        path[sizeof(path) - 1] = '\0'; // Ensure null-termination
+        strncpy(path, trimmed, sizeof(path) - 1);
+        path[sizeof(path) - 1] = '\0';
         free(trimmed);
 
         int fd = -1;
@@ -127,14 +118,15 @@ int setup_redirections(t_list *redirects, t_executor_ctx *ctx)
                 fd = open(path, flags, mode);
                 break;
             case REDIR_HEREDOC:
-                fd = process_heredoc(r->filename, ctx);  // Updated heredoc handler
+                fd = process_heredoc(r->filename, ctx);
                 break;
             default:
                 fprintf(stderr, "Unknown redirection type\n");
                 return -1;
         }
 
-        if (fd < 0) {
+        if (fd < 0)
+        {
             perror("redirection error");
             return -1;
         }
@@ -172,26 +164,25 @@ int execute_echo(char **argv, t_list *redirects, t_executor_ctx *ctx)
     int newline = 1;
     int i = 1;
 
-    if (setup_redirections(redirects, ctx) < 0) {
+    if (setup_redirections(redirects, ctx) < 0)
+    {
         ret = 1;
         cleanup_redirections(save_stdin, save_stdout, save_stderr, ctx, ret);
         return ret;
     }
-
-    // Handle -n option
-    if (argv[i] && strcmp(argv[i], "-n") == 0) {
+    if (argv[i] && strcmp(argv[i], "-n") == 0)
+    {
         newline = 0;
         i++;
     }
-
-    // Print arguments
-    while (argv[i]) {
+    while (argv[i])
+    {
         printf("%s", argv[i]);
         if (argv[i + 1]) printf(" ");
         i++;
     }
-    if (newline) printf("\n");
-
+    if (newline)
+        printf("\n");
     cleanup_redirections(save_stdin, save_stdout, save_stderr, ctx, ret);
     return ret;
 }
@@ -203,12 +194,14 @@ int execute_env(char **argv, t_list *redirects, t_executor_ctx *ctx)
     int save_stderr = dup(STDERR_FILENO);
     int ret = 0;
 
-    if (setup_redirections(redirects, ctx) < 0) {
+    if (setup_redirections(redirects, ctx) < 0)
+    {
         ret = 1;
         cleanup_redirections(save_stdin, save_stdout, save_stderr, ctx, ret);
         return ret;
     }
-    if (argv[1] != NULL) {
+    if (argv[1] != NULL)
+    {
         fprintf(stderr, "env: too many arguments\n");
         ret = 1;
         cleanup_redirections(save_stdin, save_stdout, save_stderr, ctx, ret);
@@ -218,7 +211,7 @@ int execute_env(char **argv, t_list *redirects, t_executor_ctx *ctx)
     for (char **env = environ; *env != NULL; env++) {
         if (strncmp(*env, "_=", 2) == 0 ||
             strncmp(*env, "COLUMNS=", 8) == 0 ||
-            strncmp(*env, "LINES=", 6) == 0) {
+            strncmp(*env, "LINES=", 6) == 0){
             continue;
         }
         printf("%s\n", *env);
@@ -245,12 +238,15 @@ int execute_export(char **argv, t_list *redirects, t_executor_ctx *ctx)
         ctx->last_exit_status = 1;
         return 1;
     }
-    if (!argv[1]) {
+    if (!argv[1])
+    {
         extern char **environ;
         for (char **env = environ; *env; env++) {
             printf("%s\n", *env);
         }
-    } else {
+    }
+    else
+    {
         for (int i = 1; argv[i]; i++) {
             char *arg = argv[i];
             char *eq = strchr(arg, '=');
@@ -322,22 +318,17 @@ char *resolve_binary(char *cmd)
 {
     if (strchr(cmd, '/') != NULL)
     {
-        // Check if the file exists
         if (access(cmd, F_OK) == -1)
         {
             errno = ENOENT;
             return NULL;
         }
-
-        // Check if it's a directory
         struct stat st;
         if (stat(cmd, &st) == 0 && S_ISDIR(st.st_mode))
         {
             errno = EISDIR;
             return NULL;
         }
-
-        // Check if executable
         if (access(cmd, X_OK) == -1)
         {
             errno = EACCES;
@@ -382,14 +373,15 @@ char **convert_arguments(t_list *args, t_executor_ctx *ctx)
             t_segment *s = seg->content;
             char *resolved = NULL;
 
-            if (s->type == VARIABLE) {
-                resolved = getenv(s->value);  // Get value from environment
-                if (!resolved) resolved = ""; // Handle unset variables
-            } else if (s->type == EXIT_STATUS) {
-                resolved = ft_itoa(ctx->last_exit_status);  // Resolve $?
-            } else {
-                resolved = s->value;  // Literal
+            if (s->type == VARIABLE)
+            {
+                resolved = getenv(s->value);
+                if (!resolved) resolved = "";
             }
+            else if (s->type == EXIT_STATUS)
+                resolved = ft_itoa(ctx->last_exit_status);
+            else
+                resolved = s->value;
 
             ft_strcat(buffer, resolved);
             if (s->type == EXIT_STATUS) free(resolved); // Cleanup itoa
@@ -408,7 +400,8 @@ int handle_cd(char **argv, t_list *redirects, t_executor_ctx *ctx)
     int save_stderr = dup(STDERR_FILENO);
     int ret = 0;
 
-    if (setup_redirections(redirects, ctx) < 0) {
+    if (setup_redirections(redirects, ctx) < 0)
+    {
         dup2(save_stdin, STDIN_FILENO);
         dup2(save_stdout, STDOUT_FILENO);
         dup2(save_stderr, STDERR_FILENO);
@@ -550,21 +543,14 @@ void execute_child(t_command *cmd, t_executor_ctx *ctx)
         else if (errno == ENOENT)
         {
             if (strchr(argv[0], '/') != NULL)
-            {
-                // Path specified but file not found
                 fprintf(stderr, "minishell: %s: No such file or directory\n", argv[0]);
-            }
             else
-            {
-                // Command not found in PATH
                 fprintf(stderr, "minishell: %s: command not found\n", argv[0]);
-            }
             ft_split_free(argv);
             exit(127);
         }
         else
         {
-            // Generic fallback
             fprintf(stderr, "minishell: %s: command not found\n", argv[0]);
             ft_split_free(argv);
             exit(127);
