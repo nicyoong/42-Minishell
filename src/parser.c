@@ -1,13 +1,11 @@
 #include "parser.h"
 
-// Helper: Check if token is a redirect
 int is_redirect(t_token_type type)
 {
     return (type == TOKEN_REDIRECT_IN || type == TOKEN_REDIRECT_OUT ||
             type == TOKEN_REDIRECT_APPEND || type == TOKEN_REDIRECT_HEREDOC);
 }
 
-// Helper: Convert token type to redirect type
 t_redirect_type token_to_redirect(t_token_type type)
 {
     if (type == TOKEN_REDIRECT_IN) return REDIR_IN;
@@ -16,7 +14,6 @@ t_redirect_type token_to_redirect(t_token_type type)
     return REDIR_HEREDOC;
 }
 
-// Deep copy a word (for AST ownership)
 t_word *copy_word(t_word *src)
 {
     t_word *dst = ft_calloc(1, sizeof(t_word));
@@ -40,7 +37,6 @@ void free_segment(void *seg_ptr)
     free(seg);
 }
 
-// Free a word and its segments
 void free_word(void *word_ptr)
 {
     t_word *w = word_ptr;
@@ -48,7 +44,6 @@ void free_word(void *word_ptr)
     free(w);
 }
 
-// Free a redirect and its filename
 void free_redirect(void *redir_ptr)
 {
     t_redirect *r = redir_ptr;
@@ -56,7 +51,6 @@ void free_redirect(void *redir_ptr)
     free(r);
 }
 
-// Free entire command structure
 void free_command(void *cmd_ptr)
 {
     t_command *cmd = cmd_ptr;
@@ -96,13 +90,11 @@ t_command *parse_command(t_list **tokens)
         t_token  *token = head->content;
 
         if (is_redirect(token->type)) {
-            /* handle_redirect should advance *tokens past the redirect-node */
             if (!handle_redirect(tokens, cmd)) {
                 free(head);
                 free_command(cmd);
                 return NULL;
             }
-            /* free the list-node that held the redirect token */
             free(head);
             continue;
         }
@@ -114,13 +106,10 @@ t_command *parse_command(t_list **tokens)
                 return NULL;
             }
             ft_lstadd_back(&cmd->arguments, ft_lstnew(arg));
-
-            /* advance past this node and free it */
             *tokens = head->next;
             free(head);
         }
         else {
-            /* unknown token: clean up and bail */
             free(head);
             free_command(cmd);
             return NULL;
@@ -259,49 +248,3 @@ void print_pipeline(t_pipeline *pipeline)
     printf("\n");
 }
 
-// int main() {
-//     const char *test_cmd = "echo \"Hello $USER\" 'Single Quote $VAR' | cat << EOF > output.txt";
-    
-//     printf("Testing parser with command:\n%s\n\n", test_cmd);
-
-//     // Lexing stage
-//     t_list *tokens = lex_input(test_cmd);
-//     if (!tokens) {
-//         printf("Lexer error\n");
-//         return 1;
-//     }
-
-//     // Print tokens from lexer
-//     printf("Lexer output:\n");
-//     int idx = 0;
-//     for (t_list *curr = tokens; curr; curr = curr->next) {
-//         t_token *t = curr->content;
-//         printf("Token %2d: ", ++idx);
-//         if (t->type == TOKEN_WORD) {
-//             printf("WORD [");
-//             print_word(t->word);
-//             printf("]\n");
-//         } else {
-//             const char *types[] = {"PIPE", "REDIR_IN", "REDIR_OUT", 
-//                                  "REDIR_APPEND", "REDIR_HEREDOC"};
-//             printf("%s\n", types[t->type - 1]);
-//         }
-//     }
-
-//     // Parsing stage
-//     t_pipeline *pipeline = parse(tokens);
-//     if (!pipeline) {
-//         printf("\nParser error!\n");
-//         ft_lstclear(&tokens, free_token);
-//         return 1;
-//     }
-
-//     // Print parsed structure
-//     printf("\nParser output:");
-//     print_pipeline(pipeline);
-
-//     // Cleanup
-//     ft_lstclear(&tokens, free_token);
-//     free_pipeline(pipeline);
-//     return 0;
-// }
