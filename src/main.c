@@ -33,7 +33,7 @@ int main(void)
     t_executor_ctx ctx = {0};
     ctx.last_exit_status = 0;
     setup_signal_handlers();
-	rl_bind_key('\t', rl_insert);
+	//rl_bind_key('\t', rl_insert); checked bash Tab is meant to show files in cwd
 
     while (1) {
         char cwd[PATH_MAX];
