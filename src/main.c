@@ -6,7 +6,7 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 19:39:43 by tching            #+#    #+#             */
-/*   Updated: 2025/05/15 00:39:36 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/05/15 01:31:26 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,5 +63,6 @@ int main(void)
         free_pipeline(pipeline);
         free(line);
     }
+    rl_clear_history();
     return (ctx.last_exit_status);
 }
