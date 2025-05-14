@@ -88,28 +88,52 @@ int handle_redirect(t_list **tokens, t_command *cmd)
 t_command *parse_command(t_list **tokens)
 {
     t_command *cmd = ft_calloc(1, sizeof(t_command));
-    
+    if (!cmd)
+        return NULL;
+
     while (*tokens) {
-        t_token *token = (*tokens)->content;
-        
+        t_list   *head  = *tokens;
+        t_token  *token = head->content;
+
         if (is_redirect(token->type)) {
+            /* handle_redirect should advance *tokens past the redirect-node */
             if (!handle_redirect(tokens, cmd)) {
+                free(head);
                 free_command(cmd);
                 return NULL;
             }
+            /* free the list-node that held the redirect token */
+            free(head);
             continue;
-        } 
+        }
         else if (token->type == TOKEN_WORD) {
             t_word *arg = copy_word(token->word);
+            if (!arg) {
+                free(head);
+                free_command(cmd);
+                return NULL;
+            }
             ft_lstadd_back(&cmd->arguments, ft_lstnew(arg));
-            *tokens = (*tokens)->next;
-        } 
+
+            /* advance past this node and free it */
+            *tokens = head->next;
+            free(head);
+        }
         else {
+            /* unknown token: clean up and bail */
+            free(head);
             free_command(cmd);
             return NULL;
         }
     }
+
     return cmd;
+}
+
+void	clear_token_list(void *content)
+{
+    t_list *lst = content;
+    ft_lstclear(&lst, free_token);
 }
 
 t_list *split_commands(t_list *tokens)
@@ -124,7 +148,9 @@ t_list *split_commands(t_list *tokens)
         {
             if (!current)
             {
-                ft_lstclear(&cmds, free);
+                if (current)
+                    ft_lstclear(&current, NULL);
+                ft_lstclear(&cmds, clear_token_list);
                 return NULL;
             }
             ft_lstadd_back(&cmds, ft_lstnew(current));
@@ -164,26 +190,13 @@ t_pipeline *parse(t_list *tokens)
         if (!cmd || *cmd_tokens != NULL) {
             ft_lstclear(&pipeline->commands, free_command);
             free(pipeline);
-            t_list *temp = cmd_groups;
-            while (temp) {
-                t_list *tokens = temp->content;
-                ft_lstclear(&tokens, NULL);
-                temp = temp->next;
-            }
-            ft_lstclear(&cmd_groups, NULL);
+            ft_lstclear(&cmd_groups, clear_token_list);
             return NULL;
         }
         ft_lstadd_back(&pipeline->commands, ft_lstnew(cmd));
         curr_group = curr_group->next;
     }
-    t_list *temp = cmd_groups;
-    while (temp)
-    {
-        t_list **tokens_ptr = (t_list **)&temp->content;
-        ft_lstclear(tokens_ptr, NULL);
-        temp = temp->next;
-    }
-    ft_lstclear(&cmd_groups, free);
+    ft_lstclear(&cmd_groups, clear_token_list);
     return pipeline;
 }
 
