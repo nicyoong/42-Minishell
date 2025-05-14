@@ -6,6 +6,7 @@
 # include <string.h>
 # include <ctype.h>
 # include "../libft/libft.h"
+# include "utils.h"
 
 typedef enum e_token_type {
 	TOKEN_WORD,
