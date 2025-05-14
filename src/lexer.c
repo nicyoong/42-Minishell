@@ -57,12 +57,13 @@ int process_quoted_content(const char *input, int *i, char quote_type, t_word *w
     return 1;
 }
 
-void process_unquoted_segment(const char *input, int *i, t_word *word) {
+void process_unquoted_segment(const char *input, int *i, t_word *word)
+{
     char buffer[1024];
     int buf_idx = 0;
 
     while (input[*i] && !is_whitespace(input[*i]) && !is_operator_char(input[*i]) 
-            && input[*i] != '\'' && input[*i] != '"') { // Stop at quotes too
+            && input[*i] != '\'' && input[*i] != '"') {
         if (input[*i] == '$') {
             if (buf_idx > 0) {
                 buffer[buf_idx] = '\0';
@@ -136,44 +137,3 @@ t_list *lex_input(const char *input)
     return tokens;
 }
 
-// // ==============================
-// // Example Usage & Demonstration
-// // ==============================
-// int main() {
-//     const char *example_cmd = "echo \"Hello $USER\" 'Single Quote $VAR' | cat << EOF > output.txt";
-//     printf("Parsing command:\n%s\n\n", example_cmd);
-
-//     t_list *tokens = lex_input(example_cmd);
-//     if (!tokens) {
-//         printf("Lexer error (e.g., unclosed quotes)\n");
-//         return 1;
-//     }
-
-//     // Print tokens
-//     int cmd_idx = 0;
-//     for (t_list *curr = tokens; curr; curr = curr->next) {
-//         t_token *token = (t_token *)curr->content;
-//         printf("Token %d: ", ++cmd_idx);
-        
-//         if (token->type == TOKEN_WORD) {
-//             printf("WORD [");
-//             for (t_list *seg = token->word->segments; seg; seg = seg->next) {
-//                 t_segment *s = (t_segment *)seg->content;
-//                 printf("%s: '%s'", 
-//                     (s->type == LITERAL) ? "LITERAL" :
-//                     (s->type == VARIABLE) ? "VARIABLE" : "EXIT_STATUS",
-//                     s->value);
-//                 if (seg->next) printf(", ");
-//             }
-//             printf("]\n");
-//         } else {
-//             const char *type_str[] = {
-//                 "PIPE", "REDIR_IN", "REDIR_OUT", "REDIR_APPEND", "REDIR_HEREDOC"
-//             };
-//             printf("%s\n", type_str[token->type - 1]);
-//         }
-//     }
-
-//     ft_lstclear(&tokens, free_token);
-//     return 0;
-// }
