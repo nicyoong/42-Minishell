@@ -35,7 +35,7 @@ int process_heredoc(t_word *delimiter_word, t_executor_ctx *ctx)
             resolved = s->value;
         }
         
-        strcat(buffer, resolved);
+        ft_strcat(buffer, resolved);
         
         if (s->type == EXIT_STATUS) {
             free(resolved);
@@ -93,7 +93,7 @@ int setup_redirections(t_list *redirects, t_executor_ctx *ctx)
                 resolved = s->value;
             }
             
-            strcat(path, resolved);
+            ft_strcat(path, resolved);
             
             // Cleanup dynamically allocated exit status
             if (s->type == EXIT_STATUS) {
@@ -391,7 +391,7 @@ char **convert_arguments(t_list *args, t_executor_ctx *ctx)
                 resolved = s->value;  // Literal
             }
 
-            strcat(buffer, resolved);
+            ft_strcat(buffer, resolved);
             if (s->type == EXIT_STATUS) free(resolved); // Cleanup itoa
         }
 	    if (buffer[0] != '\0')
