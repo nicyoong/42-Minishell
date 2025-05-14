@@ -33,11 +33,18 @@ t_word *copy_word(t_word *src)
     return dst;
 }
 
+void free_segment(void *seg_ptr)
+{
+    t_segment *seg = seg_ptr;
+    free(seg->value); // Free the duplicated string
+    free(seg);        // Free the segment struct
+}
+
 // Free a word and its segments
 void free_word(void *word_ptr)
 {
     t_word *w = word_ptr;
-    ft_lstclear(&w->segments, (void (*)(void *))free);
+    ft_lstclear(&w->segments, free_segment);
     free(w);
 }
 
