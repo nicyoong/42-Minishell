@@ -180,11 +180,11 @@ t_pipeline *parse(t_list *tokens)
     t_list *temp = cmd_groups;
     while (temp)
     {
-        t_list *tokens = temp->content;
-        ft_lstclear(&tokens, NULL);
+        t_list **tokens_ptr = (t_list **)&temp->content;
+        ft_lstclear(tokens_ptr, NULL);
         temp = temp->next;
     }
-    ft_lstclear(&cmd_groups, NULL);
+    ft_lstclear(&cmd_groups, free);
     return pipeline;
 }
 
