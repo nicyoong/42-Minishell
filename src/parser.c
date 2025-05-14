@@ -145,94 +145,45 @@ t_list *split_commands(t_list *tokens)
     return cmds;
 }
 
-// t_pipeline *parse(t_list *tokens)
-// {
-//     t_pipeline *pipeline = ft_calloc(1, sizeof(t_pipeline));
-//     t_list *cmd_groups = split_commands(tokens);
-    
-//     if (!cmd_groups)
-//     {
-//         free(pipeline);
-//         return NULL;
-//     }
-//     t_list *curr_group = cmd_groups;
-//     while (curr_group)
-//     {
-//         t_list **cmd_tokens = (t_list **)&curr_group->content;
-//         t_command *cmd = parse_command(cmd_tokens);
-        
-//         if (!cmd || *cmd_tokens != NULL) {
-//             ft_lstclear(&pipeline->commands, free_command);
-//             free(pipeline);
-//             t_list *temp = cmd_groups;
-//             while (temp) {
-//                 t_list *tokens = temp->content;
-//                 ft_lstclear(&tokens, NULL);
-//                 temp = temp->next;
-//             }
-//             ft_lstclear(&cmd_groups, NULL);
-//             return NULL;
-//         }
-//         ft_lstadd_back(&pipeline->commands, ft_lstnew(cmd));
-//         curr_group = curr_group->next;
-//     }
-//     t_list *temp = cmd_groups;
-//     while (temp)
-//     {
-//         t_list **tokens_ptr = (t_list **)&temp->content;
-//         ft_lstclear(tokens_ptr, NULL);
-//         temp = temp->next;
-//     }
-//     ft_lstclear(&cmd_groups, free);
-//     return pipeline;
-// }
-
-void ft_lstclear_wrapper(t_list **list)
-{
-    ft_lstclear(list, NULL);
-}
-
 t_pipeline *parse(t_list *tokens)
 {
     t_pipeline *pipeline = ft_calloc(1, sizeof(t_pipeline));
     t_list *cmd_groups = split_commands(tokens);
-    t_list *original_heads = NULL;
-
+    
     if (!cmd_groups)
     {
         free(pipeline);
         return NULL;
     }
-
-    // Save original heads of each command group's tokens
-    for (t_list *curr = cmd_groups; curr; curr = curr->next)
-        ft_lstadd_back(&original_heads, ft_lstnew(curr->content));
-
     t_list *curr_group = cmd_groups;
     while (curr_group)
     {
         t_list **cmd_tokens = (t_list **)&curr_group->content;
         t_command *cmd = parse_command(cmd_tokens);
-
-        if (!cmd || *cmd_tokens != NULL)
-        {
+        
+        if (!cmd || *cmd_tokens != NULL) {
             ft_lstclear(&pipeline->commands, free_command);
             free(pipeline);
-            // Free original command group tokens
-            ft_lstiter(original_heads, (void (*)(void *))ft_lstclear_wrapper);
-            ft_lstclear(&original_heads, free);
-            ft_lstclear(&cmd_groups, free);
+            t_list *temp = cmd_groups;
+            while (temp) {
+                t_list *tokens = temp->content;
+                ft_lstclear(&tokens, NULL);
+                temp = temp->next;
+            }
+            ft_lstclear(&cmd_groups, NULL);
             return NULL;
         }
         ft_lstadd_back(&pipeline->commands, ft_lstnew(cmd));
         curr_group = curr_group->next;
     }
-
-    // Free original command group tokens
-    ft_lstiter(original_heads, (void (*)(void *))ft_lstclear_wrapper);
-    ft_lstclear(&original_heads, free);
+    t_list *temp = cmd_groups;
+    while (temp)
+    {
+        t_list **tokens_ptr = (t_list **)&temp->content;
+        ft_lstclear(tokens_ptr, NULL);
+        temp = temp->next;
+    }
     ft_lstclear(&cmd_groups, free);
-
     return pipeline;
 }
 
