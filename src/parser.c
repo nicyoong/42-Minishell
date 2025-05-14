@@ -223,11 +223,11 @@ void print_word(t_word *word)
     for (t_list *seg = word->segments; seg; seg = seg->next) {
         t_segment *s = seg->content;
         if (s->type == VARIABLE) {
-            strcat(buffer, "$");
+            ft_strcat(buffer, "$");
         } else if (s->type == EXIT_STATUS) {
-            strcat(buffer, "$?");
+            ft_strcat(buffer, "$?");
         }
-        strcat(buffer, s->value);
+        ft_strcat(buffer, s->value);
     }
     printf("%s", buffer);
 }

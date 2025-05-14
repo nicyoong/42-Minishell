@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils2.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tching <tching@student.42kl.edu.my>        +#+  +:+       +#+        */
+/*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/10 17:29:59 by tching            #+#    #+#             */
-/*   Updated: 2025/05/10 17:32:23 by tching           ###   ########.fr       */
+/*   Updated: 2025/05/15 01:37:35 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,4 +30,17 @@ int	is_valid_var_char(char c)
 {
 	return (ft_isalnum(c)
 		|| c == '_');
+}
+
+char *ft_strcat(char *dest, const char *src)
+{
+    char *d = dest;
+
+    while (*d)
+        d++;
+
+    while ((*d++ = *src++))
+        ;
+
+    return dest;
 }
