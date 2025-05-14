@@ -24,47 +24,7 @@
 #include <readline/history.h>
 #include "../libft/libft.h"
 #include "utils.h"
-/*
-int main(void)
-{
-    char *line;
-    t_list *tokens;
-    t_pipeline *pipeline;
-
-    while (1) 
-	{
-        line = readline("minishell$ ");
-        if (!line)
-            break;
-        if (*line)
-            add_history(line);
-	if (ft_strcmp(line, "exit") == 0)
-	{
-		free (line);
-		break;
-	}
-        tokens = lex_input(line);
-        if (!tokens) 
-		{
-            free(line);
-            continue;
-        }
-        pipeline = parse(tokens);
-        if (!pipeline)
-		{
-            printf("Parser error (e.g., bad syntax)\n");
-            ft_lstclear(&tokens, free_token);
-            free(line);
-            continue;
-        }
-        execute_pipeline(pipeline);
-        ft_lstclear(&tokens, free_token);
-        free_pipeline(pipeline);
-        free(line);
-    }
-    return (0);
-}*/
-
+ 
 int main(void)
 {
     char *line;
@@ -73,6 +33,8 @@ int main(void)
     t_executor_ctx ctx = {0};
     ctx.last_exit_status = 0;
     setup_signal_handlers();
+	rl_bind_key('\t', rl_insert);
+
     while (1) {
         char cwd[PATH_MAX];
         getcwd(cwd, sizeof(cwd));
