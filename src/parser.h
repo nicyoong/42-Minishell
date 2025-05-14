@@ -74,6 +74,7 @@ t_word *copy_word(t_word *src);
 void free_word(void *word_ptr);
 void free_redirect(void *redir_ptr);
 void free_command(void *cmd_ptr);
+void free_segment(void *seg_ptr);
 
 // Main parsing functions
 t_command *parse_command(t_list **tokens);

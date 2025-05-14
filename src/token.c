@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   token.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nyoong <nyoong@student.42kl.edu.my>        +#+  +:+       +#+        */
+/*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/29 14:50:10 by nyoong            #+#    #+#             */
-/*   Updated: 2025/05/10 18:00:11 by tching           ###   ########.fr       */
+/*   Updated: 2025/05/14 18:55:42 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,15 +38,13 @@ void	add_segment(t_word *word, t_segment_type seg_type, const char *value)
 	ft_lstadd_back(&word->segments, ft_lstnew(seg));
 }
 
-void	free_token(void *token_ptr)
+void    free_token(void *token_ptr)
 {
-	t_token	*token;
-
-	token = (t_token *)token_ptr;
-	if (token->word)
-	{
-		ft_lstclear(&token->word->segments, (void (*)(void *))free);
-		free(token->word);
-	}
-	free(token);
+    t_token *token = (t_token *)token_ptr;
+    if (token->type == TOKEN_WORD && token->word)
+    {
+        ft_lstclear(&token->word->segments, free_segment);
+        free(token->word);
+    }
+    free(token);
 }
