@@ -2,13 +2,58 @@
 
 extern char **environ;
 
-int process_heredoc(t_word *delimiter_word, t_executor_ctx *ctx)
-{
-    int fds[2];
-    pipe(fds);
+// int process_heredoc(t_word *delimiter_word, t_executor_ctx *ctx)
+// {
+//     int fds[2];
+//     pipe(fds);
     
+//     char buffer[1024] = {0};
+//     t_list *seg = delimiter_word->segments;
+//     while (seg)
+//     {
+//         t_segment *s = seg->content;
+//         char *resolved = NULL;
+
+//         if (s->type == VARIABLE)
+//         {
+//             resolved = getenv(s->value);
+//             if (!resolved) resolved = "";
+//         }
+//         else if (s->type == EXIT_STATUS)
+//             resolved = ft_itoa(ctx->last_exit_status);
+//         else
+//             resolved = s->value;
+
+//         ft_strcat(buffer, resolved);
+
+//         if (s->type == EXIT_STATUS)
+//             free(resolved);
+
+//         seg = seg->next;
+//     }
+//     char *delim = buffer;
+//     char *line;
+//     while (1) {
+//         line = readline("> ");
+//         if (!line || strcmp(line, delim) == 0)
+//         {
+//             if (line)
+//                 free (line);
+//             break;
+//         }
+//         write(fds[1], line, strlen(line));
+//         write(fds[1], "\n", 1);
+//         free(line);
+//     }
+//     close(fds[1]);
+//     return fds[0];
+// }
+
+char *resolve_delimiter_word(t_word *delimiter_word, t_executor_ctx *ctx)
+{
     char buffer[1024] = {0};
     t_list *seg = delimiter_word->segments;
+
     while (seg)
     {
         t_segment *s = seg->content;
@@ -17,36 +62,19 @@ int process_heredoc(t_word *delimiter_word, t_executor_ctx *ctx)
         if (s->type == VARIABLE)
         {
             resolved = getenv(s->value);
-            if (!resolved) resolved = "";
+            if (!resolved)
+                resolved = "";
         }
         else if (s->type == EXIT_STATUS)
             resolved = ft_itoa(ctx->last_exit_status);
         else
             resolved = s->value;
-
         ft_strcat(buffer, resolved);
-
         if (s->type == EXIT_STATUS)
             free(resolved);
-
         seg = seg->next;
     }
-    char *delim = buffer;
-    char *line;
-    while (1) {
-        line = readline("> ");
-        if (!line || strcmp(line, delim) == 0)
-        {
-            if (line)
-                free (line);
-            break;
-        }
-        write(fds[1], line, strlen(line));
-        write(fds[1], "\n", 1);
-        free(line);
-    }
-    close(fds[1]);
-    return fds[0];
+    return strdup(buffer);
 }
 
 char	*resolve_segment(t_segment *seg, t_executor_ctx *ctx)
