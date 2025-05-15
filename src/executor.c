@@ -173,26 +173,30 @@ int build_path_from_word(t_word *word, char *buffer, size_t bufsize, t_executor_
             if (!resolved) resolved = "";
         }
         else if (s->type == EXIT_STATUS)
-        {
             resolved = ft_itoa(ctx->last_exit_status);
-        }
-        else // LITERAL
-        {
+        else
             resolved = s->value;
-        }
-
         if (strlen(buffer) + strlen(resolved) >= bufsize)
         {
             if (s->type == EXIT_STATUS) free(resolved);
-            return -1; // buffer overflow
+            return -1;
         }
-
-        strcat(buffer, resolved);
-
+        ft_strcat(buffer, resolved);
         if (s->type == EXIT_STATUS)
             free(resolved);
     }
     return 0;
+}
+
+char *trim_and_validate_path(const char *path)
+{
+    char *trimmed = ft_strtrim(path, " \t\n\r");
+    if (!trimmed || trimmed[0] == '\0')
+    {
+        if (trimmed) free(trimmed);
+        return NULL;
+    }
+    return trimmed;
 }
 
 void cleanup_redirections(int save_stdin, int save_stdout, int save_stderr, t_executor_ctx *ctx, int ret)
