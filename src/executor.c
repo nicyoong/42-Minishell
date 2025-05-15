@@ -448,6 +448,29 @@ char *concatenate_segments(t_word *word, t_executor_ctx *ctx)
     return ft_strdup(buffer);
 }
 
+char **convert_arguments(t_list *args, t_executor_ctx *ctx)
+{
+    int size = ft_lstsize(args);
+    char **argv = ft_calloc(size + 1, sizeof(char *));
+    int i = 0;
+
+    t_list *node = args;
+    while (node)
+    {
+        t_word *word = node->content;
+        char *arg = concatenate_segments(word, ctx);
+
+        if (arg[0] != '\0')
+            argv[i++] = arg;
+        else
+            free(arg);
+
+        node = node->next;
+    }
+
+    return argv;
+}
+
 int handle_cd(char **argv, t_list *redirects, t_executor_ctx *ctx)
 {
     int save_stdin = dup(STDIN_FILENO);
