@@ -628,6 +628,19 @@ void execute_binary(char *path, char **argv)
     exit(126);
 }
 
+void execute_child(t_command *cmd, t_executor_ctx *ctx)
+{
+    char **argv = convert_arguments(cmd->arguments, ctx);
+
+    handle_invalid_arguments(argv);
+    handle_builtin_command(argv, cmd, ctx);
+
+    char *path = resolve_binary(argv[0]);
+    handle_path_errors(path, argv);
+
+    execute_binary(path, argv);
+}
+
 void execute_pipeline_commands(t_pipeline *pipeline, t_executor_ctx *ctx)
 {
     int prev_fd = -1;
