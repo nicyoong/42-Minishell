@@ -662,16 +662,15 @@ void execute_pipeline_commands(t_pipeline *pipeline, t_executor_ctx *ctx)
 
         if (!is_last && create_pipe(pipe_fd, ctx) < 0)
             return;
-
         pid_t pid = fork();
-        if (pid == 0) {
+        if (pid == 0)
             setup_child_process(cmd, prev_fd, pipe_fd, is_last, ctx);
-        } else if (pid < 0) {
+        else if (pid < 0)
+        {
             perror("fork");
             ctx->last_exit_status = 1;
             return;
         }
-
         close_fds_after_fork(&prev_fd, pipe_fd, is_last);
         last_pid = pid;
         node = node->next;
