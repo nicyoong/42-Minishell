@@ -8,7 +8,9 @@ int process_heredoc(t_word *delimiter_word, t_executor_ctx *ctx)
     pipe(fds);
     
     char buffer[1024] = {0};
-    for (t_list *seg = delimiter_word->segments; seg; seg = seg->next) {
+    t_list *seg = delimiter_word->segments;
+    while (seg)
+    {
         t_segment *s = seg->content;
         char *resolved = NULL;
 
@@ -16,14 +18,18 @@ int process_heredoc(t_word *delimiter_word, t_executor_ctx *ctx)
         {
             resolved = getenv(s->value);
             if (!resolved) resolved = "";
-        } 
+        }
         else if (s->type == EXIT_STATUS)
             resolved = ft_itoa(ctx->last_exit_status);
         else
             resolved = s->value;
+
         ft_strcat(buffer, resolved);
+
         if (s->type == EXIT_STATUS)
             free(resolved);
+
+        seg = seg->next;
     }
     char *delim = buffer;
     char *line;
