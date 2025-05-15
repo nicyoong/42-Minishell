@@ -242,6 +242,42 @@ int duplicate_fd(int fd, t_redirect_type type)
     return 0;
 }
 
+int setup_redirections(t_list *redirects, t_executor_ctx *ctx)
+{
+    char path[4096];
+
+    for (t_list *node = redirects; node; node = node->next)
+    {
+        t_redirect *r = node->content;
+
+        if (build_path_from_word(r->filename, path, sizeof(path), ctx) < 0)
+        {
+            fprintf(stderr, "redirection error: path too long\n");
+            return -1;
+        }
+
+        char *trimmed = trim_and_validate_path(path);
+        if (!trimmed)
+        {
+            fprintf(stderr, "redirection error: invalid filename\n");
+            return -1;
+        }
+        ft_strncpy(path, trimmed, sizeof(path) - 1);
+        path[sizeof(path) - 1] = '\0';
+        free(trimmed);
+
+        int fd = open_redirection_fd(r->type, path, r->filename, ctx);
+        if (fd < 0)
+        {
+            perror("redirection error");
+            return -1;
+        }
+        if (duplicate_fd(fd, r->type) < 0)
+            return -1;
+    }
+    return 0;
+}
+
 void cleanup_redirections(int save_stdin, int save_stdout, int save_stderr, t_executor_ctx *ctx, int ret)
 {
     dup2(save_stdin, STDIN_FILENO);
