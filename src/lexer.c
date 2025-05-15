@@ -145,26 +145,31 @@ t_list *lex_input(const char *input)
     int i = 0;
     int len = strlen(input);
 
-    while (i < len) {
-        while (i < len && is_whitespace(input[i])) i++;
-        if (i >= len) break;
-
+    while (i < len)
+    {
+        while (i < len && is_whitespace(input[i]))
+            i++;
+        if (i >= len)
+            break;
         if (is_operator_char(input[i])) {
             t_token_type type = get_operator(input, &i);
             ft_lstadd_back(&tokens, ft_lstnew(create_token(type)));
         } else {
             t_token *token = create_token(TOKEN_WORD);
-            while (i < len && !is_whitespace(input[i]) && !is_operator_char(input[i])) {
-                if (input[i] == '\'' || input[i] == '"') {
+            while (i < len && !is_whitespace(input[i]) && !is_operator_char(input[i]))
+            {
+                if (input[i] == '\'' || input[i] == '"')
+                {
                     char quote_type = input[i];
-                    if (!process_quoted_content(input, &i, quote_type, token->word)) {
+                    if (!process_quoted_content(input, &i, quote_type, token->word))
+                    {
                         ft_lstclear(&tokens, free_token);
                         free_token(token);
                         return NULL;
                     }
-                } else {
-                    process_unquoted_segment(input, &i, token->word);
                 }
+                else
+                    process_unquoted_segment(input, &i, token->word);
             }
             ft_lstadd_back(&tokens, ft_lstnew(token));
         }
