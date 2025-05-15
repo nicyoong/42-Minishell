@@ -6,7 +6,7 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 19:39:43 by tching            #+#    #+#             */
-/*   Updated: 2025/05/16 00:13:45 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/05/16 00:14:24 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,4 +88,33 @@ void execute_and_cleanup(char *line, t_list *tokens, t_pipeline *pipeline, t_exe
     ft_lstclear(&tokens, free_token);
     free_pipeline(pipeline);
     free(line);
+}
+
+int main(void)
+{
+    t_executor_ctx ctx = { .last_exit_status = 0 };
+
+    setup_signal_handlers();
+    while (1)
+    {
+        char *line = read_line(&ctx);
+        if (!line)
+            exit(ctx.last_exit_status);
+        t_list *tokens = tokenize_input(line, &ctx);
+        if (!tokens)
+        {
+            free(line);
+            continue;
+        }
+        t_pipeline *pipeline = build_pipeline(tokens, &ctx);
+        if (!pipeline)
+        {
+            ft_lstclear(&tokens, free_token);
+            free(line);
+            continue;
+        }
+        execute_and_cleanup(line, tokens, pipeline, &ctx);
+    }
+    rl_clear_history();
+    return ctx.last_exit_status;
 }
