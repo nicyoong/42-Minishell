@@ -202,6 +202,15 @@ int finalize_current_command(t_list **cmds, t_list **current)
     return 0;
 }
 
+t_list *clear_on_error(t_list **current, t_list **cmds)
+{
+    if (*current)
+        ft_lstclear(current, NULL);
+    if (*cmds)
+        ft_lstclear(cmds, clear_token_list);
+    return NULL;
+}
+
 t_pipeline *parse(t_list *tokens)
 {
     t_pipeline *pipeline = ft_calloc(1, sizeof(t_pipeline));
