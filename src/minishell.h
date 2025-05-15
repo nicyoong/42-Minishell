@@ -116,4 +116,30 @@ void execute_pipeline(t_pipeline *pipeline, t_executor_ctx *ctx);
 void    sigint_handler(int signo);
 void    setup_signal_handlers(void);
 
+//process heredoc
+int	process_heredoc(t_word *delimiter_word, t_executor_ctx *ctx);
+
+
+//builtin function
+int     execute_pwd(char **argv, t_list *redirects, t_executor_ctx *ctx);
+int	execute_echo(char **argv, t_list *redirects, t_executor_ctx *ctx);
+int	execute_env(char **argv, t_list *redirects, t_executor_ctx *ctx);
+int	execute_export(char **argv, t_list *redirects, t_executor_ctx *ctx);
+int	execute_unset(char **argv, t_list *redirects, t_executor_ctx *ctx);
+int	handle_cd(char **argv, t_list *redirects, t_executor_ctx *ctx);
+int	execute_exit(char **argv, t_executor_ctx *ctx);
+int	execute_builtin(char **argv, t_list *redirects, t_executor_ctx *ctx);
+
+//to be sorted
+char	*resolve_segment(t_segment *seg, t_executor_ctx *ctx);
+int	setup_redirections(t_list *redirects, t_executor_ctx *ctx);
+void	cleanup_redirections(int save_stdin, int save_stdout, int save_stderr, t_executor_ctx *ctx, int ret);
+char	*resolve_from_path_env(char *cmd);
+char	*resolve_binary(char *cmd);
+char	**convert_arguments(t_list *args, t_executor_ctx *ctx);
+void	execute_child(t_command *cmd, t_executor_ctx *ctx);
+void	execute_pipeline_commands(t_pipeline *pipeline, t_executor_ctx *ctx);
+void	execute_pipeline(t_pipeline *pipeline, t_executor_ctx *ctx);
+
+
 # endif
