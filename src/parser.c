@@ -244,5 +244,3 @@ void free_pipeline(t_pipeline *pipeline)
     ft_lstclear(&pipeline->commands, free_command);
     free(pipeline);
 }
-
-
