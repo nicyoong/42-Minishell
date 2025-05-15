@@ -78,88 +78,6 @@ char	*resolve_segment(t_segment *seg, t_executor_ctx *ctx)
 	return (ft_strdup(seg->value));
 }
 
-// int setup_redirections(t_list *redirects, t_executor_ctx *ctx)
-// {
-//     for (t_list *node = redirects; node; node = node->next) 
-//     {
-//         t_redirect *r = node->content;
-//         char path[4096] = {0};
-
-//         t_list *seg = r->filename->segments;
-//         while (seg)
-//         {
-//             t_segment *s = seg->content;
-//             char *resolved = NULL;
-
-//             if (s->type == VARIABLE)
-//             {
-//                 resolved = getenv(s->value);
-//                 if (!resolved) resolved = "";
-//             }
-//             else if (s->type == EXIT_STATUS)
-//                 resolved = ft_itoa(ctx->last_exit_status);
-//             else
-//                 resolved = s->value;
-
-//             ft_strcat(path, resolved);
-
-//             if (s->type == EXIT_STATUS)
-//                 free(resolved);
-
-//             seg = seg->next;
-//         }
-//         char *trimmed = ft_strtrim(path, " \t\n\r");
-//         if (!trimmed)
-//         {
-//             fprintf(stderr, "redirection error: invalid filename\n");
-//             return -1;
-//         }
-//         strncpy(path, trimmed, sizeof(path) - 1);
-//         path[sizeof(path) - 1] = '\0';
-//         free(trimmed);
-
-//         int fd = -1;
-//         int flags = 0;
-//         mode_t mode = 0644;
-
-//         if (r->type == REDIR_IN) {
-//             fd = open(path, O_RDONLY);
-//         } 
-//         else if (r->ty pe == REDIR_OUT) {
-//             flags = O_WRONLY | O_CREAT | O_TRUNC;
-//             fd = open(path, flags, mode);
-//         } 
-//         else if (r->type == REDIR_APPEND) {
-//             flags = O_WRONLY | O_CREAT | O_APPEND;
-//             fd = open(path, flags, mode);
-//         } 
-//         else if (r->type == REDIR_HEREDOC) {
-//             fd = process_heredoc(r->filename, ctx);
-//         } 
-//         else {
-//             fprintf(stderr, "Unknown redirection type\n");
-//             return -1;
-//         }
-
-//         if (fd < 0)
-//         {
-//             perror("redirection error");
-//             return -1;
-//         }
-
-//         int target = (r->type == REDIR_IN || r->type == REDIR_HEREDOC) 
-//                    ? STDIN_FILENO : STDOUT_FILENO;
-        
-//         if (dup2(fd, target) < 0) {
-//             perror("dup2 error");
-//             close(fd);
-//             return -1;
-//         }
-//         close(fd);
-//     }
-//     return 0;
-// }
-
 int build_path_from_word(t_word *word, char *buffer, size_t bufsize, t_executor_ctx *ctx)
 {
     buffer[0] = '\0';
@@ -487,13 +405,10 @@ char **convert_arguments(t_list *args, t_executor_ctx *ctx)
 
             seg = seg->next;
         }
-
         if (buffer[0] != '\0')
             argv[i++] = ft_strdup(buffer);
-
         node = node->next;
     }
-
     return argv;
 }
 
