@@ -1,16 +1,4 @@
-#include "parser.h"
-#include <unistd.h>
-#include <fcntl.h>
-#include <sys/wait.h>
-#include <sys/stat.h>
-#include <errno.h>
-#include <readline/readline.h>
-#include <readline/history.h>
-#include <limits.h>
-#include "executor.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include "utils.h"
+#include "minishell.h"
 
 extern char **environ;
 

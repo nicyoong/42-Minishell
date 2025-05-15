@@ -1,5 +1,4 @@
-#include "parser.h"
-#include "utils.h"
+#include "minishell.h"
 
 void handle_variable_expansion(const char *input, int *i, t_word *word, char *buffer, int *buf_idx)
 {

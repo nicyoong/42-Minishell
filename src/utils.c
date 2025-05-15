@@ -6,12 +6,11 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/10 18:10:31 by tching            #+#    #+#             */
-/*   Updated: 2025/05/13 22:45:05 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/05/15 17:03:58 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-//#include "minishell.h"
-#include "utils.h"
+#include "minishell.h"
 
 int	ft_strcmp(const char *s1, const char *s2)
 {

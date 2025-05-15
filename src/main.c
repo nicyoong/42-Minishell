@@ -6,24 +6,11 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 19:39:43 by tching            #+#    #+#             */
-/*   Updated: 2025/05/15 01:31:26 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/05/15 17:07:50 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-//#include "minishell.h"
-#include <signal.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <limits.h>
-#include <stdbool.h>
-#include "parser.h"
-#include "executor.h"
-#include <readline/readline.h>
-#include <readline/history.h>
-#include "../libft/libft.h"
-#include "utils.h"
+#include "minishell.h"
  
 int main(void)
 {

@@ -1,8 +1,7 @@
 #ifndef EXECUTOR_H
 # define EXECUTOR_H
 
-# include "parser.h"
-# include <readline/readline.h>
+# include "minishell.h"
 
 typedef struct s_executor_ctx {
     int last_exit_status;

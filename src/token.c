@@ -6,12 +6,11 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/29 14:50:10 by nyoong            #+#    #+#             */
-/*   Updated: 2025/05/14 18:55:42 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/05/15 17:05:03 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-//#include "minishell.h"
-#include "parser.h"
+#include "minishell.h"
 
 t_token	*create_token(t_token_type type)
 {

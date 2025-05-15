@@ -1,4 +1,4 @@
-#include "parser.h"
+#include "minishell.h"
 
 int is_redirect(t_token_type type)
 {

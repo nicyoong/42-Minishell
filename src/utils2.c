@@ -6,12 +6,11 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/10 17:29:59 by tching            #+#    #+#             */
-/*   Updated: 2025/05/15 01:37:35 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/05/15 17:04:00 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-//#include "minishell.h"
-#include "utils.h"
+#include "minishell.h"
 
 int	is_whitespace(char c)
 {

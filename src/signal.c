@@ -3,16 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   signal.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tching <tching@student.42kl.edu.my>        +#+  +:+       +#+        */
+/*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/10 17:11:51 by tching            #+#    #+#             */
-/*   Updated: 2025/05/10 17:21:26 by tching           ###   ########.fr       */
+/*   Updated: 2025/05/15 17:07:58 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-//#include "minishell.h"
-#include "executor.h"
-#include <signal.h>
+#include "minishell.h"
 
 void	sigint_handler(int signo)
 {
