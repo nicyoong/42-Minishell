@@ -73,23 +73,28 @@ int setup_redirections(t_list *redirects, t_executor_ctx *ctx)
         t_redirect *r = node->content;
         char path[1024] = {0};
 
-        // Resolve filename segments (variables and exit status)
-        for (t_list *seg = r->filename->segments; seg; seg = seg->next) {
+        t_list *seg = r->filename->segments;
+        while (seg)
+        {
             t_segment *s = seg->content;
             char *resolved = NULL;
-            
+
             if (s->type == VARIABLE)
             {
                 resolved = getenv(s->value);
                 if (!resolved) resolved = "";
-            } 
+            }
             else if (s->type == EXIT_STATUS)
                 resolved = ft_itoa(ctx->last_exit_status);
             else
                 resolved = s->value;
+
             ft_strcat(path, resolved);
+
             if (s->type == EXIT_STATUS)
                 free(resolved);
+
+            seg = seg->next;
         }
         char *trimmed = ft_strtrim(path, " \t\n\r");
         if (!trimmed)
