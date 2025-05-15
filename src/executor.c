@@ -247,8 +247,10 @@ int execute_export(char **argv, t_list *redirects, t_executor_ctx *ctx)
     if (!argv[1])
     {
         extern char **environ;
-        for (char **env = environ; *env; env++) {
+        char **env = environ;
+        while (*env) {
             printf("%s\n", *env);
+            env++;
         }
     }
     else
