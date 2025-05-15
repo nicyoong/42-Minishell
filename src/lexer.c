@@ -40,6 +40,13 @@ void flush_buffer(t_word *word, char *buffer, int *buf_idx)
     }
 }
 
+void parse_exit_status(const char *input, int *i, t_word *word)
+{
+    (*i)++;
+    add_segment(word, EXIT_STATUS, "$?");
+    (*i)++;
+}
+
 int process_quoted_content(const char *input, int *i, char quote_type, t_word *word)
 {
     char buffer[1024];
