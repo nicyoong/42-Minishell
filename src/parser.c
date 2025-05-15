@@ -156,6 +156,33 @@ int process_word(t_list **tokens, t_command *cmd, t_list *head)
     return 1;
 }
 
+t_command *parse_command(t_list **tokens)
+{
+    t_command *cmd = ft_calloc(1, sizeof(t_command));
+    if (!cmd)
+        return NULL;
+
+    while (*tokens) {
+        t_list *head = *tokens;
+        t_token *token = head->content;
+
+        if (is_redirect(token->type)) {
+            if (!process_redirect(tokens, cmd, head))
+                return NULL;
+        }
+        else if (token->type == TOKEN_WORD) {
+            if (!process_word(tokens, cmd, head))
+                return NULL;
+        }
+        else {
+            free(head);
+            free_command(cmd);
+            return NULL;
+        }
+    }
+    return cmd;
+}
+
 void	clear_token_list(void *content)
 {
     t_list *lst = content;
