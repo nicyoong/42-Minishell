@@ -211,14 +211,16 @@ int execute_env(char **argv, t_list *redirects, t_executor_ctx *ctx)
         cleanup_redirections(save_stdin, save_stdout, save_stderr, ctx, ret);
         return ret;
     }
-    extern char **environ;
-    for (char **env = environ; *env != NULL; env++) {
-        if (strncmp(*env, "_=", 2) == 0 ||
-            strncmp(*env, "COLUMNS=", 8) == 0 ||
-            strncmp(*env, "LINES=", 6) == 0){
+    char **env = environ;
+    while (*env != NULL) {
+        if (ft_strncmp(*env, "_=", 2) == 0 ||
+            ft_strncmp(*env, "COLUMNS=", 8) == 0 ||
+            ft_strncmp(*env, "LINES=", 6) == 0) {
+            env++;
             continue;
         }
         printf("%s\n", *env);
+        env++;
     }
     cleanup_redirections(save_stdin, save_stdout, save_stderr, ctx, ret);
     return ret;
