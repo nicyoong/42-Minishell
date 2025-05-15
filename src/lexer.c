@@ -160,3 +160,26 @@ int handle_operator(const char *input, int *i, t_list **tokens)
     ft_lstadd_back(tokens, ft_lstnew(create_token(type)));
     return *i;
 }
+
+int handle_word(const char *input, int *i, int len, t_list **tokens)
+{
+    t_token *token = create_token(TOKEN_WORD);
+    if (!token)
+        return 0;
+    while (*i < len && !is_whitespace(input[*i]) && !is_operator_char(input[*i]))
+    {
+        if (input[*i] == '\'' || input[*i] == '"')
+        {
+            char quote_type = input[*i];
+            if (!process_quoted_content(input, i, quote_type, token->word))
+            {
+                free_token(token);
+                return 0;
+            }
+        }
+        else
+            process_unquoted_segment(input, i, token->word);
+    }
+    ft_lstadd_back(tokens, ft_lstnew(token));
+    return 1;
+}
