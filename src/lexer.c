@@ -42,6 +42,7 @@ void flush_buffer(t_word *word, char *buffer, int *buf_idx)
 
 void parse_exit_status(const char *input, int *i, t_word *word)
 {
+    (void) input;
     (*i)++;
     add_segment(word, EXIT_STATUS, "$?");
     (*i)++;
