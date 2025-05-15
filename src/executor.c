@@ -621,6 +621,13 @@ void handle_path_errors(char *path, char **argv)
     }
 }
 
+void execute_binary(char *path, char **argv)
+{
+    execve(path, argv, environ);
+    perror("execve");
+    exit(126);
+}
+
 void execute_pipeline_commands(t_pipeline *pipeline, t_executor_ctx *ctx)
 {
     int prev_fd = -1;
