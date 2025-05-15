@@ -228,6 +228,20 @@ int open_redirection_fd(t_redirect_type type, const char *path, t_word *filename
     return fd;
 }
 
+int duplicate_fd(int fd, t_redirect_type type)
+{
+    int target = (type == REDIR_IN || type == REDIR_HEREDOC) ? STDIN_FILENO : STDOUT_FILENO;
+
+    if (dup2(fd, target) < 0)
+    {
+        perror("dup2 error");
+        close(fd);
+        return -1;
+    }
+    close(fd);
+    return 0;
+}
+
 void cleanup_redirections(int save_stdin, int save_stdout, int save_stderr, t_executor_ctx *ctx, int ret)
 {
     dup2(save_stdin, STDIN_FILENO);
