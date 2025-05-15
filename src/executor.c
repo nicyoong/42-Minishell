@@ -602,7 +602,15 @@ void wait_for_children(pid_t last_pid, t_executor_ctx *ctx)
     waitpid(last_pid, &status, 0);
     if (WIFEXITED(status))
         ctx->last_exit_status = WEXITSTATUS(status);
-    while (wait(NULL) > 0);
+    else if (WIFSIGNALED(status))
+    {
+        int sig = WTERMSIG(status);
+        ctx->last_exit_status = 128 + sig;
+    }
+    else
+        ctx->last_exit_status = 1;
+    while (wait(NULL) > 0)
+        ;
 }
 
 void execute_pipeline_commands(t_pipeline *pipeline, t_executor_ctx *ctx)
