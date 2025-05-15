@@ -153,3 +153,10 @@ int skip_whitespace(const char *input, int i)
         i++;
     return i;
 }
+
+int handle_operator(const char *input, int *i, t_list **tokens)
+{
+    t_token_type type = get_operator(input, i);
+    ft_lstadd_back(tokens, ft_lstnew(create_token(type)));
+    return *i;
+}
