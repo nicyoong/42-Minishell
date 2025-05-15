@@ -149,41 +149,6 @@ void	clear_token_list(void *content)
     ft_lstclear(&lst, free_token);
 }
 
-// t_list *split_commands(t_list *tokens)
-// {
-//     t_list *cmds = NULL;
-//     t_list *current = NULL;
-    
-//     while (tokens) {
-//         t_token *token = tokens->content;
-        
-//         if (token->type == TOKEN_PIPE)
-//         {
-//             if (!current)
-//             {
-//                 if (current)
-//                     ft_lstclear(&current, NULL);
-//                 ft_lstclear(&cmds, clear_token_list);
-//                 return NULL;
-//             }
-//             ft_lstadd_back(&cmds, ft_lstnew(current));
-//             current = NULL;
-//         } 
-//         else {
-//             t_list *new_node = ft_lstnew(token);
-//             if (!current) {
-//                 current = new_node;
-//             } else {
-//                 ft_lstadd_back(&current, new_node);
-//             }
-//         }
-//         tokens = tokens->next;
-//     }
-//     if (current) 
-//         ft_lstadd_back(&cmds, ft_lstnew(current));
-//     return cmds;
-// }
-
 void add_token_to_current(t_list **current, t_token *token)
 {
     t_list *new_node = ft_lstnew(token);
