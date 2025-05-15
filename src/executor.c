@@ -293,19 +293,23 @@ int execute_export(char **argv, t_list *redirects, t_executor_ctx *ctx)
 
 int execute_unset(char **argv, t_list *redirects, t_executor_ctx *ctx)
 {
-    int ret = 0;
-    int i = 1;
+    int ret;
+    int i;
 
     (void)redirects;
-    while (argv[i]) {
-        if (unsetenv(argv[i]) != 0) {
+    ret = 0;
+    i = 1;
+    while (argv[i])
+    {
+        if (unsetenv(argv[i]) != 0)
+        {
             perror("unset");
             ret = 1;
         }
         i++;
     }
     ctx->last_exit_status = ret;
-    return ret;
+    return (ret);
 }
 
 char *resolve_from_path_env(char *cmd)
