@@ -375,43 +375,6 @@ char *resolve_binary(char *cmd)
         return (resolve_from_path_env(cmd));
 }
 
-// char **convert_arguments(t_list *args, t_executor_ctx *ctx)
-// {
-//     char **argv = ft_calloc(ft_lstsize(args) + 1, sizeof(char *));
-//     int i = 0;
-
-//     t_list *node = args;
-//     while (node) {
-//         t_word *word = node->content;
-//         char buffer[1024] = {0};
-
-//         t_list *seg = word->segments;
-//         while (seg) {
-//             t_segment *s = seg->content;
-//             char *resolved = NULL;
-
-//             if (s->type == VARIABLE)
-//             {
-//                 resolved = getenv(s->value);
-//                 if (!resolved) resolved = "";
-//             }
-//             else if (s->type == EXIT_STATUS)
-//                 resolved = ft_itoa(ctx->last_exit_status);
-//             else
-//                 resolved = s->value;
-
-//             ft_strcat(buffer, resolved);
-//             if (s->type == EXIT_STATUS) free(resolved);
-
-//             seg = seg->next;
-//         }
-//         if (buffer[0] != '\0')
-//             argv[i++] = ft_strdup(buffer);
-//         node = node->next;
-//     }
-//     return argv;
-// }
-
 char *get_segment_value(t_segment *s, t_executor_ctx *ctx)
 {
     if (s->type == VARIABLE)
@@ -464,10 +427,8 @@ char **convert_arguments(t_list *args, t_executor_ctx *ctx)
             argv[i++] = arg;
         else
             free(arg);
-
         node = node->next;
     }
-
     return argv;
 }
 
