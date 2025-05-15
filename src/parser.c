@@ -141,6 +141,21 @@ int process_redirect(t_list **tokens, t_command *cmd, t_list *head)
     return 1;
 }
 
+int process_word(t_list **tokens, t_command *cmd, t_list *head)
+{
+    t_token *token = head->content;
+    t_word *arg = copy_word(token->word);
+    if (!arg) {
+        free(head);
+        free_command(cmd);
+        return 0;
+    }
+    ft_lstadd_back(&cmd->arguments, ft_lstnew(arg));
+    *tokens = head->next;
+    free(head);
+    return 1;
+}
+
 void	clear_token_list(void *content)
 {
     t_list *lst = content;
