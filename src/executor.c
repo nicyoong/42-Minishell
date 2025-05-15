@@ -77,6 +77,24 @@ char *resolve_delimiter_word(t_word *delimiter_word, t_executor_ctx *ctx)
     return strdup(buffer);
 }
 
+void read_until_delimiter(const char *delim, int fd_write)
+{
+    char *line;
+
+    while (1) {
+        line = readline("> ");
+        if (!line || strcmp(line, delim) == 0)
+        {
+            if (line)
+                free(line);
+            break;
+        }
+        write(fd_write, line, strlen(line));
+        write(fd_write, "\n", 1);
+        free(line);
+    }
+}
+
 char	*resolve_segment(t_segment *seg, t_executor_ctx *ctx)
 {
 	char	*value;
