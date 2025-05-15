@@ -666,6 +666,16 @@ void setup_child_process(t_command *cmd, int prev_fd, int pipe_fd[2], int is_las
     execute_child(cmd, ctx);
 }
 
+void close_fds_after_fork(int *prev_fd, int pipe_fd[2], int is_last) {
+    if (*prev_fd != -1) close(*prev_fd);
+    if (!is_last) {
+        close(pipe_fd[1]);
+        *prev_fd = pipe_fd[0];
+    } else {
+        *prev_fd = -1;
+    }
+}
+
 void execute_pipeline(t_pipeline *pipeline, t_executor_ctx *ctx)
 {
     if (ft_lstsize(pipeline->commands) == 1) {
