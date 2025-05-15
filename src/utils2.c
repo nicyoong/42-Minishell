@@ -6,7 +6,7 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/10 17:29:59 by tching            #+#    #+#             */
-/*   Updated: 2025/05/15 23:04:40 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/05/15 23:07:16 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,12 +52,11 @@ char *ft_strncpy(char *dest, const char *src, size_t n)
     {
         dest[i] = src[i];
         i++;
-    
+	}
     while (i < n)
     {
         dest[i] = '\0';
         i++;
     }
     return dest;
-	}
 }
