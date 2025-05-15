@@ -525,54 +525,62 @@ int execute_builtin(char **argv, t_list *redirects, t_executor_ctx *ctx)
     return -1;
 }
 
-void execute_child(t_command *cmd, t_executor_ctx *ctx)
-{
-    char **argv = convert_arguments(cmd->arguments, ctx);
-    int status = 0;
+// void execute_child(t_command *cmd, t_executor_ctx *ctx)
+// {
+//     char **argv = convert_arguments(cmd->arguments, ctx);
+//     int status = 0;
     
+//     if (!argv || !argv[0] || argv[0][0] == '\0') {
+//         ft_split_free(argv);
+//         exit(status);
+//     }
+//     if (argv && argv[0] && is_builtin(argv[0])) {
+//         status = execute_builtin(argv, cmd->redirects, ctx);
+//         ft_split_free(argv);
+//         exit(status);
+//     }
+//     char *path = resolve_binary(argv[0]);
+//     if (!path)
+//     {
+//         if (errno == EACCES)
+//         {
+//             fprintf(stderr, "minishell: %s: Permission denied\n", argv[0]);
+//             ft_split_free(argv);
+//             exit(126);
+//         }
+//         else if (errno == EISDIR)
+//         {
+//             fprintf(stderr, "minishell: %s: Is a directory\n", argv[0]);
+//             ft_split_free(argv);
+//             exit(126);
+//         }
+//         else if (errno == ENOENT)
+//         {
+//             if (strchr(argv[0], '/') != NULL)
+//                 fprintf(stderr, "minishell: %s: No such file or directory\n", argv[0]);
+//             else
+//                 fprintf(stderr, "minishell: %s: command not found\n", argv[0]);
+//             ft_split_free(argv);
+//             exit(127);
+//         }
+//         else
+//         {
+//             fprintf(stderr, "minishell: %s: command not found\n", argv[0]);
+//             ft_split_free(argv);
+//             exit(127);
+//         }
+//     }
+//     execve(path, argv, environ);
+//     perror("execve");
+//     exit(126);
+// }
+
+void handle_invalid_arguments(char **argv)
+{
     if (!argv || !argv[0] || argv[0][0] == '\0') {
         ft_split_free(argv);
-        exit(status);
+        exit(0);
     }
-    if (argv && argv[0] && is_builtin(argv[0])) {
-        status = execute_builtin(argv, cmd->redirects, ctx);
-        ft_split_free(argv);
-        exit(status);
-    }
-    char *path = resolve_binary(argv[0]);
-    if (!path)
-    {
-        if (errno == EACCES)
-        {
-            fprintf(stderr, "minishell: %s: Permission denied\n", argv[0]);
-            ft_split_free(argv);
-            exit(126);
-        }
-        else if (errno == EISDIR)
-        {
-            fprintf(stderr, "minishell: %s: Is a directory\n", argv[0]);
-            ft_split_free(argv);
-            exit(126);
-        }
-        else if (errno == ENOENT)
-        {
-            if (strchr(argv[0], '/') != NULL)
-                fprintf(stderr, "minishell: %s: No such file or directory\n", argv[0]);
-            else
-                fprintf(stderr, "minishell: %s: command not found\n", argv[0]);
-            ft_split_free(argv);
-            exit(127);
-        }
-        else
-        {
-            fprintf(stderr, "minishell: %s: command not found\n", argv[0]);
-            ft_split_free(argv);
-            exit(127);
-        }
-    }
-    execve(path, argv, environ);
-    perror("execve");
-    exit(126);
 }
 
 void execute_pipeline_commands(t_pipeline *pipeline, t_executor_ctx *ctx)
