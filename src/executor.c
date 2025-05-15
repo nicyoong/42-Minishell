@@ -429,6 +429,25 @@ char *get_segment_value(t_segment *s, t_executor_ctx *ctx)
     }
 }
 
+char *concatenate_segments(t_word *word, t_executor_ctx *ctx)
+{
+    char buffer[1024] = {0};
+
+    t_list *seg = word->segments;
+    while (seg)
+    {
+        t_segment *s = seg->content;
+        char *val = get_segment_value(s, ctx);
+
+        ft_strcat(buffer, val);
+        if (s->type == EXIT_STATUS)
+            free(val);
+        seg = seg->next;
+    }
+
+    return ft_strdup(buffer);
+}
+
 int handle_cd(char **argv, t_list *redirects, t_executor_ctx *ctx)
 {
     int save_stdin = dup(STDIN_FILENO);
