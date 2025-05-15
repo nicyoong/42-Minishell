@@ -90,44 +90,55 @@ int handle_redirect(t_list **tokens, t_command *cmd)
     return 1;
 }
 
-t_command *parse_command(t_list **tokens)
+// t_command *parse_command(t_list **tokens)
+// {
+//     t_command *cmd = ft_calloc(1, sizeof(t_command));
+//     if (!cmd)
+//         return NULL;
+
+//     while (*tokens) {
+//         t_list   *head  = *tokens;
+//         t_token  *token = head->content;
+
+//         if (is_redirect(token->type)) {
+//             if (!handle_redirect(tokens, cmd)) {
+//                 free(head);
+//                 free_command(cmd);
+//                 return NULL;
+//             }
+//             free(head);
+//             continue;
+//         }
+//         else if (token->type == TOKEN_WORD) {
+//             t_word *arg = copy_word(token->word);
+//             if (!arg) {
+//                 free(head);
+//                 free_command(cmd);
+//                 return NULL;
+//             }
+//             ft_lstadd_back(&cmd->arguments, ft_lstnew(arg));
+//             *tokens = head->next;
+//             free(head);
+//         }
+//         else {
+//             free(head);
+//             free_command(cmd);
+//             return NULL;
+//         }
+//     }
+
+//     return cmd;
+// }
+
+int process_redirect(t_list **tokens, t_command *cmd, t_list *head)
 {
-    t_command *cmd = ft_calloc(1, sizeof(t_command));
-    if (!cmd)
-        return NULL;
-
-    while (*tokens) {
-        t_list   *head  = *tokens;
-        t_token  *token = head->content;
-
-        if (is_redirect(token->type)) {
-            if (!handle_redirect(tokens, cmd)) {
-                free(head);
-                free_command(cmd);
-                return NULL;
-            }
-            free(head);
-            continue;
-        }
-        else if (token->type == TOKEN_WORD) {
-            t_word *arg = copy_word(token->word);
-            if (!arg) {
-                free(head);
-                free_command(cmd);
-                return NULL;
-            }
-            ft_lstadd_back(&cmd->arguments, ft_lstnew(arg));
-            *tokens = head->next;
-            free(head);
-        }
-        else {
-            free(head);
-            free_command(cmd);
-            return NULL;
-        }
+    if (!handle_redirect(tokens, cmd)) {
+        free(head);
+        free_command(cmd);
+        return 0;
     }
-
-    return cmd;
+    free(head);
+    return 1;
 }
 
 void	clear_token_list(void *content)
