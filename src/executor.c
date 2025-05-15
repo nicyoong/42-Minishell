@@ -676,6 +676,14 @@ void close_fds_after_fork(int *prev_fd, int pipe_fd[2], int is_last) {
     }
 }
 
+void wait_for_children(pid_t last_pid, t_executor_ctx *ctx) {
+    int status;
+    waitpid(last_pid, &status, 0);
+    if (WIFEXITED(status))
+        ctx->last_exit_status = WEXITSTATUS(status);
+    while (wait(NULL) > 0);
+}
+
 void execute_pipeline(t_pipeline *pipeline, t_executor_ctx *ctx)
 {
     if (ft_lstsize(pipeline->commands) == 1) {
