@@ -61,25 +61,18 @@ void free_command(void *cmd_ptr)
 
 int handle_redirect(t_list **tokens, t_command *cmd)
 {
-    // tokens[0] is the operator‐wrapper; parse_command will free it.
     t_token    *token = (*tokens)->content;
     t_redirect *redir = ft_calloc(1, sizeof(*redir));
     if (!redir)
         return 0;
-
-    // consume the operator
     *tokens = (*tokens)->next;
     redir->type = token_to_redirect(token->type);
-
-    // next must be the filename
     if (!*tokens
      || ((t_token *)(*tokens)->content)->type != TOKEN_WORD)
     {
         free(redir);
         return 0;
     }
-
-    // capture, consume, and then free the filename node
     t_list  *file_node = *tokens;
     t_token *file_tok  = file_node->content;
     redir->filename    = copy_word(file_tok->word);
@@ -89,11 +82,8 @@ int handle_redirect(t_list **tokens, t_command *cmd)
         return 0;
     }
     ft_lstadd_back(&cmd->redirects, ft_lstnew(redir));
-
-    // advance past the filename
     *tokens = file_node->next;
     free(file_node);
-
     return 1;
 }
 
