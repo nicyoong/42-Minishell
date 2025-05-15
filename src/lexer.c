@@ -58,6 +58,18 @@ void parse_variable_name(const char *input, int *i, t_word *word)
     add_segment(word, VARIABLE, var);
 }
 
+void handle_variable_expansion(const char *input, int *i, t_word *word, char *buffer, int *buf_idx)
+{
+    flush_buffer(word, buffer, buf_idx);
+    (*i)++;
+    if (input[*i] == '?')
+        parse_exit_status(input, i, word);
+    else if (is_valid_var_char(input[*i]))
+        parse_variable_name(input, i, word);
+    else
+        add_segment(word, LITERAL, "$");
+}
+
 int process_quoted_content(const char *input, int *i, char quote_type, t_word *word)
 {
     char buffer[1024];
