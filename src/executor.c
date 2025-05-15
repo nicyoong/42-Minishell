@@ -547,7 +547,8 @@ void execute_pipeline_commands(t_pipeline *pipeline, t_executor_ctx *ctx)
     int prev_fd = -1;
     pid_t last_pid = -1;
 
-    for (t_list *node = pipeline->commands; node; node = node->next) {
+    t_list *node = pipeline->commands;
+    while (node) {
         t_command *cmd = node->content;
         int is_last = (node->next == NULL);
         int pipe_fd[2];
@@ -582,6 +583,8 @@ void execute_pipeline_commands(t_pipeline *pipeline, t_executor_ctx *ctx)
             prev_fd = pipe_fd[0];
         }
         last_pid = pid;
+
+        node = node->next;
     }
     int status;
     waitpid(last_pid, &status, 0);
