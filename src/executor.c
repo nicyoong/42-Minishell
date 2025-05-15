@@ -606,8 +606,10 @@ void execute_child(t_command *cmd, t_executor_ctx *ctx)
 //     while (wait(NULL) > 0);
 // }
 
-int create_pipe(int pipe_fd[2], t_executor_ctx *ctx) {
-    if (pipe(pipe_fd) < 0) {
+int create_pipe(int pipe_fd[2], t_executor_ctx *ctx)
+{
+    if (pipe(pipe_fd) < 0)
+    {
         perror("pipe");
         ctx->last_exit_status = 1;
         return -1;
@@ -615,23 +617,26 @@ int create_pipe(int pipe_fd[2], t_executor_ctx *ctx) {
     return 0;
 }
 
-void setup_child_process(t_command *cmd, int prev_fd, int pipe_fd[2], int is_last, t_executor_ctx *ctx) {
-    if (prev_fd != -1) {
+void setup_child_process(t_command *cmd, int prev_fd, int pipe_fd[2], int is_last, t_executor_ctx *ctx)
+{
+    if (prev_fd != -1)
+    {
         dup2(prev_fd, STDIN_FILENO);
         close(prev_fd);
     }
-    if (!is_last) {
+    if (!is_last)
+    {
         close(pipe_fd[0]);
         dup2(pipe_fd[1], STDOUT_FILENO);
         close(pipe_fd[1]);
     }
     if (setup_redirections(cmd->redirects, ctx) < 0)
         exit(1);
-
     execute_child(cmd, ctx);
 }
 
-void close_fds_after_fork(int *prev_fd, int pipe_fd[2], int is_last) {
+void close_fds_after_fork(int *prev_fd, int pipe_fd[2], int is_last)
+{
     if (*prev_fd != -1) close(*prev_fd);
     if (!is_last) {
         close(pipe_fd[1]);
@@ -641,7 +646,8 @@ void close_fds_after_fork(int *prev_fd, int pipe_fd[2], int is_last) {
     }
 }
 
-void wait_for_children(pid_t last_pid, t_executor_ctx *ctx) {
+void wait_for_children(pid_t last_pid, t_executor_ctx *ctx)
+{
     int status;
     waitpid(last_pid, &status, 0);
     if (WIFEXITED(status))
