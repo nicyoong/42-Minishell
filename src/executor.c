@@ -650,6 +650,22 @@ int create_pipe(int pipe_fd[2], t_executor_ctx *ctx) {
     return 0;
 }
 
+void setup_child_process(t_command *cmd, int prev_fd, int pipe_fd[2], int is_last, t_executor_ctx *ctx) {
+    if (prev_fd != -1) {
+        dup2(prev_fd, STDIN_FILENO);
+        close(prev_fd);
+    }
+    if (!is_last) {
+        close(pipe_fd[0]);
+        dup2(pipe_fd[1], STDOUT_FILENO);
+        close(pipe_fd[1]);
+    }
+    if (setup_redirections(cmd->redirects, ctx) < 0)
+        exit(1);
+
+    execute_child(cmd, ctx);
+}
+
 void execute_pipeline(t_pipeline *pipeline, t_executor_ctx *ctx)
 {
     if (ft_lstsize(pipeline->commands) == 1) {
