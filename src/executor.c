@@ -95,6 +95,19 @@ void read_until_delimiter(const char *delim, int fd_write)
     }
 }
 
+int process_heredoc(t_word *delimiter_word, t_executor_ctx *ctx)
+{
+    int fds[2];
+    pipe(fds);
+
+    char *delim = resolve_delimiter_word(delimiter_word, ctx);
+    read_until_delimiter(delim, fds[1]);
+    free(delim);
+
+    close(fds[1]);
+    return fds[0];
+}
+
 char	*resolve_segment(t_segment *seg, t_executor_ctx *ctx)
 {
 	char	*value;
