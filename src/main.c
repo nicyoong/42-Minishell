@@ -6,7 +6,7 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 19:39:43 by tching            #+#    #+#             */
-/*   Updated: 2025/05/16 00:12:46 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/05/16 00:13:12 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,4 +72,12 @@ t_list *tokenize_input(const char *line, t_executor_ctx *ctx)
     if (!tokens)
         ctx->last_exit_status = 0;
     return tokens;
+}
+
+t_pipeline *build_pipeline(t_list *tokens, t_executor_ctx *ctx)
+{
+    t_pipeline *pipeline = parse(tokens);
+    if (!pipeline)
+        ctx->last_exit_status = 2;
+    return pipeline;
 }
