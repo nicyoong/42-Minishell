@@ -19,12 +19,15 @@ t_word *copy_word(t_word *src)
     t_word *dst = ft_calloc(1, sizeof(t_word));
     t_list *segments = NULL;
     
-    for (t_list *tmp = src->segments; tmp; tmp = tmp->next) {
+    t_list *tmp = src->segments;
+    while (tmp)
+    {
         t_segment *src_seg = tmp->content;
         t_segment *dst_seg = ft_calloc(1, sizeof(t_segment));
         dst_seg->type = src_seg->type;
         dst_seg->value = ft_strdup(src_seg->value);
         ft_lstadd_back(&segments, ft_lstnew(dst_seg));
+        tmp = tmp->next;
     }
     dst->segments = segments;
     return dst;
