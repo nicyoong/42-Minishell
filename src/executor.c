@@ -255,29 +255,35 @@ int execute_export(char **argv, t_list *redirects, t_executor_ctx *ctx)
     }
     else
     {
-        for (int i = 1; argv[i]; i++) {
+        int i = 1;
+        while (argv[i]) {
             char *arg = argv[i];
             char *eq = strchr(arg, '=');
             char *name = NULL;
             char *error_part = NULL;
             int name_invalid = 0;
+
             if (eq) {
                 name = ft_substr(arg, 0, eq - arg);
-                error_part = ft_substr(arg, 0, eq - arg + 1); // Include '='
+                error_part = ft_substr(arg, 0, eq - arg + 1);
             } else {
                 name = ft_strdup(arg);
                 error_part = ft_strdup(arg);
             }
+
             if (!is_valid_identifier(name)) {
                 fprintf(stderr, "export: '%s': not a valid identifier\n", error_part);
                 ret = 1;
                 name_invalid = 1;
             }
             free(error_part);
+
             if (name_invalid) {
                 free(name);
+                i++;
                 continue;
             }
+
             if (eq) {
                 char *value = eq + 1;
                 if (setenv(name, value, 1) != 0) {
@@ -291,7 +297,9 @@ int execute_export(char **argv, t_list *redirects, t_executor_ctx *ctx)
                     ret = 1;
                 }
             }
+
             free(name);
+            i++;
         }
     }
     dup2(save_stdin, STDIN_FILENO);
