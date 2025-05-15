@@ -110,24 +110,23 @@ int setup_redirections(t_list *redirects, t_executor_ctx *ctx)
         int flags = 0;
         mode_t mode = 0644;
 
-        switch (r->type) {
-            case REDIR_IN:
-                fd = open(path, O_RDONLY);
-                break;
-            case REDIR_OUT:
-                flags = O_WRONLY | O_CREAT | O_TRUNC;
-                fd = open(path, flags, mode);
-                break;
-            case REDIR_APPEND:
-                flags = O_WRONLY | O_CREAT | O_APPEND;
-                fd = open(path, flags, mode);
-                break;
-            case REDIR_HEREDOC:
-                fd = process_heredoc(r->filename, ctx);
-                break;
-            default:
-                fprintf(stderr, "Unknown redirection type\n");
-                return -1;
+        if (r->type == REDIR_IN) {
+            fd = open(path, O_RDONLY);
+        } 
+        else if (r->type == REDIR_OUT) {
+            flags = O_WRONLY | O_CREAT | O_TRUNC;
+            fd = open(path, flags, mode);
+        } 
+        else if (r->type == REDIR_APPEND) {
+            flags = O_WRONLY | O_CREAT | O_APPEND;
+            fd = open(path, flags, mode);
+        } 
+        else if (r->type == REDIR_HEREDOC) {
+            fd = process_heredoc(r->filename, ctx);
+        } 
+        else {
+            fprintf(stderr, "Unknown redirection type\n");
+            return -1;
         }
 
         if (fd < 0)
