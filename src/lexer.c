@@ -183,3 +183,31 @@ int handle_word(const char *input, int *i, int len, t_list **tokens)
     ft_lstadd_back(tokens, ft_lstnew(token));
     return 1;
 }
+
+t_list *lex_input(const char *input)
+{
+    t_list *tokens = NULL;
+    int i = 0;
+    int len = strlen(input);
+
+    while (i < len)
+    {
+        i = skip_whitespace(input, i);
+        if (i >= len)
+            break;
+
+        if (is_operator_char(input[i]))
+        {
+            handle_operator(input, &i, &tokens);
+        }
+        else
+        {
+            if (!handle_word(input, &i, len, &tokens))
+            {
+                ft_lstclear(&tokens, free_token);
+                return NULL;
+            }
+        }
+    }
+    return tokens;
+}
