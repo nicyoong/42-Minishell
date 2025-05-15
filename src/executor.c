@@ -592,6 +592,35 @@ void handle_builtin_command(char **argv, t_command *cmd, t_executor_ctx *ctx)
     }
 }
 
+void handle_path_errors(char *path, char **argv)
+{
+    if (!path) {
+        if (errno == EACCES) {
+            fprintf(stderr, "minishell: %s: Permission denied\n", argv[0]);
+            ft_split_free(argv);
+            exit(126);
+        }
+        else if (errno == EISDIR) {
+            fprintf(stderr, "minishell: %s: Is a directory\n", argv[0]);
+            ft_split_free(argv);
+            exit(126);
+        }
+        else if (errno == ENOENT) {
+            if (strchr(argv[0], '/') != NULL)
+                fprintf(stderr, "minishell: %s: No such file or directory\n", argv[0]);
+            else
+                fprintf(stderr, "minishell: %s: command not found\n", argv[0]);
+            ft_split_free(argv);
+            exit(127);
+        }
+        else {
+            fprintf(stderr, "minishell: %s: command not found\n", argv[0]);
+            ft_split_free(argv);
+            exit(127);
+        }
+    }
+}
+
 void execute_pipeline_commands(t_pipeline *pipeline, t_executor_ctx *ctx)
 {
     int prev_fd = -1;
