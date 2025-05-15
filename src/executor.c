@@ -207,41 +207,6 @@ void cleanup_redirections(int save_stdin, int save_stdout, int save_stderr, t_ex
     ctx->last_exit_status = ret;
 }
 
-int execute_env(char **argv, t_list *redirects, t_executor_ctx *ctx)
-{
-    int save_stdin = dup(STDIN_FILENO);
-    int save_stdout = dup(STDOUT_FILENO);
-    int save_stderr = dup(STDERR_FILENO);
-    int ret = 0;
-
-    if (setup_redirections(redirects, ctx) < 0)
-    {
-        ret = 1;
-        cleanup_redirections(save_stdin, save_stdout, save_stderr, ctx, ret);
-        return ret;
-    }
-    if (argv[1] != NULL)
-    {
-        fprintf(stderr, "env: too many arguments\n");
-        ret = 1;
-        cleanup_redirections(save_stdin, save_stdout, save_stderr, ctx, ret);
-        return ret;
-    }
-    char **env = environ;
-    while (*env != NULL) {
-        if (ft_strncmp(*env, "_=", 2) == 0 ||
-            ft_strncmp(*env, "COLUMNS=", 8) == 0 ||
-            ft_strncmp(*env, "LINES=", 6) == 0) {
-            env++;
-            continue;
-        }
-        printf("%s\n", *env);
-        env++;
-    }
-    cleanup_redirections(save_stdin, save_stdout, save_stderr, ctx, ret);
-    return ret;
-}
-
 int execute_export(char **argv, t_list *redirects, t_executor_ctx *ctx)
 {
     int save_stdin = dup(STDIN_FILENO);
