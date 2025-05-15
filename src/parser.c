@@ -193,6 +193,15 @@ void add_token_to_current(t_list **current, t_token *token)
         ft_lstadd_back(current, new_node);
 }
 
+int finalize_current_command(t_list **cmds, t_list **current)
+{
+    if (!*current)
+        return -1;
+    ft_lstadd_back(cmds, ft_lstnew(*current));
+    *current = NULL;
+    return 0;
+}
+
 t_pipeline *parse(t_list *tokens)
 {
     t_pipeline *pipeline = ft_calloc(1, sizeof(t_pipeline));
