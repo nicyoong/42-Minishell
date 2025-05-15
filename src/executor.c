@@ -684,6 +684,36 @@ void wait_for_children(pid_t last_pid, t_executor_ctx *ctx) {
     while (wait(NULL) > 0);
 }
 
+void execute_pipeline_commands(t_pipeline *pipeline, t_executor_ctx *ctx)
+{
+    int prev_fd = -1;
+    pid_t last_pid = -1;
+
+    t_list *node = pipeline->commands;
+    while (node) {
+        t_command *cmd = node->content;
+        int is_last = (node->next == NULL);
+        int pipe_fd[2];
+
+        if (!is_last && create_pipe(pipe_fd, ctx) < 0)
+            return;
+
+        pid_t pid = fork();
+        if (pid == 0) {
+            setup_child_process(cmd, prev_fd, pipe_fd, is_last, ctx);
+        } else if (pid < 0) {
+            perror("fork");
+            ctx->last_exit_status = 1;
+            return;
+        }
+
+        close_fds_after_fork(&prev_fd, pipe_fd, is_last);
+        last_pid = pid;
+        node = node->next;
+    }
+    wait_for_children(last_pid, ctx);
+}
+
 void execute_pipeline(t_pipeline *pipeline, t_executor_ctx *ctx)
 {
     if (ft_lstsize(pipeline->commands) == 1) {
