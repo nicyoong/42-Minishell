@@ -323,17 +323,17 @@ char *resolve_from_path_env(char *cmd)
     char **dirs = ft_split(path, ':');
     if (!dirs)
         return NULL;
-    for (int i = 0; dirs[i]; i++)
-    {
+    int i = 0;
+    while (dirs[i]) {
         char *full = ft_strjoin(dirs[i], "/");
         char *full_cmd = ft_strjoin(full, cmd);
         free(full);
-        if (access(full_cmd, X_OK) == 0)
-        {
+        if (access(full_cmd, X_OK) == 0) {
             ft_split_free(dirs);
             return full_cmd;
         }
         free(full_cmd);
+        i++;
     }
     ft_split_free(dirs);
     errno = ENOENT;
