@@ -6,7 +6,7 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 19:39:43 by tching            #+#    #+#             */
-/*   Updated: 2025/05/16 00:14:24 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/05/16 00:15:59 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@
 //     return (ctx.last_exit_status);
 // }
 
-char *read_line(t_executor_ctx *ctx)
+char *read_line()
 {
     char cwd[PATH_MAX];
     getcwd(cwd, sizeof(cwd));
@@ -97,7 +97,7 @@ int main(void)
     setup_signal_handlers();
     while (1)
     {
-        char *line = read_line(&ctx);
+        char *line = read_line();
         if (!line)
             exit(ctx.last_exit_status);
         t_list *tokens = tokenize_input(line, &ctx);
