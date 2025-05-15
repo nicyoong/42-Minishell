@@ -47,6 +47,17 @@ void parse_exit_status(const char *input, int *i, t_word *word)
     (*i)++;
 }
 
+void parse_variable_name(const char *input, int *i, t_word *word)
+{
+    char var[1024];
+    int var_idx = 0;
+
+    while (is_valid_var_char(input[*i]))
+        var[var_idx++] = input[(*i)++];
+    var[var_idx] = '\0';
+    add_segment(word, VARIABLE, var);
+}
+
 int process_quoted_content(const char *input, int *i, char quote_type, t_word *word)
 {
     char buffer[1024];
