@@ -6,7 +6,7 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 19:39:43 by tching            #+#    #+#             */
-/*   Updated: 2025/05/16 00:13:12 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/05/16 00:13:45 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,4 +80,12 @@ t_pipeline *build_pipeline(t_list *tokens, t_executor_ctx *ctx)
     if (!pipeline)
         ctx->last_exit_status = 2;
     return pipeline;
+}
+
+void execute_and_cleanup(char *line, t_list *tokens, t_pipeline *pipeline, t_executor_ctx *ctx)
+{
+    execute_pipeline(pipeline, ctx);
+    ft_lstclear(&tokens, free_token);
+    free_pipeline(pipeline);
+    free(line);
 }
