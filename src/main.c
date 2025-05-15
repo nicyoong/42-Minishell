@@ -6,7 +6,7 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 19:39:43 by tching            #+#    #+#             */
-/*   Updated: 2025/05/16 00:12:01 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/05/16 00:12:46 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,3 +66,10 @@ char *read_line(t_executor_ctx *ctx)
     return line;
 }
 
+t_list *tokenize_input(const char *line, t_executor_ctx *ctx)
+{
+    t_list *tokens = lex_input(line);
+    if (!tokens)
+        ctx->last_exit_status = 0;
+    return tokens;
+}
