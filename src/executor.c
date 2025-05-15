@@ -308,50 +308,50 @@ int execute_unset(char **argv, t_list *redirects, t_executor_ctx *ctx)
     return ret;
 }
 
+char *resolve_from_path_env(char *cmd)
+{
+    char *path;
+    
+    path = getenv("PATH");
+    if (!path)
+        return NULL;
+    char **dirs = ft_split(path, ':');
+    if (!dirs)
+        return NULL;
+    for (int i = 0; dirs[i]; i++)
+    {
+        char *full = ft_strjoin(dirs[i], "/");
+        char *full_cmd = ft_strjoin(full, cmd);
+        free(full);
+        if (access(full_cmd, X_OK) == 0)
+        {
+            ft_split_free(dirs);
+            return full_cmd;
+        }
+        free(full_cmd);
+    }
+    ft_split_free(dirs);
+    errno = ENOENT;
+    return NULL;
+}
+
 char *resolve_binary(char *cmd)
 {
+    struct stat st;
     if (strchr(cmd, '/') != NULL)
     {
         if (access(cmd, F_OK) == -1)
-        {
             errno = ENOENT;
-            return NULL;
-        }
-        struct stat st;
-        if (stat(cmd, &st) == 0 && S_ISDIR(st.st_mode))
-        {
+        else if (stat(cmd, &st) == 0 && S_ISDIR(st.st_mode))
             errno = EISDIR;
-            return NULL;
-        }
-        if (access(cmd, X_OK) == -1)
-        {
+        else if (access(cmd, X_OK) == -1)
             errno = EACCES;
-            return NULL;
-        }
-        return ft_strdup(cmd);
+        else
+            return (ft_strdup(cmd));
+        return (NULL);
     }
     else
-    {
-        char *path = getenv("PATH");
-        if (!path)
-            return NULL;
-        char **dirs = ft_split(path, ':');
-        for (int i = 0; dirs[i]; i++)
-        {
-            char *full = ft_strjoin(dirs[i], "/");
-            char *full_cmd = ft_strjoin(full, cmd);
-            free(full);
-            if (access(full_cmd, X_OK) == 0)
-            {
-                ft_split_free(dirs);
-                return full_cmd;
-            }
-            free(full_cmd);
-        }
-        ft_split_free(dirs);
-        errno = ENOENT;
-        return NULL;
-    }
+        return (resolve_from_path_env(cmd));
 }
 
 char **convert_arguments(t_list *args, t_executor_ctx *ctx)
