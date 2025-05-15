@@ -591,55 +591,64 @@ void execute_child(t_command *cmd, t_executor_ctx *ctx)
     execute_binary(path, argv);
 }
 
-void execute_pipeline_commands(t_pipeline *pipeline, t_executor_ctx *ctx)
-{
-    int prev_fd = -1;
-    pid_t last_pid = -1;
+// void execute_pipeline_commands(t_pipeline *pipeline, t_executor_ctx *ctx)
+// {
+//     int prev_fd = -1;
+//     pid_t last_pid = -1;
 
-    t_list *node = pipeline->commands;
-    while (node) {
-        t_command *cmd = node->content;
-        int is_last = (node->next == NULL);
-        int pipe_fd[2];
+//     t_list *node = pipeline->commands;
+//     while (node) {
+//         t_command *cmd = node->content;
+//         int is_last = (node->next == NULL);
+//         int pipe_fd[2];
 
-        if (!is_last && pipe(pipe_fd) < 0) {
-            perror("pipe");
-            ctx->last_exit_status = 1;
-            return;
-        }
+//         if (!is_last && pipe(pipe_fd) < 0) {
+//             perror("pipe");
+//             ctx->last_exit_status = 1;
+//             return;
+//         }
 
-        pid_t pid = fork();
-        if (pid == 0) {
-            if (prev_fd != -1) {
-                dup2(prev_fd, STDIN_FILENO);
-                close(prev_fd);
-            }
-            if (!is_last) {
-                close(pipe_fd[0]);
-                dup2(pipe_fd[1], STDOUT_FILENO);
-                close(pipe_fd[1]);
-            }
-            if (setup_redirections(cmd->redirects, ctx) < 0) exit(1);
-            execute_child(cmd, ctx);
-        } else if (pid < 0) {
-            perror("fork");
-            ctx->last_exit_status = 1;
-            return;
-        }
-        if (prev_fd != -1) close(prev_fd);
-        if (!is_last) {
-            close(pipe_fd[1]);
-            prev_fd = pipe_fd[0];
-        }
-        last_pid = pid;
+//         pid_t pid = fork();
+//         if (pid == 0) {
+//             if (prev_fd != -1) {
+//                 dup2(prev_fd, STDIN_FILENO);
+//                 close(prev_fd);
+//             }
+//             if (!is_last) {
+//                 close(pipe_fd[0]);
+//                 dup2(pipe_fd[1], STDOUT_FILENO);
+//                 close(pipe_fd[1]);
+//             }
+//             if (setup_redirections(cmd->redirects, ctx) < 0) exit(1);
+//             execute_child(cmd, ctx);
+//         } else if (pid < 0) {
+//             perror("fork");
+//             ctx->last_exit_status = 1;
+//             return;
+//         }
+//         if (prev_fd != -1) close(prev_fd);
+//         if (!is_last) {
+//             close(pipe_fd[1]);
+//             prev_fd = pipe_fd[0];
+//         }
+//         last_pid = pid;
 
-        node = node->next;
+//         node = node->next;
+//     }
+//     int status;
+//     waitpid(last_pid, &status, 0);
+//     if (WIFEXITED(status)) ctx->last_exit_status = WEXITSTATUS(status);
+//     while (wait(NULL) > 0);
+// }
+
+int create_pipe(int pipe_fd[2], t_executor_ctx *ctx) {
+    if (pipe(pipe_fd) < 0) {
+        perror("pipe");
+        ctx->last_exit_status = 1;
+        return -1;
     }
-    int status;
-    waitpid(last_pid, &status, 0);
-    if (WIFEXITED(status)) ctx->last_exit_status = WEXITSTATUS(status);
-    while (wait(NULL) > 0);
-}	
+    return 0;
+}
 
 void execute_pipeline(t_pipeline *pipeline, t_executor_ctx *ctx)
 {
