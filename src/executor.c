@@ -583,6 +583,15 @@ void handle_invalid_arguments(char **argv)
     }
 }
 
+void handle_builtin_command(char **argv, t_command *cmd, t_executor_ctx *ctx)
+{
+    if (is_builtin(argv[0])) {
+        int status = execute_builtin(argv, cmd->redirects, ctx);
+        ft_split_free(argv);
+        exit(status);
+    }
+}
+
 void execute_pipeline_commands(t_pipeline *pipeline, t_executor_ctx *ctx)
 {
     int prev_fd = -1;
