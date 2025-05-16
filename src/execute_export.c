@@ -6,7 +6,7 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/16 17:24:23 by nyoong            #+#    #+#             */
-/*   Updated: 2025/05/16 22:51:21 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/05/16 22:52:13 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,14 +31,27 @@ void restore_stdio(int in, int out, int err)
 	close(err);
 }
 
-void print_environment(void)
+int env_cmp(const void *a, const void *b)
 {
-    char **env = environ;
-    while (*env) {
-        printf("%s\n", *env);
-        env++;
-    }
+    const char *va = *(const char * const *)a;
+    const char *vb = *(const char * const *)b;
+    /* compare up to the '=' */
+    size_t la = strcspn(va, "=");
+    size_t lb = strcspn(vb, "=");
+    int cmp = strncmp(va, vb, la < lb ? la : lb);
+    if (cmp != 0) return cmp;
+    /* if one name is a prefix of the other, shorter one sorts first */
+    return (int)(la - lb);
 }
+
+// void print_environment(void)
+// {
+//     char **env = environ;
+//     while (*env) {
+//         printf("%s\n", *env);
+//         env++;
+//     }
+// }
 
 int handle_single_export_arg(const char *arg)
 {
