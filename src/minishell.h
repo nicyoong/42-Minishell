@@ -80,6 +80,13 @@ typedef struct s_pipeline {
 	t_list			*commands;
 }	t_pipeline;
 
+typedef struct s_export_entry
+{
+    char					*name;
+    bool					assigned;
+    struct s_export_entry	*next;
+}	t_export;
+
 // lexer.c
 // Token functions
 t_token *create_token(t_token_type type);
