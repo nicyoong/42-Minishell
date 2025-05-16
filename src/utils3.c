@@ -6,7 +6,7 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/16 18:47:47 by nyoong            #+#    #+#             */
-/*   Updated: 2025/05/16 18:57:23 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/05/16 18:58:30 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,13 +23,10 @@ int	ft_isxdigit(int c)
 
 int  hex_digit(char c)
 {
-    if (c >= '0' && c <= '9')
-        return (c - '0');
-    c = ft_toupper(c);
-    if (c >= 'A' && c <= 'F')
-        return (c - 'A' + 10);
-    return (-1);
+	if (c >= '0' && c <= '9')
+		return (c - '0');
+	c = ft_toupper(c);
+	if (c >= 'A' && c <= 'F')
+		return (c - 'A' + 10);
+	return (-1);
 }
-
-
-
