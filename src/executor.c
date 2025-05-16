@@ -72,8 +72,12 @@ int open_redirection_fd(t_redirect_type type, const char *path, t_word *filename
 
 int duplicate_fd(int fd, t_redirect_type type)
 {
-	int target = (type == REDIR_IN || type == REDIR_HEREDOC) ? STDIN_FILENO : STDOUT_FILENO;
-
+	int	target;
+	
+	if (type == REDIR_IN || type == REDIR_HEREDOC)
+		target = STDIN_FILENO;
+	else
+		target = STDOUT_FILENO;
 	if (dup2(fd, target) < 0)
 	{
 		perror("dup2 error");
@@ -81,7 +85,7 @@ int duplicate_fd(int fd, t_redirect_type type)
 		return -1;
 	}
 	close(fd);
-	return 0;
+	return (0);
 }
 
 int setup_redirections(t_list *redirects, t_executor_ctx *ctx)
