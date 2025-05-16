@@ -65,13 +65,27 @@ int process_quoted_content(const char *input, int *i, char quote_type, t_word *w
 char decode_escape(const char *s, int *idx)
 {
 	char c = s[*idx];
-	if (c == 'n') { (*idx)++; return '\n'; }
-	if (c == 't') { (*idx)++; return '\t'; }
+	if (c == 'n') {
+		(*idx)++;
+		return '\n';
+	}
+	if (c == 't') {
+		(*idx)++;
+		return '\t';
+	}
 	if (c == 'x' && ft_isxdigit(s[*idx+1]) && ft_isxdigit(s[*idx+2]))
 	{
-		char hex[3] = { s[*idx+1], s[*idx+2], 0 };
+		char hex[3] = { s[*idx+1], s[*idx+2], '\0' };
 		*idx += 3;
 		return (char)hex_to_long(hex);
+	}
+	if (c == '\\') {
+		(*idx)++;
+		return '\\';
+	}
+	if (c == '\'') {
+		(*idx)++;
+		return '\'';
 	}
 	(*idx)++;
 	return s[*idx - 1];
