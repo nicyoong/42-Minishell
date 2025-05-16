@@ -17,6 +17,8 @@
 # include <readline/history.h>
 # include <limits.h>
 
+extern volatile sig_atomic_t g_sigint_received;
+
 int ft_strcmp(const char *s1, const char *s2);
 void ft_split_free(char **array);
 int  is_builtin(const char *cmd);

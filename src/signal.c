@@ -6,19 +6,21 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/10 17:11:51 by tching            #+#    #+#             */
-/*   Updated: 2025/05/16 20:41:07 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/05/16 20:54:36 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
+volatile sig_atomic_t g_sigint_received;
+
 void	sigint_handler(int signo)
 {
 	(void)signo;
+	g_sigint_received = 1;
 	write (STDOUT_FILENO, "\n", 1);
 	rl_replace_line("", 0);
-	rl_on_new_line();
-	rl_redisplay();
+	rl_done = 1;
 }
 
 void	setup_signal_handlers(void)
@@ -28,7 +30,7 @@ void	setup_signal_handlers(void)
 
 	sa_int.sa_handler = sigint_handler;
 	sigemptyset(&sa_int.sa_mask);
-	sa_int.sa_flags = SA_RESTART;
+	sa_int.sa_flags = 0;
 	if (sigaction(SIGINT, &sa_int, NULL) == -1)
 		perror("sigaction SIGINT");
 	sa_quit.sa_handler = SIG_IGN;
