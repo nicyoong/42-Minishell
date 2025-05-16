@@ -135,64 +135,6 @@ void cleanup_redirections(int save_stdin, int save_stdout, int save_stderr, t_ex
 	ctx->last_exit_status = ret;
 }
 
-char    *get_segment_value(t_segment *s, t_executor_ctx *ctx)
-{
-        char    *val;
-
-        if (s->type == VARIABLE)
-        {
-                val = getenv(s->value);
-                if (val)
-                        return (val);
-                else
-                        return ("");
-        }
-        else if (s->type == EXIT_STATUS)
-                return (ft_itoa(ctx->last_exit_status));
-        else
-                return (s->value);
-}
-
-char *concatenate_segments(t_word *word, t_executor_ctx *ctx)
-{
-	char buffer[1024] = {0};
-
-	t_list *seg = word->segments;
-	while (seg)
-	{
-		t_segment *s = seg->content;
-		char *val = get_segment_value(s, ctx);
-
-		ft_strcat(buffer, val);
-		if (s->type == EXIT_STATUS)
-			free(val);
-		seg = seg->next;
-	}
-
-	return ft_strdup(buffer);
-}
-
-char **convert_arguments(t_list *args, t_executor_ctx *ctx)
-{
-	int size = ft_lstsize(args);
-	char **argv = ft_calloc(size + 1, sizeof(char *));
-	int i = 0;
-
-	t_list *node = args;
-	while (node)
-	{
-		t_word *word = node->content;
-		char *arg = concatenate_segments(word, ctx);
-
-		if (arg[0] != '\0')
-			argv[i++] = arg;
-		else
-			free(arg);
-		node = node->next;
-	}
-	return argv;
-}
-
 int execute_builtin(char **argv, t_list *redirects, t_executor_ctx *ctx)
 {
 	if (ft_strcmp(argv[0], "cd") == 0) {
