@@ -2,174 +2,174 @@
 
 void flush_buffer(t_word *word, char *buffer, int *buf_idx)
 {
-    if (*buf_idx > 0)
-    {
-        buffer[*buf_idx] = '\0';
-        add_segment(word, LITERAL, buffer);
-        *buf_idx = 0;
-    }
+	if (*buf_idx > 0)
+	{
+		buffer[*buf_idx] = '\0';
+		add_segment(word, LITERAL, buffer);
+		*buf_idx = 0;
+	}
 }
 
 void parse_exit_status(const char *input, int *i, t_word *word)
 {
-    (void) input;
-    add_segment(word, EXIT_STATUS, "$?");
-    (*i)++;
+	(void) input;
+	add_segment(word, EXIT_STATUS, "$?");
+	(*i)++;
 }
 
 void parse_variable_name(const char *input, int *i, t_word *word)
 {
-    char var[1024];
-    int var_idx = 0;
+	char var[1024];
+	int var_idx = 0;
 
-    while (is_valid_var_char(input[*i]))
-        var[var_idx++] = input[(*i)++];
-    var[var_idx] = '\0';
-    add_segment(word, VARIABLE, var);
+	while (is_valid_var_char(input[*i]))
+		var[var_idx++] = input[(*i)++];
+	var[var_idx] = '\0';
+	add_segment(word, VARIABLE, var);
 }
 
 void handle_variable_expansion(const char *input, int *i, t_word *word, char *buffer, int *buf_idx)
 {
-    flush_buffer(word, buffer, buf_idx);
-    (*i)++;
-    if (input[*i] == '?')
-        parse_exit_status(input, i, word);
-    else if (is_valid_var_char(input[*i]))
-        parse_variable_name(input, i, word);
-    else
-        add_segment(word, LITERAL, "$");
+	flush_buffer(word, buffer, buf_idx);
+	(*i)++;
+	if (input[*i] == '?')
+		parse_exit_status(input, i, word);
+	else if (is_valid_var_char(input[*i]))
+		parse_variable_name(input, i, word);
+	else
+		add_segment(word, LITERAL, "$");
 }
 
 int process_quoted_content(const char *input, int *i, char quote_type, t_word *word)
 {
-    char buffer[1024];
-    int buf_idx = 0;
+	char buffer[1024];
+	int buf_idx = 0;
 
-    (*i)++;
-    while (input[*i] && input[*i] != quote_type) {
-        if (quote_type == '"' && input[*i] == '$') {
-            handle_variable_expansion(input, i, word, buffer, &buf_idx);
-        } else {
-            buffer[buf_idx++] = input[(*i)++];
-        }
-    }
-    if (buf_idx > 0) {
-        buffer[buf_idx] = '\0';
-        add_segment(word, LITERAL, buffer);
-    }
-    if (input[*i] != quote_type) return 0;
-    (*i)++;
-    return 1;
+	(*i)++;
+	while (input[*i] && input[*i] != quote_type) {
+		if (quote_type == '"' && input[*i] == '$') {
+			handle_variable_expansion(input, i, word, buffer, &buf_idx);
+		} else {
+			buffer[buf_idx++] = input[(*i)++];
+		}
+	}
+	if (buf_idx > 0) {
+		buffer[buf_idx] = '\0';
+		add_segment(word, LITERAL, buffer);
+	}
+	if (input[*i] != quote_type) return 0;
+	(*i)++;
+	return 1;
 }
 
 void process_unquoted_segment(const char *input, int *i, t_word *word)
 {
-    char buffer[1024];
-    int buf_idx = 0;
+	char buffer[1024];
+	int buf_idx = 0;
 
-    while (input[*i] && !is_whitespace(input[*i]) && !is_operator_char(input[*i]) 
-            && input[*i] != '\'' && input[*i] != '"') {
-        if (input[*i] == '$') {
-            if (buf_idx > 0) {
-                buffer[buf_idx] = '\0';
-                add_segment(word, LITERAL, buffer);
-                buf_idx = 0;
-            }
-            handle_variable_expansion(input, i, word, buffer, &buf_idx);
-        } else {
-            buffer[buf_idx++] = input[(*i)++];
-        }
-    }
-    if (buf_idx > 0) {
-        buffer[buf_idx] = '\0';
-        add_segment(word, LITERAL, buffer);
-    }
+	while (input[*i] && !is_whitespace(input[*i]) && !is_operator_char(input[*i]) 
+			&& input[*i] != '\'' && input[*i] != '"') {
+		if (input[*i] == '$') {
+			if (buf_idx > 0) {
+				buffer[buf_idx] = '\0';
+				add_segment(word, LITERAL, buffer);
+				buf_idx = 0;
+			}
+			handle_variable_expansion(input, i, word, buffer, &buf_idx);
+		} else {
+			buffer[buf_idx++] = input[(*i)++];
+		}
+	}
+	if (buf_idx > 0) {
+		buffer[buf_idx] = '\0';
+		add_segment(word, LITERAL, buffer);
+	}
 }
 
 t_token_type get_operator(const char *input, int *i)
 {
-    if (input[*i] == '|') {
-        (*i)++;
-        return TOKEN_PIPE;
-    } else if (input[*i] == '<') {
-        if (input[*i + 1] == '<') {
-            (*i) += 2;
-            return TOKEN_REDIRECT_HEREDOC;
-        }
-        (*i)++;
-        return TOKEN_REDIRECT_IN;
-    } else if (input[*i] == '>') {
-        if (input[*i + 1] == '>') {
-            (*i) += 2;
-            return TOKEN_REDIRECT_APPEND;
-        }
-        (*i)++;
-        return TOKEN_REDIRECT_OUT;
-    }
-    return TOKEN_WORD;
+	if (input[*i] == '|') {
+		(*i)++;
+		return TOKEN_PIPE;
+	} else if (input[*i] == '<') {
+		if (input[*i + 1] == '<') {
+			(*i) += 2;
+			return TOKEN_REDIRECT_HEREDOC;
+		}
+		(*i)++;
+		return TOKEN_REDIRECT_IN;
+	} else if (input[*i] == '>') {
+		if (input[*i + 1] == '>') {
+			(*i) += 2;
+			return TOKEN_REDIRECT_APPEND;
+		}
+		(*i)++;
+		return TOKEN_REDIRECT_OUT;
+	}
+	return TOKEN_WORD;
 }
 
 int skip_whitespace(const char *input, int i)
 {
-    while (input[i] && is_whitespace(input[i]))
-        i++;
-    return i;
+	while (input[i] && is_whitespace(input[i]))
+		i++;
+	return i;
 }
 
 int handle_operator(const char *input, int *i, t_list **tokens)
 {
-    t_token_type type = get_operator(input, i);
-    ft_lstadd_back(tokens, ft_lstnew(create_token(type)));
-    return *i;
+	t_token_type type = get_operator(input, i);
+	ft_lstadd_back(tokens, ft_lstnew(create_token(type)));
+	return *i;
 }
 
 int handle_word(const char *input, int *i, int len, t_list **tokens)
 {
-    t_token *token = create_token(TOKEN_WORD);
-    if (!token)
-        return 0;
-    while (*i < len && !is_whitespace(input[*i]) && !is_operator_char(input[*i]))
-    {
-        if (input[*i] == '\'' || input[*i] == '"')
-        {
-            char quote_type = input[*i];
-            if (!process_quoted_content(input, i, quote_type, token->word))
-            {
-                free_token(token);
-                return 0;
-            }
-        }
-        else
-            process_unquoted_segment(input, i, token->word);
-    }
-    ft_lstadd_back(tokens, ft_lstnew(token));
-    return 1;
+	t_token *token = create_token(TOKEN_WORD);
+	if (!token)
+		return 0;
+	while (*i < len && !is_whitespace(input[*i]) && !is_operator_char(input[*i]))
+	{
+		if (input[*i] == '\'' || input[*i] == '"')
+		{
+			char quote_type = input[*i];
+			if (!process_quoted_content(input, i, quote_type, token->word))
+			{
+				free_token(token);
+				return 0;
+			}
+		}
+		else
+			process_unquoted_segment(input, i, token->word);
+	}
+	ft_lstadd_back(tokens, ft_lstnew(token));
+	return 1;
 }
 
 t_list *lex_input(const char *input)
 {
-    t_list *tokens = NULL;
-    int i = 0;
-    int len = strlen(input);
+	t_list *tokens = NULL;
+	int i = 0;
+	int len = strlen(input);
 
-    while (i < len)
-    {
-        i = skip_whitespace(input, i);
-        if (i >= len)
-            break;
+	while (i < len)
+	{
+		i = skip_whitespace(input, i);
+		if (i >= len)
+			break;
 
-        if (is_operator_char(input[i]))
-        {
-            handle_operator(input, &i, &tokens);
-        }
-        else
-        {
-            if (!handle_word(input, &i, len, &tokens))
-            {
-                ft_lstclear(&tokens, free_token);
-                return NULL;
-            }
-        }
-    }
-    return tokens;
+		if (is_operator_char(input[i]))
+		{
+			handle_operator(input, &i, &tokens);
+		}
+		else
+		{
+			if (!handle_word(input, &i, len, &tokens))
+			{
+				ft_lstclear(&tokens, free_token);
+				return NULL;
+			}
+		}
+	}
+	return tokens;
 }
