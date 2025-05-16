@@ -6,7 +6,7 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/16 17:24:23 by nyoong            #+#    #+#             */
-/*   Updated: 2025/05/17 01:57:12 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/05/17 02:04:04 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -134,26 +134,41 @@ void	sort_exports_insertion(t_export **arr, size_t n)
 	}
 }
 
-void	print_environment(void)
+size_t	count_exports(t_export *head)
 {
-	size_t count = 0;
-	t_export *e = g_export_list;
-	while (e)
+	size_t	count;
+
+	count = 0;
+	while (head)
 	{
 		count++;
-		e = e->next;
+		head = head->next;
 	}
-	t_export **arr = malloc(sizeof(*arr) * count);
+	return (count);
+}
+
+t_export	**list_to_array(t_export *head, size_t count)
+{
+	t_export	**arr;
+	size_t		i;
+
+	arr = malloc(sizeof(*arr) * count);
 	if (!arr)
-		return;
-	size_t i = 0;
-	e = g_export_list;
-	while (e)
+		return (NULL);
+	i = 0;
+	while (i < count)
 	{
-		arr[i++] = e;
-		e = e->next;
+		arr[i] = head;
+		head = head->next;
+		i++;
 	}
-	sort_exports_insertion(arr, count);
+    return (arr);
+}
+
+void print_exports(t_export **arr, size_t count)
+{
+	size_t i;
+
 	i = 0;
 	while (i < count)
 	{
@@ -167,18 +182,76 @@ void	print_environment(void)
 			i++;
 			continue;
 		}
-
 		if (!e->assigned)
 			printf("declare -x %s\n", n);
 		else
-			printf("declare -x %s=\"%s\"\n",
-				n,
-				getenv(n) ? getenv(n) : "");
+			printf("declare -x %s=\"%s\"\n", n, getenv(n) ? getenv(n) : "");
 
 		i++;
 	}
+}
+
+void print_environment(void)
+{
+	size_t	count;
+	t_export **arr;
+
+	count = count_exports(g_export_list);
+	if (count == 0)
+		return;
+	arr = list_to_array(g_export_list, count);
+	if (!arr)
+		return;
+	sort_exports_insertion(arr, count);
+	print_exports(arr, count);
 	free(arr);
 }
+
+// void	print_environment(void)
+// {
+// 	size_t count = 0;
+// 	t_export *e = g_export_list;
+// 	while (e)
+// 	{
+// 		count++;
+// 		e = e->next;
+// 	}
+// 	t_export **arr = malloc(sizeof(*arr) * count);
+// 	if (!arr)
+// 		return;
+// 	size_t i = 0;
+// 	e = g_export_list;
+// 	while (e)
+// 	{
+// 		arr[i++] = e;
+// 		e = e->next;
+// 	}
+// 	sort_exports_insertion(arr, count);
+// 	i = 0;
+// 	while (i < count)
+// 	{
+// 		t_export *e = arr[i];
+// 		const char *n = e->name;
+
+// 		if (strcmp(n, "LINES") == 0 ||
+// 			strcmp(n, "COLUMNS") == 0 ||
+// 			strcmp(n, "_") == 0)
+// 		{
+// 			i++;
+// 			continue;
+// 		}
+
+// 		if (!e->assigned)
+// 			printf("declare -x %s\n", n);
+// 		else
+// 			printf("declare -x %s=\"%s\"\n",
+// 				n,
+// 				getenv(n) ? getenv(n) : "");
+
+// 		i++;
+// 	}
+// 	free(arr);
+// }
 
 int handle_single_export_arg(const char *arg)
 {
