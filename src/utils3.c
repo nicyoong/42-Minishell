@@ -6,7 +6,7 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/16 18:47:47 by nyoong            #+#    #+#             */
-/*   Updated: 2025/05/16 18:59:12 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/05/16 19:00:29 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,4 +38,24 @@ const char *skip_prefix(const char *s)
 	if (s[0] == '0' && (s[1] == 'x' || s[1] == 'X'))
 		s += 2;
 	return (s);
+}
+
+long  hex_to_long(const char *hex)
+{
+	long	result;
+	int		d;
+
+	if (!hex)
+		return (0);
+	result = 0;
+	hex = skip_prefix(hex);
+	while (*hex)
+	{
+		d = hex_digit(*hex);
+		if (d < 0)
+			break;
+		result = (result << 4) | d;
+		hex++;
+	}
+	return (result);
 }
