@@ -198,9 +198,9 @@ char    *get_segment_value(t_segment *s, t_executor_ctx *ctx)
         {
                 val = getenv(s->value);
                 if (val)
-                        return (ft_strdup(val));
+                        return (val);
                 else
-                        return (ft_strdup(""));
+                        return ("");
         }
         else if (s->type == EXIT_STATUS)
                 return (ft_itoa(ctx->last_exit_status));
