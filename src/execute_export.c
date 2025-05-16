@@ -6,13 +6,14 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/16 17:24:23 by nyoong            #+#    #+#             */
-/*   Updated: 2025/05/16 22:59:21 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/05/16 23:32:33 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
 extern char **environ;
+t_export *g_export_list = NULL;
 
 void save_stdio(int *in, int *out, int *err)
 {
@@ -31,88 +32,161 @@ void restore_stdio(int in, int out, int err)
 	close(err);
 }
 
-int env_cmp(const void *a, const void *b)
+t_export *find_export(const char *name)
 {
-    const char *va = *(const char * const *)a;
-    const char *vb = *(const char * const *)b;
-    /* compare up to the '=' */
-    size_t la = strcspn(va, "=");
-    size_t lb = strcspn(vb, "=");
-    int cmp = strncmp(va, vb, la < lb ? la : lb);
-    if (cmp != 0) return cmp;
-    /* if one name is a prefix of the other, shorter one sorts first */
-    return (int)(la - lb);
+    t_export *cur = g_export_list;
+    while (cur)
+    {
+        if (strcmp(cur->name, name) == 0)
+            return cur;
+        cur = cur->next;
+    }
+    return NULL;
+}
+
+void add_export(const char *name, bool assigned)
+{
+    t_export *ent = find_export(name);
+    if (ent)
+    {
+        /* once assigned, always assigned */
+        ent->assigned = ent->assigned || assigned;
+    }
+    else
+    {
+        ent = malloc(sizeof(*ent));
+        if (!ent) return; /* oom */
+        ent->name     = strdup(name);
+        ent->assigned = assigned;
+        ent->next     = g_export_list;
+        g_export_list = ent;
+    }
+}
+
+void init_export_list_from_environ(void)
+{
+    for (char **e = environ; *e; e++)
+    {
+        char *eq = strchr(*e, '=');
+        if (!eq)
+            continue;
+
+        size_t namelen = eq - *e;
+        /* copy the name */
+        char *name = strndup(*e, namelen);
+        if (!name)
+            continue;
+
+        /* mark as “assigned” because it already has a value */
+        add_export(name, true);
+        free(name);
+    }
+}
+
+void remove_export(const char *name)
+{
+    t_export **prev = &g_export_list;
+    while (*prev)
+    {
+        t_export *cur = *prev;
+        if (strcmp(cur->name, name) == 0)
+        {
+            *prev = cur->next;
+            free(cur->name);
+            free(cur);
+            return;
+        }
+        prev = &cur->next;
+    }
+}
+
+int export_cmp(const void *a, const void *b)
+{
+    const t_export *ea = *(const t_export * const *)a;
+    const t_export *eb = *(const t_export * const *)b;
+    return strcmp(ea->name, eb->name);
 }
 
 void print_environment(void)
 {
-    /* 1) count entries */
+    /* If the user never did any “export foo…”, seed from environ[] */
+    if (g_export_list == NULL)
+        init_export_list_from_environ();
+
+    /* (the rest is unchanged) */
     size_t count = 0;
-    for (char **e = environ; *e; e++)
+    for (t_export *e = g_export_list; e; e = e->next)
         count++;
 
-    /* 2) copy pointers into a temporary array */
-    char **vars = malloc((count + 1) * sizeof(*vars));
-    if (!vars) return; /* out of memory—just bail */
-    for (size_t i = 0; i < count; i++)
-        vars[i] = environ[i];
-    vars[count] = NULL;
+    t_export **arr = malloc(sizeof(*arr) * count);
+    if (!arr) return;
 
-    /* 3) sort them by NAME */
-    qsort(vars, count, sizeof(*vars), env_cmp);
+    size_t i = 0;
+    for (t_export *e = g_export_list; e; e = e->next)
+        arr[i++] = e;
 
-    /* 4) print in bash-style, skipping LINES/COLUMNS */
-    for (size_t i = 0; i < count; i++) {
-        char *eq = strchr(vars[i], '=');
-        if (!eq) continue;
-        size_t namelen = eq - vars[i];
-        if ((namelen == 5 && strncmp(vars[i], "LINES", 5) == 0) ||
-            (namelen == 7 && strncmp(vars[i], "COLUMNS", 7) == 0) ||
-			(namelen == 1 && vars[i][0] == '_'))
-        {
+    qsort(arr, count, sizeof(*arr), export_cmp);
+
+    for (i = 0; i < count; i++)
+    {
+        t_export *e = arr[i];
+        const char *n = e->name;
+
+        if (strcmp(n, "LINES")   == 0 ||
+            strcmp(n, "COLUMNS") == 0 ||
+            strcmp(n, "_")       == 0)
             continue;
-        }
-        vars[i][namelen] = '\0';
-        char *name  = vars[i];
-        char *value = eq + 1;
-        printf("declare -x %s=\"%s\"\n", name, value);
-        vars[i][namelen] = '=';
+
+        if (!e->assigned)
+            printf("declare -x %s\n", n);
+        else
+            printf("declare -x %s=\"%s\"\n",
+                   n,
+                   getenv(n) ? getenv(n) : "");
     }
 
-    free(vars);
+    free(arr);
 }
 
 int handle_single_export_arg(const char *arg)
 {
-    char *name = NULL;
-    char *error_part = NULL;
+    char *name;
+    char *error_part;
     const char *eq = strchr(arg, '=');
     int ret = 0;
 
-    if (eq) {
-        name = ft_substr(arg, 0, eq - arg);
-        error_part = ft_substr(arg, 0, eq - arg + 1);
-    } else {
-        name = ft_strdup(arg);
+    if (eq)
+    {
+        name       = ft_substr(arg, 0, eq - arg);
+        error_part = ft_substr(arg, 0, (eq - arg) + 1);
+    }
+    else
+    {
+        name       = ft_strdup(arg);
         error_part = ft_strdup(arg);
     }
 
-    if (!is_valid_identifier(name)) {
+    if (!is_valid_identifier(name))
+    {
         fprintf(stderr, "export: '%s': not a valid identifier\n", error_part);
         ret = 1;
-    } else if (eq) {
-        const char *value = eq + 1;
-        if (setenv(name, value, 1) < 0) {
-            perror("export");
-            ret = 1;
-        }
-    } else {
-        const char *current = getenv(name);
-        if (setenv(name, current ? current : "", 1) < 0) {
-            perror("export");
-            ret = 1;
-        }
     }
+    else if (eq)
+    {
+        /* assigned form: always setenv */
+        if (setenv(name, eq + 1, 1) < 0)
+        {
+            perror("export");
+            ret = 1;
+        }
+        add_export(name, true);
+    }
+    else
+    {
+        /* bare form: just mark for export, no setenv if unset */
+        add_export(name, false);
+    }
+
     free(name);
     free(error_part);
     return ret;

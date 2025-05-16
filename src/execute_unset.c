@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execute_unset.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tching <tching@student.42kl.edu.my>        +#+  +:+       +#+        */
+/*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/15 22:35:05 by tching            #+#    #+#             */
-/*   Updated: 2025/05/15 22:38:46 by tching           ###   ########.fr       */
+/*   Updated: 2025/05/16 23:33:47 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,8 @@ int	execute_unset(char **argv, t_list *redirects, t_executor_ctx *ctx)
 			perror("unset");
 			ret = 1;
 		}
+		else
+			remove_export(argv[i]);
 		i++;
 	}
 	ctx->last_exit_status = ret;
