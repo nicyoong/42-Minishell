@@ -6,7 +6,7 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/16 17:24:23 by nyoong            #+#    #+#             */
-/*   Updated: 2025/05/16 23:32:33 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/05/16 23:47:56 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,20 +100,24 @@ void remove_export(const char *name)
     }
 }
 
-int export_cmp(const void *a, const void *b)
+void sort_exports_insertion(t_export **arr, size_t n)
 {
-    const t_export *ea = *(const t_export * const *)a;
-    const t_export *eb = *(const t_export * const *)b;
-    return strcmp(ea->name, eb->name);
+    for (size_t i = 1; i < n; ++i)
+    {
+        t_export *key = arr[i];
+        size_t j = i;
+        /* shift larger items right */
+        while (j > 0 && strcmp(arr[j-1]->name, key->name) > 0)
+        {
+            arr[j] = arr[j-1];
+            --j;
+        }
+        arr[j] = key;
+    }
 }
 
 void print_environment(void)
 {
-    /* If the user never did any “export foo…”, seed from environ[] */
-    if (g_export_list == NULL)
-        init_export_list_from_environ();
-
-    /* (the rest is unchanged) */
     size_t count = 0;
     for (t_export *e = g_export_list; e; e = e->next)
         count++;
@@ -125,7 +129,7 @@ void print_environment(void)
     for (t_export *e = g_export_list; e; e = e->next)
         arr[i++] = e;
 
-    qsort(arr, count, sizeof(*arr), export_cmp);
+    sort_exports_insertion(arr, count);
 
     for (i = 0; i < count; i++)
     {
@@ -207,6 +211,8 @@ int	execute_export(char **argv, t_list *redirects, t_executor_ctx *ctx)
     int save_in, save_out, save_err;
     int ret = 0;
 
+	if (g_export_list == NULL)
+        init_export_list_from_environ();
     save_stdio(&save_in, &save_out, &save_err);
     if (setup_redirections(redirects, ctx) < 0)
 	{
