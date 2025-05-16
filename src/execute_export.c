@@ -6,7 +6,7 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/16 17:24:23 by nyoong            #+#    #+#             */
-/*   Updated: 2025/05/16 22:29:33 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/05/16 22:42:56 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,15 @@ void restore_stdio(int in, int out, int err)
 	close(in);
 	close(out);
 	close(err);
+}
+
+void print_environment(void)
+{
+    char **env = environ;
+    while (*env) {
+        printf("%s\n", *env);
+        env++;
+    }
 }
 
 // int execute_export(char **argv, t_list *redirects, t_executor_ctx *ctx)
