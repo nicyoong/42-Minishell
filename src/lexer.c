@@ -62,6 +62,29 @@ int process_quoted_content(const char *input, int *i, char quote_type, t_word *w
 	return 1;
 }
 
+void process_ansi_c_quote(const char *input, int *i, t_word *word)
+{
+	char buffer[1024];
+	int buf_idx = 0;
+
+	*i += 2;
+	while (input[*i] && input[*i] != '\'') {
+		if (input[*i] == '\\') {
+			(*i)++;
+			char decoded = decode_escape(input, i);
+			buffer[buf_idx++] = decoded;
+		} else {
+			buffer[buf_idx++] = input[(*i)++];
+		}
+		if (buf_idx >= sizeof(buffer)-1)
+			break;
+	}
+	buffer[buf_idx] = '\0';
+	add_segment(word, LITERAL, buffer);
+	if (input[*i] == '\'')
+		(*i)++;
+}
+
 void process_unquoted_segment(const char *input, int *i, t_word *word)
 {
 		char buffer[1024];
