@@ -29,6 +29,7 @@ char *ft_strcat(char *dest, const char *src);
 char *ft_strncpy(char *dest, const char *src, size_t n);
 int	ft_isxdigit(int c);
 long  hex_to_long(const char *hex);
+char	*ft_strndup(const char *s1, size_t n);
 
 typedef enum e_token_type {
 	TOKEN_WORD,
