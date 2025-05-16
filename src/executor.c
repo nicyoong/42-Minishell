@@ -234,25 +234,6 @@ char *resolve_from_path_env(char *cmd)
 	return NULL;
 }
 
-char *resolve_binary(char *cmd)
-{
-	struct stat st;
-	if (ft_strchr(cmd, '/') != NULL)
-	{
-		if (access(cmd, F_OK) == -1)
-			errno = ENOENT;
-		else if (stat(cmd, &st) == 0 && S_ISDIR(st.st_mode))
-			errno = EISDIR;
-		else if (access(cmd, X_OK) == -1)
-			errno = EACCES;
-		else
-			return (ft_strdup(cmd));
-		return (NULL);
-	}
-	else
-		return (resolve_from_path_env(cmd));
-}
-
 char *get_segment_value(t_segment *s, t_executor_ctx *ctx)
 {
 	if (s->type == VARIABLE)
