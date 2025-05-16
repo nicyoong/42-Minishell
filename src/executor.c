@@ -310,6 +310,7 @@ char **convert_arguments(t_list *args, t_executor_ctx *ctx)
     return argv;
 }
 
+/* to remove once execute cd nom'd
 int handle_cd(char **argv, t_list *redirects, t_executor_ctx *ctx)
 {
     int save_stdin = dup(STDIN_FILENO);
@@ -357,6 +358,7 @@ int handle_cd(char **argv, t_list *redirects, t_executor_ctx *ctx)
     ctx->last_exit_status = ret;
     return ret;
 }
+*/
 
 int execute_exit(char **argv, t_executor_ctx *ctx)
 {
