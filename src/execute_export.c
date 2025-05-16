@@ -6,7 +6,7 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/16 17:24:23 by nyoong            #+#    #+#             */
-/*   Updated: 2025/05/16 22:28:47 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/05/16 22:29:33 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,15 @@ void save_stdio(int *in, int *out, int *err)
 	*err = dup(STDERR_FILENO);
 }
 
+void restore_stdio(int in, int out, int err)
+{
+	dup2(in,  STDIN_FILENO);
+	dup2(out, STDOUT_FILENO);
+	dup2(err, STDERR_FILENO);
+	close(in);
+	close(out);
+	close(err);
+}
 
 // int execute_export(char **argv, t_list *redirects, t_executor_ctx *ctx)
 // {
