@@ -207,33 +207,6 @@ void cleanup_redirections(int save_stdin, int save_stdout, int save_stderr, t_ex
 	ctx->last_exit_status = ret;
 }
 
-char *resolve_from_path_env(char *cmd)
-{
-	char *path;
-	
-	path = getenv("PATH");
-	if (!path)
-		return NULL;
-	char **dirs = ft_split(path, ':');
-	if (!dirs)
-		return NULL;
-	int i = 0;
-	while (dirs[i]) {
-		char *full = ft_strjoin(dirs[i], "/");
-		char *full_cmd = ft_strjoin(full, cmd);
-		free(full);
-		if (access(full_cmd, X_OK) == 0) {
-			ft_split_free(dirs);
-			return full_cmd;
-		}
-		free(full_cmd);
-		i++;
-	}
-	ft_split_free(dirs);
-	errno = ENOENT;
-	return NULL;
-}
-
 char *get_segment_value(t_segment *s, t_executor_ctx *ctx)
 {
 	if (s->type == VARIABLE)
