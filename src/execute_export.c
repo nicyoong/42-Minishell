@@ -6,7 +6,7 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/16 17:24:23 by nyoong            #+#    #+#             */
-/*   Updated: 2025/05/16 22:54:02 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/05/16 22:59:21 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,29 +67,20 @@ void print_environment(void)
         if (!eq) continue;
         size_t namelen = eq - vars[i];
         if ((namelen == 5 && strncmp(vars[i], "LINES", 5) == 0) ||
-            (namelen == 8 && strncmp(vars[i], "COLUMNS", 8) == 0))
+            (namelen == 7 && strncmp(vars[i], "COLUMNS", 7) == 0) ||
+			(namelen == 1 && vars[i][0] == '_'))
         {
             continue;
         }
-        /* temporarily split name/value */
         vars[i][namelen] = '\0';
         char *name  = vars[i];
         char *value = eq + 1;
         printf("declare -x %s=\"%s\"\n", name, value);
-        vars[i][namelen] = '=';  /* restore */
+        vars[i][namelen] = '=';
     }
 
     free(vars);
 }
-
-// void print_environment(void)
-// {
-//     char **env = environ;
-//     while (*env) {
-//         printf("%s\n", *env);
-//         env++;
-//     }
-// }
 
 int handle_single_export_arg(const char *arg)
 {
