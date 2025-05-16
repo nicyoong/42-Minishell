@@ -6,7 +6,7 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/29 14:50:10 by nyoong            #+#    #+#             */
-/*   Updated: 2025/05/15 17:05:03 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/05/16 17:35:57 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,11 +39,11 @@ void	add_segment(t_word *word, t_segment_type seg_type, const char *value)
 
 void    free_token(void *token_ptr)
 {
-    t_token *token = (t_token *)token_ptr;
-    if (token->type == TOKEN_WORD && token->word)
-    {
-        ft_lstclear(&token->word->segments, free_segment);
-        free(token->word);
-    }
-    free(token);
+	t_token *token = (t_token *)token_ptr;
+	if (token->type == TOKEN_WORD && token->word)
+	{
+		ft_lstclear(&token->word->segments, free_segment);
+		free(token->word);
+	}
+	free(token);
 }
