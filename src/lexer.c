@@ -80,7 +80,7 @@ char decode_escape(const char *s, int *idx)
 void process_ansi_c_quote(const char *input, int *i, t_word *word)
 {
 	char buffer[1024];
-	int buf_idx = 0;
+	size_t buf_idx = 0;
 
 	*i += 2;
 	while (input[*i] && input[*i] != '\'') {
