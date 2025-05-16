@@ -6,7 +6,7 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/16 17:24:23 by nyoong            #+#    #+#             */
-/*   Updated: 2025/05/16 22:42:56 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/05/16 22:44:58 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,42 @@ void print_environment(void)
         printf("%s\n", *env);
         env++;
     }
+}
+
+int handle_single_export_arg(const char *arg)
+{
+    char *name = NULL;
+    char *error_part = NULL;
+    const char *eq = strchr(arg, '=');
+    int ret = 0;
+
+    if (eq) {
+        name = ft_substr(arg, 0, eq - arg);
+        error_part = ft_substr(arg, 0, eq - arg + 1);
+    } else {
+        name = ft_strdup(arg);
+        error_part = ft_strdup(arg);
+    }
+
+    if (!is_valid_identifier(name)) {
+        fprintf(stderr, "export: '%s': not a valid identifier\n", error_part);
+        ret = 1;
+    } else if (eq) {
+        const char *value = eq + 1;
+        if (setenv(name, value, 1) < 0) {
+            perror("export");
+            ret = 1;
+        }
+    } else {
+        const char *current = getenv(name);
+        if (setenv(name, current ? current : "", 1) < 0) {
+            perror("export");
+            ret = 1;
+        }
+    }
+    free(name);
+    free(error_part);
+    return ret;
 }
 
 // int execute_export(char **argv, t_list *redirects, t_executor_ctx *ctx)
