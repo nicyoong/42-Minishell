@@ -71,7 +71,7 @@ char decode_escape(const char *s, int *idx)
 	{
 		char hex[3] = { s[*idx+1], s[*idx+2], 0 };
 		*idx += 3;
-		return (char) strtol(hex, NULL, 16);
+		return (char)hex_to_long(hex);
 	}
 	(*idx)++;
 	return s[*idx - 1];

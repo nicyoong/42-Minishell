@@ -6,7 +6,7 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/16 18:47:47 by nyoong            #+#    #+#             */
-/*   Updated: 2025/05/16 19:00:29 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/05/16 19:06:38 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ int  hex_digit(char c)
 
 const char *skip_prefix(const char *s)
 {
-	while (ft_isspace(*s))
+	while (is_whitespace(*s))
 		s++;
 	if (s[0] == '0' && (s[1] == 'x' || s[1] == 'X'))
 		s += 2;
