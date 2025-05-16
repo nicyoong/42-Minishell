@@ -6,7 +6,7 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/16 17:24:23 by nyoong            #+#    #+#             */
-/*   Updated: 2025/05/17 01:48:54 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/05/17 01:54:10 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -137,7 +137,7 @@ void	sort_exports_insertion(t_export **arr, size_t n)
 void	print_environment(void)
 {
 	size_t count = 0;
-	t_export *e = g_export_list;
+	t_export *e;
 	while (e)
 	{
 		count++;
@@ -147,7 +147,7 @@ void	print_environment(void)
 	if (!arr)
 		return;
 	size_t i = 0;
-	t_export *e = g_export_list;
+	e = g_export_list;
 	while (e)
 	{
 		arr[i++] = e;
