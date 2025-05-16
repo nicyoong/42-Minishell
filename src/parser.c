@@ -172,7 +172,7 @@ t_list *clear_on_error(t_list **current, t_list **cmds)
 	if (*current)
 		ft_lstclear(current, NULL);
 	if (*cmds)
-		ft_lstclear(cmds, clear_token_list);
+		ft_lstclear(cmds, NULL);
 	return NULL;
 }
 
@@ -187,6 +187,12 @@ t_list *split_commands(t_list *tokens)
 
 		if (token->type == TOKEN_PIPE)
 		{
+			if (!current)
+            {
+                fprintf(stderr,
+                        "minishell: syntax error near unexpected token `|'\n");
+                return clear_on_error(&current, &cmds);
+            }
 			if (finalize_current_command(&cmds, &current) == -1)
 				return clear_on_error(&current, &cmds);
 		}
