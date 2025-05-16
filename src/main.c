@@ -6,25 +6,27 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 19:39:43 by tching            #+#    #+#             */
-<<<<<<< HEAD
 /*   Updated: 2025/05/16 20:50:05 by nyoong           ###   ########.fr       */
-=======
-/*   Updated: 2025/05/16 20:12:21 by nyoong           ###   ########.fr       */
->>>>>>> parent of b679423 (>_ functionality)
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-char *read_line()
+char *read_line(const char *prompt)
 {
-	char cwd[PATH_MAX];
-	getcwd(cwd, sizeof(cwd));
+	char *line;
 
-	char prompt[PATH_MAX + 4];
-	snprintf(prompt, sizeof(prompt), "%s$ ", cwd);
-
-	char *line = readline(prompt);
+	if (prompt)
+		line = readline(prompt);
+	else
+	{
+		char cwd[PATH_MAX];
+		if (getcwd(cwd, sizeof(cwd)) == NULL)
+			ft_strcpy(cwd, "?");
+		char full_prompt[PATH_MAX + 4];
+		snprintf(full_prompt, sizeof(full_prompt), "%s$ ", cwd);
+		line = readline(full_prompt);
+	}
 	if (line && *line)
 		add_history(line);
 	return line;
@@ -69,7 +71,7 @@ int main(void)
 	setup_signal_handlers();
 	while (1)
 	{
-		char *full_line = read_line();
+		char *full_line = read_line(NULL);
 		if (!full_line)
 			exit(ctx.last_exit_status);
 		while (ends_in_pipe(full_line))
