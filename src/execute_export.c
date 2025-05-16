@@ -6,7 +6,7 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/16 17:24:23 by nyoong            #+#    #+#             */
-/*   Updated: 2025/05/16 22:44:58 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/05/16 22:45:19 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,6 +73,27 @@ int handle_single_export_arg(const char *arg)
     }
     free(name);
     free(error_part);
+    return ret;
+}
+
+int	execute_export(char **argv, t_list *redirects, t_executor_ctx *ctx)
+{
+    int save_in, save_out, save_err;
+    int ret = 0;
+
+    save_stdio(&save_in, &save_out, &save_err);
+    if (setup_redirections(redirects, ctx) < 0)
+	{
+        restore_stdio(save_in, save_out, save_err);
+        ctx->last_exit_status = 1;
+        return 1;
+    }
+    if (!argv[1])
+        print_environment();
+    else
+        ret = process_export_args(argv);
+    restore_stdio(save_in, save_out, save_err);
+    ctx->last_exit_status = ret;
     return ret;
 }
 
