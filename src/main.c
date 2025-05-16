@@ -6,7 +6,7 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 19:39:43 by tching            #+#    #+#             */
-/*   Updated: 2025/05/16 20:10:11 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/05/16 20:12:21 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,14 @@ char *read_line()
 		add_history(line);
 	return line;
 }
+
+int ends_in_pipe(const char *s)
+{
+	size_t i = ft_strlen(s);
+	while (i > 0 && is_whitespace((unsigned char)s[i - 1]))
+		--i;
+	return (i > 0 && s[i - 1] == '|');
+	}
 
 t_list *tokenize_input(const char *line, t_executor_ctx *ctx)
 {
