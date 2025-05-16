@@ -6,7 +6,7 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/16 18:47:47 by nyoong            #+#    #+#             */
-/*   Updated: 2025/05/16 18:58:30 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/05/16 18:59:12 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,4 +29,13 @@ int  hex_digit(char c)
 	if (c >= 'A' && c <= 'F')
 		return (c - 'A' + 10);
 	return (-1);
+}
+
+const char *skip_prefix(const char *s)
+{
+	while (ft_isspace(*s))
+		s++;
+	if (s[0] == '0' && (s[1] == 'x' || s[1] == 'X'))
+		s += 2;
+	return (s);
 }
