@@ -6,7 +6,7 @@
 /*   By: tching <tching@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/17 00:51:38 by tching            #+#    #+#             */
-/*   Updated: 2025/05/17 00:56:45 by tching           ###   ########.fr       */
+/*   Updated: 2025/05/17 01:27:51 by tching           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,16 +14,13 @@
 
 static char	*resolve_value(char *resolved, t_segment *s, t_executor_ctx *ctx)
 {
-	if (s->type == VARIABLE)
-	{
-		resolved = getenv(s->value);
-		if (!resolved)
-			return ("");
-		else if (s->type == EXIT_STATUS)
-			return (ft_itoa(ctx->last_exit_status));
-		else
-			return (s->value);
-	}
+	resolved = getenv(s->value);
+	if (!resolved)
+		return ("");
+	else if (s->type == EXIT_STATUS)
+		return (ft_itoa(ctx->last_exit_status));
+	else
+		return (s->value);
 }
 
 char	*resolve_delimiter_word(t_word *delimiter_word, t_executor_ctx *ctx)
@@ -39,7 +36,8 @@ char	*resolve_delimiter_word(t_word *delimiter_word, t_executor_ctx *ctx)
 	{
 		s = seg->content;
 		resolved = NULL;
-		resolved = resolve_value(resolved, s, ctx);
+		if (s->type == VARIABLE)
+			resolved = resolve_value(resolved, s, ctx);
 		ft_strcat(buffer, resolved);
 		if (s->type == EXIT_STATUS)
 			free(resolved);
