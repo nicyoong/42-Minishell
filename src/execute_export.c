@@ -6,7 +6,7 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/16 17:24:23 by nyoong            #+#    #+#             */
-/*   Updated: 2025/05/16 22:52:13 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/05/16 22:52:41 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,44 @@ int env_cmp(const void *a, const void *b)
     if (cmp != 0) return cmp;
     /* if one name is a prefix of the other, shorter one sorts first */
     return (int)(la - lb);
+}
+
+void print_environment(void)
+{
+    /* 1) count entries */
+    size_t count = 0;
+    for (char **e = environ; *e; e++)
+        count++;
+
+    /* 2) copy pointers into a temporary array */
+    char **vars = malloc((count + 1) * sizeof(*vars));
+    if (!vars) return; /* out of memory—just bail */
+    for (size_t i = 0; i < count; i++)
+        vars[i] = environ[i];
+    vars[count] = NULL;
+
+    /* 3) sort them by NAME */
+    qsort(vars, count, sizeof(*vars), env_cmp);
+
+    /* 4) print in bash-style, skipping LINES/COLUMNS */
+    for (size_t i = 0; i < count; i++) {
+        char *eq = strchr(vars[i], '=');
+        if (!eq) continue;
+        size_t namelen = eq - vars[i];
+        if ((namelen == 5 && strncmp(vars[i], "LINES", 5) == 0) ||
+            (namelen == 8 && strncmp(vars[i], "COLUMNS", 8) == 0))
+        {
+            continue;
+        }
+        /* temporarily split name/value */
+        vars[i][namelen] = '\0';
+        char *name  = vars[i];
+        char *value = eq + 1;
+        printf("declare -x %s=\"%s\"\n", name, value);
+        vars[i][namelen] = '=';  /* restore */
+    }
+
+    free(vars);
 }
 
 // void print_environment(void)
