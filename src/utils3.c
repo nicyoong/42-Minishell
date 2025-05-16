@@ -6,7 +6,7 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/16 18:47:47 by nyoong            #+#    #+#             */
-/*   Updated: 2025/05/16 19:06:38 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/05/17 01:43:39 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,4 +58,28 @@ long  hex_to_long(const char *hex)
 		hex++;
 	}
 	return (result);
+}
+
+char	*ft_strndup(const char *s1, size_t n)
+{
+	const char	*start;
+	size_t		length;
+	char		*copy;
+	char		*copy_start;
+
+	start = s1;
+	length = 0;
+	while (length < n && *s1)
+	{
+		s1++;
+		length++;
+	}
+	copy = (char *)malloc((length + 1) * sizeof(char));
+	if (!copy)
+		return (NULL);
+	copy_start = copy;
+	while (length--)
+		*copy_start++ = *start++;
+	*copy_start = '\0';
+	return (copy);
 }
