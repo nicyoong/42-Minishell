@@ -6,7 +6,7 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/16 17:24:23 by nyoong            #+#    #+#             */
-/*   Updated: 2025/05/17 01:39:34 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/05/17 01:48:54 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,64 +34,75 @@ void restore_stdio(int in, int out, int err)
 
 t_export *find_export(const char *name)
 {
-	t_export *cur;
+	t_export	*cur;
 	
 	cur = g_export_list;
 	while (cur)
 	{
 		if (strcmp(cur->name, name) == 0)
-			return cur;
+			return (cur);
 		cur = cur->next;
 	}
-	return NULL;
+	return (NULL);
 }
 
-void add_export(const char *name, bool assigned)
+void	add_export(const char *name, bool assigned)
 {
-	t_export *ent = find_export(name);
+	t_export	*ent;
+
+	ent = find_export(name);
 	if (ent)
-	{
-		/* once assigned, always assigned */
 		ent->assigned = ent->assigned || assigned;
-	}
 	else
 	{
 		ent = malloc(sizeof(*ent));
-		if (!ent) return; /* oom */
-		ent->name     = strdup(name);
+		if (!ent)
+			return;
+		ent->name = ft_strdup(name);
 		ent->assigned = assigned;
-		ent->next     = g_export_list;
+		ent->next = g_export_list;
 		g_export_list = ent;
 	}
 }
 
-void init_export_list_from_environ(void)
+void	init_export_list_from_environ(void)
 {
-	for (char **e = environ; *e; e++)
+	char	**e;
+	char	*eq;
+	size_t	namelen;
+
+	e = environ;
+	while (*e)
 	{
-		char *eq = strchr(*e, '=');
+		eq = ft_strchr(*e, '=');
 		if (!eq)
+		{
+			e++;
 			continue;
-
-		size_t namelen = eq - *e;
-		/* copy the name */
-		char *name = strndup(*e, namelen);
+		}
+		namelen = eq - *e;
+		char *name = ft_strndup(*e, namelen);
 		if (!name)
+		{
+			e++;
 			continue;
-
-		/* mark as “assigned” because it already has a value */
+		}
 		add_export(name, true);
 		free(name);
+		e++;
 	}
 }
 
-void remove_export(const char *name)
+void	remove_export(const char *name)
 {
-	t_export **prev = &g_export_list;
+	t_export	**prev;
+	t_export	*cur;
+	
+	prev = &g_export_list;
 	while (*prev)
 	{
-		t_export *cur = *prev;
-		if (strcmp(cur->name, name) == 0)
+		cur = *prev;
+		if (ft_strcmp(cur->name, name) == 0)
 		{
 			*prev = cur->next;
 			free(cur->name);
@@ -102,55 +113,70 @@ void remove_export(const char *name)
 	}
 }
 
-void sort_exports_insertion(t_export **arr, size_t n)
+void	sort_exports_insertion(t_export **arr, size_t n)
 {
-	for (size_t i = 1; i < n; ++i)
+	size_t		i;
+	t_export	*key;
+	size_t		j;
+	
+	i = 1;
+	while (i < n)
 	{
-		t_export *key = arr[i];
-		size_t j = i;
-		/* shift larger items right */
-		while (j > 0 && strcmp(arr[j-1]->name, key->name) > 0)
+		key = arr[i];
+		j = i;
+		while (j > 0 && ft_strcmp(arr[j-1]->name, key->name) > 0)
 		{
 			arr[j] = arr[j-1];
 			--j;
 		}
 		arr[j] = key;
+		++i;
 	}
 }
 
-void print_environment(void)
+void	print_environment(void)
 {
 	size_t count = 0;
-	for (t_export *e = g_export_list; e; e = e->next)
+	t_export *e = g_export_list;
+	while (e)
+	{
 		count++;
-
+		e = e->next;
+	}
 	t_export **arr = malloc(sizeof(*arr) * count);
-	if (!arr) return;
-
+	if (!arr)
+		return;
 	size_t i = 0;
-	for (t_export *e = g_export_list; e; e = e->next)
+	t_export *e = g_export_list;
+	while (e)
+	{
 		arr[i++] = e;
-
+		e = e->next;
+	}
 	sort_exports_insertion(arr, count);
-
-	for (i = 0; i < count; i++)
+	i = 0;
+	while (i < count)
 	{
 		t_export *e = arr[i];
 		const char *n = e->name;
 
-		if (strcmp(n, "LINES")   == 0 ||
+		if (strcmp(n, "LINES") == 0 ||
 			strcmp(n, "COLUMNS") == 0 ||
-			strcmp(n, "_")       == 0)
+			strcmp(n, "_") == 0)
+		{
+			i++;
 			continue;
+		}
 
 		if (!e->assigned)
 			printf("declare -x %s\n", n);
 		else
 			printf("declare -x %s=\"%s\"\n",
-				   n,
-				   getenv(n) ? getenv(n) : "");
-	}
+				n,
+				getenv(n) ? getenv(n) : "");
 
+		i++;
+	}
 	free(arr);
 }
 
