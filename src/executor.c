@@ -61,23 +61,6 @@ int process_heredoc(t_word *delimiter_word, t_executor_ctx *ctx)
 	return fds[0];
 }
 
-char	*resolve_segment(t_segment *seg, t_executor_ctx *ctx)
-{
-	char	*value;
-
-	if (seg->type == VARIABLE)
-	{
-		value = getenv(seg->value);
-		if (value)
-			return (ft_strdup(value));
-		else
-			return (ft_strdup(""));
-	}
-	else if (seg->type == EXIT_STATUS)
-		return (ft_itoa(ctx->last_exit_status));
-	return (ft_strdup(seg->value));
-}
-
 int build_path_from_word(t_word *word, char *buffer, size_t bufsize, t_executor_ctx *ctx)
 {
 	buffer[0] = '\0';
