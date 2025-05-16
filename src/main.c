@@ -6,7 +6,7 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 19:39:43 by tching            #+#    #+#             */
-/*   Updated: 2025/05/16 20:08:43 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/05/16 20:10:11 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,17 @@ int main(void)
 		char *full_line = read_line();
 		if (!full_line)
 			exit(ctx.last_exit_status);
+		while (ends_in_pipe(full_line))
+        {
+            char *more = read_line("> ");
+            if (!more)
+                exit(ctx.last_exit_status);
+            char *tmp = ft_strjoin(full_line, "\n");
+            free(full_line);
+            full_line = ft_strjoin(tmp, more);
+            free(tmp);
+            free(more);
+        }
 		t_list *tokens = tokenize_input(full_line, &ctx);
 		if (!tokens)
 		{
