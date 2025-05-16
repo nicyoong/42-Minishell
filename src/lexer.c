@@ -67,7 +67,7 @@ char decode_escape(const char *s, int *idx)
 	char c = s[*idx];
 	if (c == 'n') { (*idx)++; return '\n'; }
 	if (c == 't') { (*idx)++; return '\t'; }
-	if (c == 'x' && isxdigit(s[*idx+1]) && isxdigit(s[*idx+2]))
+	if (c == 'x' && ft_isxdigit(s[*idx+1]) && ft_isxdigit(s[*idx+2]))
 	{
 		char hex[3] = { s[*idx+1], s[*idx+2], 0 };
 		*idx += 3;

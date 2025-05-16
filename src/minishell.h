@@ -27,6 +27,7 @@ int is_valid_identifier(const char *str);
 int is_valid_integer(const char *str);
 char *ft_strcat(char *dest, const char *src);
 char *ft_strncpy(char *dest, const char *src, size_t n);
+int	ft_isxdigit(int c);
 
 typedef enum e_token_type {
 	TOKEN_WORD,
