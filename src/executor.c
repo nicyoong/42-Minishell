@@ -2,65 +2,6 @@
 
 extern char **environ;
 
-char *resolve_delimiter_word(t_word *delimiter_word, t_executor_ctx *ctx)
-{
-	char buffer[1024] = {0};
-	t_list *seg = delimiter_word->segments;
-
-	while (seg)
-	{
-		t_segment *s = seg->content;
-		char *resolved = NULL;
-
-		if (s->type == VARIABLE)
-		{
-			resolved = getenv(s->value);
-			if (!resolved)
-				resolved = "";
-		}
-		else if (s->type == EXIT_STATUS)
-			resolved = ft_itoa(ctx->last_exit_status);
-		else
-			resolved = s->value;
-		ft_strcat(buffer, resolved);
-		if (s->type == EXIT_STATUS)
-			free(resolved);
-		seg = seg->next;
-	}
-	return strdup(buffer);
-}
-
-void read_until_delimiter(const char *delim, int fd_write)
-{
-	char *line;
-
-	while (1) {
-		line = readline("> ");
-		if (!line || strcmp(line, delim) == 0)
-		{
-			if (line)
-				free(line);
-			break;
-		}
-		write(fd_write, line, strlen(line));
-		write(fd_write, "\n", 1);
-		free(line);
-	}
-}
-
-int process_heredoc(t_word *delimiter_word, t_executor_ctx *ctx)
-{
-	int fds[2];
-	pipe(fds);
-
-	char *delim = resolve_delimiter_word(delimiter_word, ctx);
-	read_until_delimiter(delim, fds[1]);
-	free(delim);
-
-	close(fds[1]);
-	return fds[0];
-}
-
 int build_path_from_word(t_word *word, char *buffer, size_t bufsize, t_executor_ctx *ctx)
 {
 	buffer[0] = '\0';
@@ -131,8 +72,12 @@ int open_redirection_fd(t_redirect_type type, const char *path, t_word *filename
 
 int duplicate_fd(int fd, t_redirect_type type)
 {
-	int target = (type == REDIR_IN || type == REDIR_HEREDOC) ? STDIN_FILENO : STDOUT_FILENO;
-
+	int	target;
+	
+	if (type == REDIR_IN || type == REDIR_HEREDOC)
+		target = STDIN_FILENO;
+	else
+		target = STDOUT_FILENO;
 	if (dup2(fd, target) < 0)
 	{
 		perror("dup2 error");
@@ -140,7 +85,7 @@ int duplicate_fd(int fd, t_redirect_type type)
 		return -1;
 	}
 	close(fd);
-	return 0;
+	return (0);
 }
 
 int setup_redirections(t_list *redirects, t_executor_ctx *ctx)
@@ -198,9 +143,9 @@ char    *get_segment_value(t_segment *s, t_executor_ctx *ctx)
         {
                 val = getenv(s->value);
                 if (val)
-                        return (ft_strdup(val));
+                        return (val);
                 else
-                        return (ft_strdup(""));
+                        return ("");
         }
         else if (s->type == EXIT_STATUS)
                 return (ft_itoa(ctx->last_exit_status));
