@@ -6,7 +6,7 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/16 17:24:23 by nyoong            #+#    #+#             */
-/*   Updated: 2025/05/16 22:52:41 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/05/16 22:54:02 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,6 +124,16 @@ int handle_single_export_arg(const char *arg)
     }
     free(name);
     free(error_part);
+    return ret;
+}
+
+int process_export_args(char **argv)
+{
+    int ret = 0;
+    for (int i = 1; argv[i]; i++) {
+        if (handle_single_export_arg(argv[i]) != 0)
+            ret = 1;
+    }
     return ret;
 }
 
