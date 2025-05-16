@@ -423,17 +423,30 @@ void execute_pipeline_commands(t_pipeline *pipeline, t_executor_ctx *ctx)
 
 void execute_pipeline(t_pipeline *pipeline, t_executor_ctx *ctx)
 {
-	if (ft_lstsize(pipeline->commands) == 1) {
-		t_command *cmd = pipeline->commands->content;
-		char **argv = convert_arguments(cmd->arguments, ctx);
+    if (ft_lstsize(pipeline->commands) == 1)
+	{
+        t_command *cmd = pipeline->commands->content;
+        char **argv = convert_arguments(cmd->arguments, ctx);
 		
-		if (argv && argv[0] && is_builtin(argv[0])) {
-			execute_builtin(argv, cmd->redirects, ctx);
-			ft_split_free(argv);
-			return;
-		}
-		ft_split_free(argv);
-	}
-	execute_pipeline_commands(pipeline, ctx);
+        if (argv && argv[0] && is_builtin(argv[0]))
+		{
+            int save_in  = dup(STDIN_FILENO);
+            int save_out = dup(STDOUT_FILENO);
+            int save_err = dup(STDERR_FILENO);
+
+            if (setup_redirections(cmd->redirects, ctx) < 0)
+			{
+                cleanup_redirections(save_in, save_out, save_err, ctx, 1);
+                ft_split_free(argv);
+                return;
+            }
+            int status = execute_builtin(argv, cmd->redirects, ctx);
+            cleanup_redirections(save_in, save_out, save_err, ctx, status);
+            ft_split_free(argv);
+            return;
+        }
+        ft_split_free(argv);
+    }
+    execute_pipeline_commands(pipeline, ctx);
 }
 
