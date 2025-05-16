@@ -64,26 +64,40 @@ int process_quoted_content(const char *input, int *i, char quote_type, t_word *w
 
 void process_unquoted_segment(const char *input, int *i, t_word *word)
 {
-	char buffer[1024];
-	int buf_idx = 0;
+		char buffer[1024];
+		int buf_idx = 0;
 
-	while (input[*i] && !is_whitespace(input[*i]) && !is_operator_char(input[*i]) 
-			&& input[*i] != '\'' && input[*i] != '"') {
-		if (input[*i] == '$') {
-			if (buf_idx > 0) {
-				buffer[buf_idx] = '\0';
-				add_segment(word, LITERAL, buffer);
-				buf_idx = 0;
+		while (input[*i]
+			&& !is_whitespace(input[*i])
+			&& !is_operator_char(input[*i])
+			&& input[*i] != '\''
+			&& input[*i] != '"')
+		{
+			if (input[*i] == '$' && input[*i + 1] == '\'') {
+				if (buf_idx > 0) {
+					buffer[buf_idx] = '\0';
+					add_segment(word, LITERAL, buffer);
+					buf_idx = 0;
+				}
+				process_ansi_c_quote(input, i, word);
 			}
-			handle_variable_expansion(input, i, word, buffer, &buf_idx);
-		} else {
-			buffer[buf_idx++] = input[(*i)++];
+			else if (input[*i] == '$') {
+				if (buf_idx > 0) {
+					buffer[buf_idx] = '\0';
+					add_segment(word, LITERAL, buffer);
+					buf_idx = 0;
+				}
+				handle_variable_expansion(input, i, word, buffer, &buf_idx);
+			}
+			else {
+				buffer[buf_idx++] = input[(*i)++];
+			}
 		}
-	}
-	if (buf_idx > 0) {
-		buffer[buf_idx] = '\0';
-		add_segment(word, LITERAL, buffer);
-	}
+
+		if (buf_idx > 0) {
+			buffer[buf_idx] = '\0';
+			add_segment(word, LITERAL, buffer);
+		}
 }
 
 t_token_type get_operator(const char *input, int *i)
