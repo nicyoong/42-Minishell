@@ -450,3 +450,20 @@ void execute_pipeline(t_pipeline *pipeline, t_executor_ctx *ctx)
     execute_pipeline_commands(pipeline, ctx);
 }
 
+// Old execute pipeline in case any bug change to this
+// void execute_pipeline(t_pipeline *pipeline, t_executor_ctx *ctx)
+// {
+// 	if (ft_lstsize(pipeline->commands) == 1) {
+// 		t_command *cmd = pipeline->commands->content;
+// 		char **argv = convert_arguments(cmd->arguments, ctx);
+		
+// 		if (argv && argv[0] && is_builtin(argv[0])) {
+// 			execute_builtin(argv, cmd->redirects, ctx);
+// 			ft_split_free(argv);
+// 			return;
+// 		}
+// 		ft_split_free(argv);
+// 	}
+// 	execute_pipeline_commands(pipeline, ctx);
+// }
+
