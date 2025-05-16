@@ -6,7 +6,7 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/10 17:29:59 by tching            #+#    #+#             */
-/*   Updated: 2025/05/16 20:22:57 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/05/16 17:36:08 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,7 @@
 int	is_whitespace(char c)
 {
 	return (c == ' '
-		|| c == '\t'
-		|| c == '\n');
+		|| c == '\t');
 }
 
 int	is_operator_char(char c)
