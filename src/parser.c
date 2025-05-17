@@ -80,6 +80,12 @@ void	free_command(void *cmd_ptr)
 	free(cmd);
 }
 
+void	free_pipeline(t_pipeline *pipeline)
+{
+	ft_lstclear(&pipeline->commands, free_command);
+	free(pipeline);
+}
+
 // normed up to here
 
 int	handle_redirect(t_list **tokens, t_command *cmd)
@@ -275,8 +281,3 @@ const char *redirect_type_str(t_redirect_type type)
 	return names[type];
 }
 
-void free_pipeline(t_pipeline *pipeline)
-{
-	ft_lstclear(&pipeline->commands, free_command);
-	free(pipeline);
-}
