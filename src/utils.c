@@ -6,7 +6,7 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/10 18:10:31 by tching            #+#    #+#             */
-/*   Updated: 2025/05/15 17:03:58 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/05/17 21:35:34 by tching           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,15 +37,15 @@ void	ft_split_free(char **array)
 	free(array);
 }
 
-int is_builtin(const char *cmd)
+int	is_builtin(const char *cmd)
 {
-	return (ft_strcmp(cmd, "cd") == 0 ||
-			ft_strcmp(cmd, "export") == 0 ||
-			ft_strcmp(cmd, "unset") == 0 ||
-			ft_strcmp(cmd, "pwd") == 0 ||
-			ft_strcmp(cmd, "exit") == 0 ||
-			ft_strcmp(cmd, "echo") == 0 ||
-			ft_strcmp(cmd, "env") == 0);
+	return (ft_strcmp(cmd, "cd") == 0
+		|| ft_strcmp(cmd, "export") == 0
+		|| ft_strcmp(cmd, "unset") == 0
+		|| ft_strcmp(cmd, "pwd") == 0
+		|| ft_strcmp(cmd, "exit") == 0
+		|| ft_strcmp(cmd, "echo") == 0
+		|| ft_strcmp(cmd, "env") == 0);
 }
 
 int	is_valid_identifier(const char *str)
