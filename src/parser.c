@@ -80,6 +80,8 @@ void	free_command(void *cmd_ptr)
 	free(cmd);
 }
 
+// normed up to here
+
 int	handle_redirect(t_list **tokens, t_command *cmd)
 {
 	t_token		*token;
@@ -90,14 +92,14 @@ int	handle_redirect(t_list **tokens, t_command *cmd)
 	token = (*tokens)->content;
 	redir = ft_calloc(1, sizeof(*redir));
 	if (!redir)
-		return 0;
+		return (0);
 	*tokens = (*tokens)->next;
 	redir->type = token_to_redirect(token->type);
 	if (!*tokens
-	 || ((t_token *)(*tokens)->content)->type != TOKEN_WORD)
+		|| ((t_token *)(*tokens)->content)->type != TOKEN_WORD)
 	{
 		free(redir);
-		return 0;
+		return (0);
 	}
 	file_node = *tokens;
 	file_tok = file_node->content;
@@ -105,12 +107,12 @@ int	handle_redirect(t_list **tokens, t_command *cmd)
 	if (!redir->filename)
 	{
 		free(redir);
-		return 0;
+		return (0);
 	}
 	ft_lstadd_back(&cmd->redirects, ft_lstnew(redir));
 	*tokens = file_node->next;
 	free(file_node);
-	return 1;
+	return (1);
 }
 
 int	process_redirect(t_list **tokens, t_command *cmd, t_list *head)
@@ -143,7 +145,6 @@ int	process_word(t_list **tokens, t_command *cmd, t_list *head)
 	free(head);
 	return (1);
 }
-// normed up to here
 
 t_command *parse_command(t_list **tokens)
 {
