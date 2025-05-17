@@ -66,56 +66,5 @@ int setup_redirections(t_list *redirects, t_executor_ctx *ctx)
 	return 0;
 }
 
-void execute_pipeline_commands(t_pipeline *pipeline, t_executor_ctx *ctx)
-{
-	int prev_fd = -1;
-	pid_t last_pid = -1;
-	t_list *node = pipeline->commands;
 
-	while (node)
-	{
-		t_command *cmd = node->content;
-		int is_last = (node->next == NULL);
-		int pipe_fd[2];
 
-		if (!is_last && create_pipe(pipe_fd, ctx) < 0)
-			return;
-
-		t_pipe_info pinfo = {
-			.prev_fd = prev_fd,
-			.pipe_fd = {pipe_fd[0], pipe_fd[1]},
-			.is_last = is_last
-		};
-
-		pid_t pid = fork();
-		if (pid == 0)
-			setup_child_process(cmd, &pinfo, ctx);
-		else if (pid < 0)
-		{
-			perror("fork");
-			ctx->last_exit_status = 1;
-			return;
-		}
-
-		close_fds_after_fork(&prev_fd, pipe_fd, is_last);
-		last_pid = pid;
-		node = node->next;
-	}
-	wait_for_children(last_pid, ctx);
-}
-
-void execute_pipeline(t_pipeline *pipeline, t_executor_ctx *ctx)
-{
-	if (ft_lstsize(pipeline->commands) == 1) {
-		t_command *cmd = pipeline->commands->content;
-		char **argv = convert_arguments(cmd->arguments, ctx);
-		
-		if (argv && argv[0] && is_builtin(argv[0])) {
-			execute_builtin(argv, cmd->redirects, ctx);
-			ft_split_free(argv);
-			return;
-		}
-		ft_split_free(argv);
-	}
-	execute_pipeline_commands(pipeline, ctx);
-}
