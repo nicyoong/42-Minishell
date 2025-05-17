@@ -6,7 +6,7 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/16 18:47:47 by nyoong            #+#    #+#             */
-/*   Updated: 2025/05/17 01:43:39 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/05/17 21:39:40 by tching           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ int	ft_isxdigit(int c)
 	return (0);
 }
 
-int  hex_digit(char c)
+int	hex_digit(char c)
 {
 	if (c >= '0' && c <= '9')
 		return (c - '0');
@@ -31,7 +31,7 @@ int  hex_digit(char c)
 	return (-1);
 }
 
-const char *skip_prefix(const char *s)
+const char	*skip_prefix(const char *s)
 {
 	while (is_whitespace(*s))
 		s++;
@@ -40,7 +40,7 @@ const char *skip_prefix(const char *s)
 	return (s);
 }
 
-long  hex_to_long(const char *hex)
+long	hex_to_long(const char *hex)
 {
 	long	result;
 	int		d;
@@ -53,7 +53,7 @@ long  hex_to_long(const char *hex)
 	{
 		d = hex_digit(*hex);
 		if (d < 0)
-			break;
+			break ;
 		result = (result << 4) | d;
 		hex++;
 	}
