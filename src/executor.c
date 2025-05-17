@@ -2,45 +2,6 @@
 
 extern char **environ;
 
-int build_path_from_word(t_word *word, char *buffer, size_t bufsize, t_executor_ctx *ctx)
-{
-	buffer[0] = '\0';
-	for (t_list *seg = word->segments; seg; seg = seg->next)
-	{
-		t_segment *s = seg->content;
-		char *resolved = NULL;
-		if (s->type == VARIABLE)
-		{
-			resolved = getenv(s->value);
-			if (!resolved) resolved = "";
-		}
-		else if (s->type == EXIT_STATUS)
-			resolved = ft_itoa(ctx->last_exit_status);
-		else
-			resolved = s->value;
-		if (strlen(buffer) + strlen(resolved) >= bufsize)
-		{
-			if (s->type == EXIT_STATUS) free(resolved);
-			return -1;
-		}
-		ft_strcat(buffer, resolved);
-		if (s->type == EXIT_STATUS)
-			free(resolved);
-	}
-	return 0;
-}
-
-char *trim_and_validate_path(const char *path)
-{
-	char *trimmed = ft_strtrim(path, " \t\n\r");
-	if (!trimmed || trimmed[0] == '\0')
-	{
-		if (trimmed) free(trimmed);
-		return NULL;
-	}
-	return trimmed;
-}
-
 int open_redirection_fd(t_redirect_type type, const char *path, t_word *filename, t_executor_ctx *ctx)
 {
 	int fd = -1;
@@ -87,6 +48,8 @@ int duplicate_fd(int fd, t_redirect_type type)
 	close(fd);
 	return (0);
 }
+
+
 
 int setup_redirections(t_list *redirects, t_executor_ctx *ctx)
 {

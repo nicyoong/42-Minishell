@@ -151,8 +151,13 @@ void	handle_builtin_command(char **argv, t_command *cmd, t_executor_ctx *ctx);
 void handle_invalid_arguments(char **argv);
 void handle_path_errors(char *path, char **argv);
 
+//redirections
+int build_path_from_word(t_word *word, char *buffer, size_t bufsize, t_executor_ctx *ctx);
+char	*trim_and_validate_path(const char *path);
+
 //to be sorted
 char	*resolve_segment(t_segment *seg, t_executor_ctx *ctx);
+char *resolve_segment_value(t_segment *s, t_executor_ctx *ctx);
 int	setup_redirections(t_list *redirects, t_executor_ctx *ctx);
 void	cleanup_redirections(int save_stdin, int save_stdout, int save_stderr, t_executor_ctx *ctx, int ret);
 char	*resolve_from_path_env(char *cmd);
