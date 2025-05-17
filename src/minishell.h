@@ -143,6 +143,7 @@ int build_path_from_word(t_word *word, char *buffer, size_t bufsize, t_executor_
 char	*trim_and_validate_path(const char *path);
 void	cleanup_redirections(int save_stdin, int save_stdout, int save_stderr);
 char *resolve_segment_value(t_segment *s, t_executor_ctx *ctx);
+int open_redirection_fd(t_redirect_type type, const char *path, t_word *filename, t_executor_ctx *ctx);
 
 //to be sorted
 char	*resolve_segment(t_segment *seg, t_executor_ctx *ctx);
