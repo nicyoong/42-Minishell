@@ -227,14 +227,13 @@ t_pipeline *parse(t_list *tokens)
 	return pipeline;
 }
 
-const char *redirect_type_str(t_redirect_type type)
-{
-	const char *names[] = {
-		[REDIR_IN] = "INPUT",
-		[REDIR_OUT] = "OUTPUT",
-		[REDIR_APPEND] = "APPEND",
-		[REDIR_HEREDOC] = "HEREDOC"
-	};
-	return names[type];
-}
-
+// const char *redirect_type_str(t_redirect_type type)
+// {
+// 	const char *names[] = {
+// 		[REDIR_IN] = "INPUT",
+// 		[REDIR_OUT] = "OUTPUT",
+// 		[REDIR_APPEND] = "APPEND",
+// 		[REDIR_HEREDOC] = "HEREDOC"
+// 	};
+// 	return names[type];
+// }
