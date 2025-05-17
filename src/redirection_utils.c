@@ -6,7 +6,7 @@
 /*   By: tching <tching@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/17 20:02:19 by tching            #+#    #+#             */
-/*   Updated: 2025/05/17 20:23:43 by tching           ###   ########.fr       */
+/*   Updated: 2025/05/17 20:48:13 by tching           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,4 +59,14 @@ char	*trim_and_validate_path(const char *path)
 		return (NULL);
 	}
 	return (trimmed);
+}
+
+void	cleanup_redirections(int save_stdin, int save_stdout, int save_stderr)
+{
+	dup2(save_stdin, STDIN_FILENO);
+	dup2(save_stdout, STDOUT_FILENO);
+	dup2(save_stderr, STDERR_FILENO);
+	close(save_stdin);
+	close(save_stdout);
+	close(save_stderr);
 }

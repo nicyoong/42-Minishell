@@ -46,8 +46,8 @@ int	execute_env(char **argv, t_list *redirects, t_executor_ctx *ctx)
 	if (setup_redirections(redirects, ctx) < 0)
 	{
 		ret = 1;
-		cleanup_redirections(save_stdin, save_stdout, save_stderr, ctx, ret);
-		return (ret);
+		cleanup_redirections(save_stdin, save_stdout, save_stderr);
+		return (ctx->last_exit_status = ret);
 	}
 	if (argv[1] != NULL)
 	{
@@ -56,6 +56,6 @@ int	execute_env(char **argv, t_list *redirects, t_executor_ctx *ctx)
 	}
 	else
 		print_filtered_env();
-	cleanup_redirections(save_stdin, save_stdout, save_stderr, ctx, ret);
-	return (ret);
+	cleanup_redirections(save_stdin, save_stdout, save_stderr);
+	return (ctx->last_exit_status = ret);
 }

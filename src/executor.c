@@ -49,8 +49,6 @@ int duplicate_fd(int fd, t_redirect_type type)
 	return (0);
 }
 
-
-
 int setup_redirections(t_list *redirects, t_executor_ctx *ctx)
 {
 	char path[4096];
@@ -85,17 +83,6 @@ int setup_redirections(t_list *redirects, t_executor_ctx *ctx)
 			return -1;
 	}
 	return 0;
-}
-
-void cleanup_redirections(int save_stdin, int save_stdout, int save_stderr, t_executor_ctx *ctx, int ret)
-{
-	dup2(save_stdin, STDIN_FILENO);
-	dup2(save_stdout, STDOUT_FILENO);
-	dup2(save_stderr, STDERR_FILENO);
-	close(save_stdin);
-	close(save_stdout);
-	close(save_stderr);
-	ctx->last_exit_status = ret;
 }
 
 int create_pipe(int pipe_fd[2], t_executor_ctx *ctx)
@@ -191,4 +178,3 @@ void execute_pipeline(t_pipeline *pipeline, t_executor_ctx *ctx)
 	}
 	execute_pipeline_commands(pipeline, ctx);
 }
-

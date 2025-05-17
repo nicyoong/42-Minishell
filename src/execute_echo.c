@@ -50,10 +50,12 @@ int	execute_echo(char **argv, t_list *redirects, t_executor_ctx *ctx)
 	if (setup_redirections(redirects, ctx) < 0)
 	{
 		ret = 1;
-		cleanup_redirections(save_stdin, save_stdout, save_stderr, ctx, ret);
+		cleanup_redirections(save_stdin, save_stdout, save_stderr);
+		ctx->last_exit_status = ret;
 		return (ret);
 	}
 	ret = run_echo_command(argv);
-	cleanup_redirections(save_stdin, save_stdout, save_stderr, ctx, ret);
+	cleanup_redirections(save_stdin, save_stdout, save_stderr);
+	ctx->last_exit_status = ret;
 	return (ret);
 }
