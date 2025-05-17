@@ -143,6 +143,7 @@ int	process_word(t_list **tokens, t_command *cmd, t_list *head)
 	free(head);
 	return (1);
 }
+// normed up to here
 
 t_command *parse_command(t_list **tokens)
 {
