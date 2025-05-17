@@ -224,17 +224,19 @@ void setup_child_process(t_command *cmd, int prev_fd, int pipe_fd[2], int is_las
 void close_fds_after_fork(int *prev_fd, int pipe_fd[2], int is_last)
 {
 	if (*prev_fd != -1) close(*prev_fd);
-	if (!is_last) {
+	if (!is_last)
+	{
 		close(pipe_fd[1]);
 		*prev_fd = pipe_fd[0];
-	} else {
-		*prev_fd = -1;
 	}
+	else
+		*prev_fd = -1;
 }
 
 void wait_for_children(pid_t last_pid, t_executor_ctx *ctx)
 {
-	int status;
+	int	status;
+
 	waitpid(last_pid, &status, 0);
 	if (WIFEXITED(status))
 		ctx->last_exit_status = WEXITSTATUS(status);
