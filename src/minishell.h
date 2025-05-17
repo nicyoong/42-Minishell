@@ -88,6 +88,13 @@ typedef struct s_export_entry
     struct s_export_entry	*next;
 }	t_export;
 
+typedef struct s_pipe_info
+{
+	int	prev_fd;
+	int pipe_fd[2];
+	int is_last;
+}	t_pipe_info;
+
 // lexer.c
 // Token functions
 t_token *create_token(t_token_type type);
@@ -141,6 +148,8 @@ int	handle_cd(char **argv, t_list *redirects, t_executor_ctx *ctx);
 int	execute_exit(char **argv, t_executor_ctx *ctx);
 int	execute_builtin(char **argv, t_list *redirects, t_executor_ctx *ctx);
 void	handle_builtin_command(char **argv, t_command *cmd, t_executor_ctx *ctx);
+void handle_invalid_arguments(char **argv);
+void handle_path_errors(char *path, char **argv);
 
 //to be sorted
 char	*resolve_segment(t_segment *seg, t_executor_ctx *ctx);
@@ -153,7 +162,6 @@ void	execute_child(t_command *cmd, t_executor_ctx *ctx);
 void	execute_pipeline_commands(t_pipeline *pipeline, t_executor_ctx *ctx);
 void	execute_pipeline(t_pipeline *pipeline, t_executor_ctx *ctx);
 void remove_export(const char *name);
-void setup_child_process(t_command *cmd, int prev_fd, int pipe_fd[2], int is_last, t_executor_ctx *ctx);
-
+void setup_child_process(t_command *cmd, t_pipe_info *pinfo, t_executor_ctx *ctx);
 
 # endif
