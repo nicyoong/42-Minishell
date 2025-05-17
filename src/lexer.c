@@ -66,39 +66,106 @@ int	process_quoted_content(const char *input, int *i, char quote_type, t_word *w
 	return (1);
 }
 
+// char	decode_escape(const char *s, int *idx)
+// {
+// 	char	c;
+
+// 	c = s[*idx];
+// 	if (c == 'n')
+// 	{
+// 		(*idx)++;
+// 		return ('\n');
+// 	}
+// 	if (c == 't')
+// 	{
+// 		(*idx)++;
+// 		return ('\t');
+// 	}
+// 	if (c == 'x' && ft_isxdigit(s[*idx+1]) && ft_isxdigit(s[*idx+2]))
+// 	{
+// 		char hex[3] = { s[*idx+1], s[*idx+2], '\0' };
+// 		*idx += 3;
+// 		return ((char)hex_to_long(hex));
+// 	}
+// 	if (c == '\\')
+// 	{
+// 		(*idx)++;
+// 		return ('\\');
+// 	}
+// 	if (c == '\'')
+// 	{
+// 		(*idx)++;
+// 		return ('\'');
+// 	}
+// 	(*idx)++;
+// 	return (s[*idx - 1]);
+// }
+
+char	decode_newline(int *idx)
+{
+	(*idx)++;
+	return ('\n');
+}
+
+char	decode_tab(int *idx)
+{
+	(*idx)++;
+	return ('\t');
+}
+
+int	is_hex_escape(const char *s, int idx)
+{
+	return (s[idx] == 'x'
+		&& ft_isxdigit(s[idx + 1])
+		&& ft_isxdigit(s[idx + 2]));
+}
+
+char	decode_hex(const char *s, int *idx)
+{
+	char	hex[3];
+
+	hex[0] = s[*idx + 1];
+	hex[1] = s[*idx + 2];
+	hex[2] = '\0';
+	*idx += 3;
+	return ((char)hex_to_long(hex));
+}
+
+char	decode_backslash(int *idx)
+{
+	(*idx)++;
+	return ('\\');
+}
+
+char	decode_quote(int *idx)
+{
+	(*idx)++;
+	return ('\'');
+}
+
+char	decode_default(const char *s, int *idx)
+{
+	(*idx)++;
+	return (s[*idx - 1]);
+}
+
+
 char	decode_escape(const char *s, int *idx)
 {
 	char	c;
 
 	c = s[*idx];
 	if (c == 'n')
-	{
-		(*idx)++;
-		return ('\n');
-	}
+		return (decode_newline(idx));
 	if (c == 't')
-	{
-		(*idx)++;
-		return ('\t');
-	}
-	if (c == 'x' && ft_isxdigit(s[*idx+1]) && ft_isxdigit(s[*idx+2]))
-	{
-		char hex[3] = { s[*idx+1], s[*idx+2], '\0' };
-		*idx += 3;
-		return ((char)hex_to_long(hex));
-	}
+		return (decode_tab(idx));
+	if (is_hex_escape(s, *idx))
+		return (decode_hex(s, idx));
 	if (c == '\\')
-	{
-		(*idx)++;
-		return ('\\');
-	}
+		return (decode_backslash(idx));
 	if (c == '\'')
-	{
-		(*idx)++;
-		return ('\'');
-	}
-	(*idx)++;
-	return (s[*idx - 1]);
+		return (decode_quote(idx));
+	return (decode_default(s, idx));
 }
 
 void	process_ansi_c_quote(const char *input, int *i, t_word *word)
