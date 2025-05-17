@@ -134,42 +134,6 @@ void cleanup_redirections(int save_stdin, int save_stdout, int save_stderr, t_ex
 	close(save_stderr);
 	ctx->last_exit_status = ret;
 }
-void handle_invalid_arguments(char **argv)
-{
-	if (!argv || !argv[0] || argv[0][0] == '\0') {
-		ft_split_free(argv);
-		exit(0);
-	}
-}
-
-void handle_path_errors(char *path, char **argv)
-{
-	if (!path) {
-		if (errno == EACCES) {
-			fprintf(stderr, "minishell: %s: Permission denied\n", argv[0]);
-			ft_split_free(argv);
-			exit(126);
-		}
-		else if (errno == EISDIR) {
-			fprintf(stderr, "minishell: %s: Is a directory\n", argv[0]);
-			ft_split_free(argv);
-			exit(126);
-		}
-		else if (errno == ENOENT) {
-			if (strchr(argv[0], '/') != NULL)
-				fprintf(stderr, "minishell: %s: No such file or directory\n", argv[0]);
-			else
-				fprintf(stderr, "minishell: %s: command not found\n", argv[0]);
-			ft_split_free(argv);
-			exit(127);
-		}
-		else {
-			fprintf(stderr, "minishell: %s: command not found\n", argv[0]);
-			ft_split_free(argv);
-			exit(127);
-		}
-	}
-}
 
 int create_pipe(int pipe_fd[2], t_executor_ctx *ctx)
 {
