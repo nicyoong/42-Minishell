@@ -43,49 +43,6 @@ t_word	*copy_word(t_word *src)
 	return (dst);
 }
 
-void	free_segment(void *seg_ptr)
-{
-	t_segment	*seg;
-
-	seg = seg_ptr;
-	free(seg->value);
-	free(seg);
-}
-
-void	free_word(void *word_ptr)
-{
-	t_word	*w;
-
-	w = word_ptr;
-	ft_lstclear(&w->segments, free_segment);
-	free(w);
-}
-
-void	free_redirect(void *redir_ptr)
-{
-	t_redirect	*r;
-
-	r = redir_ptr;
-	free_word(r->filename);
-	free(r);
-}
-
-void	free_command(void *cmd_ptr)
-{
-	t_command	*cmd;
-
-	cmd = cmd_ptr;
-	ft_lstclear(&cmd->arguments, free_word);
-	ft_lstclear(&cmd->redirects, free_redirect);
-	free(cmd);
-}
-
-void	free_pipeline(t_pipeline *pipeline)
-{
-	ft_lstclear(&pipeline->commands, free_command);
-	free(pipeline);
-}
-
 // normed up to here
 
 int	handle_redirect(t_list **tokens, t_command *cmd)
