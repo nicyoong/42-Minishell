@@ -10,7 +10,7 @@ Minishell is a collaborative project at 42 that involves building a simplified U
 - Built-in commands: `echo`, `cd`, `pwd`, `export`, `unset`, `env`, `exit`  
 - Redirections: `>`, `>>`, `<`, here-documents (`<<`)  
 - Pipes (`|`) and multi-pipe command chains  
-- Signal handling for `Ctrl-C` (SIGINT) and `Ctrl-\` (SIGQUIT), and EOF handling for Ctrl-D
+- Signal handling for `Ctrl-C` (SIGINT) and `Ctrl-\` (SIGQUIT), and EOF handling for `Ctrl-D`
 - Environment variable expansion (e.g., `$PATH`)  
 - Error handling for syntax and runtime issues  
 
