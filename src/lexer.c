@@ -1,6 +1,6 @@
 #include "minishell.h"
 
-void flush_buffer(t_word *word, char *buffer, int *buf_idx)
+void	flush_buffer(t_word *word, char *buffer, int *buf_idx)
 {
 	if (*buf_idx > 0)
 	{
@@ -10,18 +10,19 @@ void flush_buffer(t_word *word, char *buffer, int *buf_idx)
 	}
 }
 
-void parse_exit_status(const char *input, int *i, t_word *word)
+void	parse_exit_status(const char *input, int *i, t_word *word)
 {
 	(void) input;
 	add_segment(word, EXIT_STATUS, "$?");
 	(*i)++;
 }
 
-void parse_variable_name(const char *input, int *i, t_word *word)
+void	parse_variable_name(const char *input, int *i, t_word *word)
 {
-	char var[1024];
-	int var_idx = 0;
+	char	var[1024];
+	int		var_idx;
 
+	var_idx = 0;
 	while (is_valid_var_char(input[*i]))
 		var[var_idx++] = input[(*i)++];
 	var[var_idx] = '\0';
