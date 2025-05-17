@@ -17,20 +17,6 @@
 # include <readline/history.h>
 # include <limits.h>
 
-int ft_strcmp(const char *s1, const char *s2);
-void ft_split_free(char **array);
-int  is_builtin(const char *cmd);
-int is_whitespace(char c);
-int is_operator_char(char c);
-int is_valid_var_char(char c);
-int is_valid_identifier(const char *str);
-int is_valid_integer(const char *str);
-char *ft_strcat(char *dest, const char *src);
-char *ft_strncpy(char *dest, const char *src, size_t n);
-int	ft_isxdigit(int c);
-long  hex_to_long(const char *hex);
-char	*ft_strndup(const char *s1, size_t n);
-
 typedef enum e_token_type {
 	TOKEN_WORD,
 	TOKEN_PIPE,
@@ -168,5 +154,24 @@ void	execute_pipeline_commands(t_pipeline *pipeline, t_executor_ctx *ctx);
 void	execute_pipeline(t_pipeline *pipeline, t_executor_ctx *ctx);
 void remove_export(const char *name);
 void setup_child_process(t_command *cmd, t_pipe_info *pinfo, t_executor_ctx *ctx);
+void wait_for_children(pid_t last_pid, t_executor_ctx *ctx);
+
+//utils
+int ft_strcmp(const char *s1, const char *s2);
+void ft_split_free(char **array);
+int  is_builtin(const char *cmd);
+int is_whitespace(char c);
+int is_operator_char(char c);
+int is_valid_var_char(char c);
+int is_valid_identifier(const char *str);
+int is_valid_integer(const char *str);
+char *ft_strcat(char *dest, const char *src);
+char *ft_strncpy(char *dest, const char *src, size_t n);
+int	ft_isxdigit(int c);
+long  hex_to_long(const char *hex);
+char	*ft_strndup(const char *s1, size_t n);
+int	create_pipe(int pipe_fd[2], t_executor_ctx *ctx);
+void	close_fds_after_fork(int *prev_fd, int pipe_fd[2], int is_last);
+int	duplicate_fd(int fd, t_redirect_type type);
 
 # endif

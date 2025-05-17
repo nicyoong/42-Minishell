@@ -31,24 +31,6 @@ int open_redirection_fd(t_redirect_type type, const char *path, t_word *filename
 	return fd;
 }
 
-int duplicate_fd(int fd, t_redirect_type type)
-{
-	int	target;
-	
-	if (type == REDIR_IN || type == REDIR_HEREDOC)
-		target = STDIN_FILENO;
-	else
-		target = STDOUT_FILENO;
-	if (dup2(fd, target) < 0)
-	{
-		perror("dup2 error");
-		close(fd);
-		return -1;
-	}
-	close(fd);
-	return (0);
-}
-
 int setup_redirections(t_list *redirects, t_executor_ctx *ctx)
 {
 	char path[4096];
@@ -62,7 +44,6 @@ int setup_redirections(t_list *redirects, t_executor_ctx *ctx)
 			fprintf(stderr, "redirection error: path too long\n");
 			return -1;
 		}
-
 		char *trimmed = trim_and_validate_path(path);
 		if (!trimmed)
 		{
@@ -83,46 +64,6 @@ int setup_redirections(t_list *redirects, t_executor_ctx *ctx)
 			return -1;
 	}
 	return 0;
-}
-
-int create_pipe(int pipe_fd[2], t_executor_ctx *ctx)
-{
-	if (pipe(pipe_fd) < 0)
-	{
-		perror("pipe");
-		ctx->last_exit_status = 1;
-		return -1;
-	}
-	return 0;
-}
-
-
-void close_fds_after_fork(int *prev_fd, int pipe_fd[2], int is_last)
-{
-	if (*prev_fd != -1) close(*prev_fd);
-	if (!is_last) {
-		close(pipe_fd[1]);
-		*prev_fd = pipe_fd[0];
-	} else {
-		*prev_fd = -1;
-	}
-}
-
-void wait_for_children(pid_t last_pid, t_executor_ctx *ctx)
-{
-	int status;
-	waitpid(last_pid, &status, 0);
-	if (WIFEXITED(status))
-		ctx->last_exit_status = WEXITSTATUS(status);
-	else if (WIFSIGNALED(status))
-	{
-		int sig = WTERMSIG(status);
-		ctx->last_exit_status = 128 + sig;
-	}
-	else
-		ctx->last_exit_status = 1;
-	while (wait(NULL) > 0)
-		;
 }
 
 void execute_pipeline_commands(t_pipeline *pipeline, t_executor_ctx *ctx)

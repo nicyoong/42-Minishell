@@ -6,7 +6,7 @@
 /*   By: tching <tching@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/17 17:57:46 by tching            #+#    #+#             */
-/*   Updated: 2025/05/17 19:22:17 by tching           ###   ########.fr       */
+/*   Updated: 2025/05/17 21:11:59 by tching           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,4 +51,23 @@ void	setup_child_process(t_command *cmd, t_pipe_info *pinfo,
 	if (setup_redirections(cmd->redirects, ctx) < 0)
 		exit(1);
 	execute_child(cmd, ctx);
+}
+
+void	wait_for_children(pid_t last_pid, t_executor_ctx *ctx)
+{
+	int	status;
+	int	sig;
+
+	waitpid(last_pid, &status, 0);
+	if (WIFEXITED(status))
+		ctx->last_exit_status = WEXITSTATUS(status);
+	else if (WIFSIGNALED(status))
+	{
+		sig = WTERMSIG(status);
+		ctx->last_exit_status = 128 + sig;
+	}
+	else
+		ctx->last_exit_status = 1;
+	while (wait(NULL) > 0)
+		;
 }
