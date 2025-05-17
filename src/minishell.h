@@ -140,6 +140,7 @@ int	execute_unset(char **argv, t_list *redirects, t_executor_ctx *ctx);
 int	handle_cd(char **argv, t_list *redirects, t_executor_ctx *ctx);
 int	execute_exit(char **argv, t_executor_ctx *ctx);
 int	execute_builtin(char **argv, t_list *redirects, t_executor_ctx *ctx);
+void	handle_builtin_command(char **argv, t_command *cmd, t_executor_ctx *ctx);
 
 //to be sorted
 char	*resolve_segment(t_segment *seg, t_executor_ctx *ctx);

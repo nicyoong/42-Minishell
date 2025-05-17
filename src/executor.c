@@ -184,7 +184,7 @@ void execute_child(t_command *cmd, t_executor_ctx *ctx)
 	char **argv = convert_arguments(cmd->arguments, ctx);
 
 	handle_invalid_arguments(argv);
-	handle_builtin_command(argv, cmd, ctx);
+	(argv, cmd, ctx);
 
 	char *path = resolve_binary(argv[0]);
 	handle_path_errors(path, argv);
