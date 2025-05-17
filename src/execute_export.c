@@ -6,7 +6,7 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/16 17:24:23 by nyoong            #+#    #+#             */
-/*   Updated: 2025/05/17 17:54:38 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/05/17 17:58:06 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -214,6 +214,17 @@ void print_environment(void)
 	free(arr);
 }
 
+int	handle_setenv_and_export(const char *name, const char *value)
+{
+	if (setenv(name, value, 1) < 0)
+	{
+		perror("export");
+		return (1);
+	}
+	add_export(name, true);
+	return (0);
+}
+
 int handle_single_export_arg(const char *arg)
 {
 	char		*name;
@@ -239,14 +250,7 @@ int handle_single_export_arg(const char *arg)
 		ret = 1;
 	}
 	else if (eq)
-	{
-		if (setenv(name, eq + 1, 1) < 0)
-		{
-			perror("export");
-			ret = 1;
-		}
-		add_export(name, true);
-	}
+		handle_setenv_and_export(name, eq + 1);
 	else
 		add_export(name, false);
 	free(name);
