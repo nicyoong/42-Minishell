@@ -153,6 +153,7 @@ void	execute_child(t_command *cmd, t_executor_ctx *ctx);
 void	execute_pipeline_commands(t_pipeline *pipeline, t_executor_ctx *ctx);
 void	execute_pipeline(t_pipeline *pipeline, t_executor_ctx *ctx);
 void remove_export(const char *name);
+void setup_child_process(t_command *cmd, int prev_fd, int pipe_fd[2], int is_last, t_executor_ctx *ctx);
 
 
 # endif
