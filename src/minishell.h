@@ -88,6 +88,29 @@ void add_segment(t_word *word, t_segment_type seg_type, const char *value);
 void free_token(void *token_ptr);
 
 // Lexer function
+void	flush_buffer(t_word *word, char *buffer, int *buf_idx);
+void	parse_exit_status(const char *input, int *i, t_word *word);
+void	parse_variable_name(const char *input, int *i, t_word *word);
+void	prepare_for_expansion(t_word *word, char *buffer,
+			int *buf_idx, int *i);
+void	expand_variable(const char *input, int *i, t_word *word);
+int		process_quoted_content(const char *input, int *i,
+			char quote_type, t_word *word);
+
+char	decode_newline(int *idx);
+char	decode_tab(int *idx);
+char	decode_backslash(int *idx);
+int	is_hex_escape(const char *s, int idx);
+char	decode_hex(const char *s, int *idx);
+char	decode_quote(int *idx);
+char	decode_default(const char *s, int *idx);
+char	decode_escape(const char *s, int *idx);
+
+void	process_ansi_c_quote(const char *input, int *i, t_word *word);
+void	process_unquoted_segment(const char *input, int *i, t_word *word);
+
+t_token_type	get_operator(const char *input, int *i);
+
 t_list *lex_input(const char *input);
 
 // parser.c
