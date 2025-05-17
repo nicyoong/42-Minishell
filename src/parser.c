@@ -1,71 +1,94 @@
 #include "minishell.h"
 
-int is_redirect(t_token_type type)
+int	is_redirect(t_token_type type)
 {
-	return (type == TOKEN_REDIRECT_IN || type == TOKEN_REDIRECT_OUT ||
-			type == TOKEN_REDIRECT_APPEND || type == TOKEN_REDIRECT_HEREDOC);
+	return (type == TOKEN_REDIRECT_IN
+		|| type == TOKEN_REDIRECT_OUT
+		|| type == TOKEN_REDIRECT_APPEND
+		|| type == TOKEN_REDIRECT_HEREDOC);
 }
 
-t_redirect_type token_to_redirect(t_token_type type)
+t_redirect_type	token_to_redirect(t_token_type type)
 {
-	if (type == TOKEN_REDIRECT_IN) return REDIR_IN;
-	if (type == TOKEN_REDIRECT_OUT) return REDIR_OUT;
-	if (type == TOKEN_REDIRECT_APPEND) return REDIR_APPEND;
-	return REDIR_HEREDOC;
+	if (type == TOKEN_REDIRECT_IN)
+		return (REDIR_IN);
+	if (type == TOKEN_REDIRECT_OUT)
+		return (REDIR_OUT);
+	if (type == TOKEN_REDIRECT_APPEND)
+		return (REDIR_APPEND);
+	return (REDIR_HEREDOC);
 }
 
-t_word *copy_word(t_word *src)
+t_word	*copy_word(t_word *src)
 {
-	t_word *dst = ft_calloc(1, sizeof(t_word));
-	t_list *segments = NULL;
-	
-	t_list *tmp = src->segments;
+	t_word		*dst;
+	t_list		*segments;
+	t_list		*tmp;
+	t_segment	*src_seg;
+	t_segment	*dst_seg;
+
+	dst = ft_calloc(1, sizeof(t_word));
+	segments = NULL;
+	tmp = src->segments;
 	while (tmp)
 	{
-		t_segment *src_seg = tmp->content;
-		t_segment *dst_seg = ft_calloc(1, sizeof(t_segment));
+		src_seg = tmp->content;
+		dst_seg = ft_calloc(1, sizeof(t_segment));
 		dst_seg->type = src_seg->type;
 		dst_seg->value = ft_strdup(src_seg->value);
 		ft_lstadd_back(&segments, ft_lstnew(dst_seg));
 		tmp = tmp->next;
 	}
 	dst->segments = segments;
-	return dst;
+	return (dst);
 }
 
-void free_segment(void *seg_ptr)
+void	free_segment(void *seg_ptr)
 {
-	t_segment *seg = seg_ptr;
+	t_segment	*seg;
+
+	seg = seg_ptr;
 	free(seg->value);
 	free(seg);
 }
 
-void free_word(void *word_ptr)
+void	free_word(void *word_ptr)
 {
-	t_word *w = word_ptr;
+	t_word	*w;
+
+	w = word_ptr;
 	ft_lstclear(&w->segments, free_segment);
 	free(w);
 }
 
-void free_redirect(void *redir_ptr)
+void	free_redirect(void *redir_ptr)
 {
-	t_redirect *r = redir_ptr;
+	t_redirect	*r;
+
+	r = redir_ptr;
 	free_word(r->filename);
 	free(r);
 }
 
-void free_command(void *cmd_ptr)
+void	free_command(void *cmd_ptr)
 {
-	t_command *cmd = cmd_ptr;
+	t_command	*cmd;
+
+	cmd = cmd_ptr;
 	ft_lstclear(&cmd->arguments, free_word);
 	ft_lstclear(&cmd->redirects, free_redirect);
 	free(cmd);
 }
 
-int handle_redirect(t_list **tokens, t_command *cmd)
+int	handle_redirect(t_list **tokens, t_command *cmd)
 {
-	t_token    *token = (*tokens)->content;
-	t_redirect *redir = ft_calloc(1, sizeof(*redir));
+	t_token		*token;
+	t_redirect	*redir;
+	t_list		*file_node;
+	t_token		*file_tok;
+
+	token = (*tokens)->content;
+	redir = ft_calloc(1, sizeof(*redir));
 	if (!redir)
 		return 0;
 	*tokens = (*tokens)->next;
@@ -76,9 +99,9 @@ int handle_redirect(t_list **tokens, t_command *cmd)
 		free(redir);
 		return 0;
 	}
-	t_list  *file_node = *tokens;
-	t_token *file_tok  = file_node->content;
-	redir->filename    = copy_word(file_tok->word);
+	file_node = *tokens;
+	file_tok = file_node->content;
+	redir->filename = copy_word(file_tok->word);
 	if (!redir->filename)
 	{
 		free(redir);
@@ -90,30 +113,35 @@ int handle_redirect(t_list **tokens, t_command *cmd)
 	return 1;
 }
 
-int process_redirect(t_list **tokens, t_command *cmd, t_list *head)
+int	process_redirect(t_list **tokens, t_command *cmd, t_list *head)
 {
-	if (!handle_redirect(tokens, cmd)) {
+	if (!handle_redirect(tokens, cmd))
+	{
 		free(head);
 		free_command(cmd);
-		return 0;
+		return (0);
 	}
 	free(head);
-	return 1;
+	return (1);
 }
 
-int process_word(t_list **tokens, t_command *cmd, t_list *head)
+int	process_word(t_list **tokens, t_command *cmd, t_list *head)
 {
-	t_token *token = head->content;
-	t_word *arg = copy_word(token->word);
-	if (!arg) {
+	t_token	*token;
+	t_word	*arg;
+
+	token = head->content;
+	arg = copy_word(token->word);
+	if (!arg)
+	{
 		free(head);
 		free_command(cmd);
-		return 0;
+		return (0);
 	}
 	ft_lstadd_back(&cmd->arguments, ft_lstnew(arg));
 	*tokens = head->next;
 	free(head);
-	return 1;
+	return (1);
 }
 
 t_command *parse_command(t_list **tokens)

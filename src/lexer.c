@@ -1,5 +1,7 @@
 #include "minishell.h"
 
+// quoted 1 and quoted 2
+
 void	flush_buffer(t_word *word, char *buffer, int *buf_idx)
 {
 	if (*buf_idx > 0)
@@ -72,6 +74,8 @@ int	process_quoted_content(const char *input, int *i, char quote_type, t_word *w
 	(*i)++;
 	return (1);
 }
+
+// decode 1, decode 2, process unquoted
 
 char	decode_newline(int *idx)
 {
@@ -195,6 +199,8 @@ void	process_unquoted_segment(const char *input, int *i, t_word *word)
 		flush_buffer(word, buffer, &buf_idx);
 }
 
+// get operator . c
+
 t_token_type	parse_redirect_in(const char *input, int *i)
 {
 	if (input[*i + 1] == '<')
@@ -230,6 +236,8 @@ t_token_type	get_operator(const char *input, int *i)
 		return (parse_redirect_out(input, i));
 	return (TOKEN_WORD);
 }
+
+// lexer .c
 
 int	skip_whitespace(const char *input, int i)
 {
@@ -281,7 +289,7 @@ t_list	*lex_input(const char *input)
 
 	tokens = NULL;
 	i = 0;
-	len = strlen(input);
+	len = ft_strlen(input);
 	while (i < len)
 	{
 		i = skip_whitespace(input, i);
