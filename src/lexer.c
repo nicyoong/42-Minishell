@@ -29,10 +29,14 @@ void	parse_variable_name(const char *input, int *i, t_word *word)
 	add_segment(word, VARIABLE, var);
 }
 
-void	handle_variable_expansion(const char *input, int *i, t_word *word, char *buffer, int *buf_idx)
+void	prepare_for_expansion(t_word *word, char *buffer, int *buf_idx, int *i)
 {
 	flush_buffer(word, buffer, buf_idx);
 	(*i)++;
+}
+
+void	expand_variable(const char *input, int *i, t_word *word)
+{
 	if (input[*i] == '?')
 		parse_exit_status(input, i, word);
 	else if (is_valid_var_char(input[*i]))
@@ -51,7 +55,10 @@ int	process_quoted_content(const char *input, int *i, char quote_type, t_word *w
 	while (input[*i] && input[*i] != quote_type)
 	{
 		if (quote_type == '"' && input[*i] == '$')
-			handle_variable_expansion(input, i, word, buffer, &buf_idx);
+		{
+			prepare_for_expansion(word, buffer, &buf_idx, i);
+			expand_variable(input, i, word);
+		}
 		else
 			buffer[buf_idx++] = input[(*i)++];
 	}
@@ -179,7 +186,8 @@ void	process_unquoted_segment(const char *input, int *i, t_word *word)
 			else if (input[*i] == '$')
 			{
 				flush_buffer(word, buffer, &buf_idx);
-				handle_variable_expansion(input, i, word, buffer, &buf_idx);
+				prepare_for_expansion(word, buffer, &buf_idx, i);
+				expand_variable(input, i, word);
 			}
 			else
 				buffer[buf_idx++] = input[(*i)++];
