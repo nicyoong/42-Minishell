@@ -6,7 +6,7 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/16 17:24:23 by nyoong            #+#    #+#             */
-/*   Updated: 2025/05/17 02:05:56 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/05/17 17:54:38 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -167,17 +167,19 @@ t_export	**list_to_array(t_export *head, size_t count)
 
 void print_exports(t_export **arr, size_t count)
 {
-	size_t i;
+	size_t		i;
+	t_export	*e;
+	const char	*n;
+	char		*value;
 
 	i = 0;
 	while (i < count)
 	{
-		t_export *e = arr[i];
-		const char *n = e->name;
-
-		if (strcmp(n, "LINES") == 0 ||
-			strcmp(n, "COLUMNS") == 0 ||
-			strcmp(n, "_") == 0)
+		e = arr[i];
+		n = e->name;
+		if (ft_strcmp(n, "LINES") == 0
+			|| ft_strcmp(n, "COLUMNS") == 0
+			|| ft_strcmp(n, "_") == 0)
 		{
 			i++;
 			continue;
@@ -185,8 +187,13 @@ void print_exports(t_export **arr, size_t count)
 		if (!e->assigned)
 			printf("declare -x %s\n", n);
 		else
-			printf("declare -x %s=\"%s\"\n", n, getenv(n) ? getenv(n) : "");
-
+		{
+			value = getenv(n);
+			if (value)
+				printf("declare -x %s=\"%s\"\n", n, value);
+			else
+				printf("declare -x %s=\"\"\n", n);
+		}
 		i++;
 	}
 }
@@ -206,24 +213,26 @@ void print_environment(void)
 	print_exports(arr, count);
 	free(arr);
 }
+
 int handle_single_export_arg(const char *arg)
 {
-	char *name;
-	char *error_part;
-	const char *eq = strchr(arg, '=');
-	int ret = 0;
+	char		*name;
+	char		*error_part;
+	const char	*eq;
+	int			ret;
 
+	eq = ft_strchr(arg, '=');
+	ret = 0;
 	if (eq)
 	{
-		name       = ft_substr(arg, 0, eq - arg);
+		name = ft_substr(arg, 0, eq - arg);
 		error_part = ft_substr(arg, 0, (eq - arg) + 1);
 	}
 	else
 	{
-		name       = ft_strdup(arg);
+		name = ft_strdup(arg);
 		error_part = ft_strdup(arg);
 	}
-
 	if (!is_valid_identifier(name))
 	{
 		fprintf(stderr, "export: '%s': not a valid identifier\n", error_part);
@@ -231,7 +240,6 @@ int handle_single_export_arg(const char *arg)
 	}
 	else if (eq)
 	{
-		/* assigned form: always setenv */
 		if (setenv(name, eq + 1, 1) < 0)
 		{
 			perror("export");
@@ -240,11 +248,7 @@ int handle_single_export_arg(const char *arg)
 		add_export(name, true);
 	}
 	else
-	{
-		/* bare form: just mark for export, no setenv if unset */
 		add_export(name, false);
-	}
-
 	free(name);
 	free(error_part);
 	return ret;
@@ -252,19 +256,28 @@ int handle_single_export_arg(const char *arg)
 
 int process_export_args(char **argv)
 {
-	int ret = 0;
-	for (int i = 1; argv[i]; i++) {
+	int	ret;
+	int	i;
+
+	ret = 0;
+	i = 1;
+	while (argv[i])
+	{
 		if (handle_single_export_arg(argv[i]) != 0)
 			ret = 1;
+		i++;
 	}
 	return ret;
 }
 
 int	execute_export(char **argv, t_list *redirects, t_executor_ctx *ctx)
 {
-	int save_in, save_out, save_err;
-	int ret = 0;
+	int	save_in;
+	int	save_out;
+	int	save_err;
+	int	ret;
 
+	ret = 0;
 	if (g_export_list == NULL)
 		init_export_list_from_environ();
 	save_stdio(&save_in, &save_out, &save_err);
@@ -272,7 +285,7 @@ int	execute_export(char **argv, t_list *redirects, t_executor_ctx *ctx)
 	{
 		restore_stdio(save_in, save_out, save_err);
 		ctx->last_exit_status = 1;
-		return 1;
+		return (1);
 	}
 	if (!argv[1])
 		print_environment();
@@ -280,6 +293,6 @@ int	execute_export(char **argv, t_list *redirects, t_executor_ctx *ctx)
 		ret = process_export_args(argv);
 	restore_stdio(save_in, save_out, save_err);
 	ctx->last_exit_status = ret;
-	return ret;
+	return (ret);
 }
 
