@@ -173,31 +173,40 @@ void	process_unquoted_segment(const char *input, int *i, t_word *word)
 		{
 			if (input[*i] == '$' && input[*i + 1] == '\'')
 			{
-				if (buf_idx > 0)
-				{
-					buffer[buf_idx] = '\0';
-					add_segment(word, LITERAL, buffer);
-					buf_idx = 0;
-				}
+				flush_buffer(word, buffer, &buf_idx);
 				process_ansi_c_quote(input, i, word);
 			}
 			else if (input[*i] == '$')
 			{
-				if (buf_idx > 0) {
-					buffer[buf_idx] = '\0';
-					add_segment(word, LITERAL, buffer);
-					buf_idx = 0;
-				}
+				flush_buffer(word, buffer, &buf_idx);
 				handle_variable_expansion(input, i, word, buffer, &buf_idx);
 			}
 			else
 				buffer[buf_idx++] = input[(*i)++];
 		}
-		if (buf_idx > 0)
-		{
-			buffer[buf_idx] = '\0';
-			add_segment(word, LITERAL, buffer);
-		}
+		flush_buffer(word, buffer, &buf_idx);
+}
+
+t_token_type	parse_redirect_in(const char *input, int *i)
+{
+	if (input[*i + 1] == '<')
+	{
+		(*i) += 2;
+		return (TOKEN_REDIRECT_HEREDOC);
+	}
+	(*i)++;
+	return (TOKEN_REDIRECT_IN);
+}
+
+t_token_type	parse_redirect_out(const char *input, int *i)
+{
+	if (input[*i + 1] == '>')
+	{
+		(*i) += 2;
+		return (TOKEN_REDIRECT_APPEND);
+	}
+	(*i)++;
+	return (TOKEN_REDIRECT_OUT);
 }
 
 t_token_type	get_operator(const char *input, int *i)
@@ -208,25 +217,9 @@ t_token_type	get_operator(const char *input, int *i)
 		return (TOKEN_PIPE);
 	}
 	else if (input[*i] == '<')
-	{
-		if (input[*i + 1] == '<')
-		{
-			(*i) += 2;
-			return (TOKEN_REDIRECT_HEREDOC);
-		}
-		(*i)++;
-		return (TOKEN_REDIRECT_IN);
-	}
+		return (parse_redirect_in(input, i));
 	else if (input[*i] == '>')
-	{
-		if (input[*i + 1] == '>')
-		{
-			(*i) += 2;
-			return (TOKEN_REDIRECT_APPEND);
-		}
-		(*i)++;
-		return (TOKEN_REDIRECT_OUT);
-	}
+		return (parse_redirect_out(input, i));
 	return (TOKEN_WORD);
 }
 
@@ -248,7 +241,7 @@ int	handle_operator(const char *input, int *i, t_list **tokens)
 
 int	handle_word(const char *input, int *i, int len, t_list **tokens)
 {
-	t_token *token;
+	t_token	*token;
 
 	token = create_token(TOKEN_WORD);
 	if (!token)
