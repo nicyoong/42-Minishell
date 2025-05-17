@@ -134,7 +134,6 @@ void cleanup_redirections(int save_stdin, int save_stdout, int save_stderr, t_ex
 	close(save_stderr);
 	ctx->last_exit_status = ret;
 }
-
 void handle_invalid_arguments(char **argv)
 {
 	if (!argv || !argv[0] || argv[0][0] == '\0') {
@@ -172,26 +171,6 @@ void handle_path_errors(char *path, char **argv)
 	}
 }
 
-void execute_binary(char *path, char **argv)
-{
-	execve(path, argv, environ);
-	perror("execve");
-	exit(126);
-}
-
-void execute_child(t_command *cmd, t_executor_ctx *ctx)
-{
-	char **argv = convert_arguments(cmd->arguments, ctx);
-
-	handle_invalid_arguments(argv);
-	handle_builtin_command(argv, cmd, ctx);
-
-	char *path = resolve_binary(argv[0]);
-	handle_path_errors(path, argv);
-
-	execute_binary(path, argv);
-}
-
 int create_pipe(int pipe_fd[2], t_executor_ctx *ctx)
 {
 	if (pipe(pipe_fd) < 0)
@@ -203,40 +182,21 @@ int create_pipe(int pipe_fd[2], t_executor_ctx *ctx)
 	return 0;
 }
 
-void setup_child_process(t_command *cmd, int prev_fd, int pipe_fd[2], int is_last, t_executor_ctx *ctx)
-{
-	if (prev_fd != -1)
-	{
-		dup2(prev_fd, STDIN_FILENO);
-		close(prev_fd);
-	}
-	if (!is_last)
-	{
-		close(pipe_fd[0]);
-		dup2(pipe_fd[1], STDOUT_FILENO);
-		close(pipe_fd[1]);
-	}
-	if (setup_redirections(cmd->redirects, ctx) < 0)
-		exit(1);
-	execute_child(cmd, ctx);
-}
 
 void close_fds_after_fork(int *prev_fd, int pipe_fd[2], int is_last)
 {
 	if (*prev_fd != -1) close(*prev_fd);
-	if (!is_last)
-	{
+	if (!is_last) {
 		close(pipe_fd[1]);
 		*prev_fd = pipe_fd[0];
-	}
-	else
+	} else {
 		*prev_fd = -1;
+	}
 }
 
 void wait_for_children(pid_t last_pid, t_executor_ctx *ctx)
 {
-	int	status;
-
+	int status;
 	waitpid(last_pid, &status, 0);
 	if (WIFEXITED(status))
 		ctx->last_exit_status = WEXITSTATUS(status);
@@ -251,28 +211,68 @@ void wait_for_children(pid_t last_pid, t_executor_ctx *ctx)
 		;
 }
 
+// OLD 
+// void execute_pipeline_commands(t_pipeline *pipeline, t_executor_ctx *ctx)
+// {
+// 	int prev_fd = -1;
+// 	pid_t last_pid = -1;
+
+// 	t_list *node = pipeline->commands;
+// 	while (node) {
+// 		t_command *cmd = node->content;
+// 		int is_last = (node->next == NULL);
+// 		int pipe_fd[2];
+
+// 		if (!is_last && create_pipe(pipe_fd, ctx) < 0)
+// 			return;
+// 		pid_t pid = fork();
+// 		if (pid == 0)
+// 			setup_child_process(cmd, prev_fd, pipe_fd, is_last, ctx);
+// 		else if (pid < 0)
+// 		{
+// 			perror("fork");
+// 			ctx->last_exit_status = 1;
+// 			return;
+// 		}
+// 		close_fds_after_fork(&prev_fd, pipe_fd, is_last);
+// 		last_pid = pid;
+// 		node = node->next;
+// 	}
+// 	wait_for_children(last_pid, ctx);
+// }
+
+//
 void execute_pipeline_commands(t_pipeline *pipeline, t_executor_ctx *ctx)
 {
 	int prev_fd = -1;
 	pid_t last_pid = -1;
-
 	t_list *node = pipeline->commands;
-	while (node) {
+
+	while (node)
+	{
 		t_command *cmd = node->content;
 		int is_last = (node->next == NULL);
 		int pipe_fd[2];
 
 		if (!is_last && create_pipe(pipe_fd, ctx) < 0)
 			return;
+
+		t_pipe_info pinfo = {
+			.prev_fd = prev_fd,
+			.pipe_fd = {pipe_fd[0], pipe_fd[1]},
+			.is_last = is_last
+		};
+
 		pid_t pid = fork();
 		if (pid == 0)
-			setup_child_process(cmd, prev_fd, pipe_fd, is_last, ctx);
+			setup_child_process(cmd, &pinfo, ctx);
 		else if (pid < 0)
 		{
 			perror("fork");
 			ctx->last_exit_status = 1;
 			return;
 		}
+
 		close_fds_after_fork(&prev_fd, pipe_fd, is_last);
 		last_pid = pid;
 		node = node->next;
