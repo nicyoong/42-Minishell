@@ -11,7 +11,7 @@
 # **************************************************************************** #
 
 
-CC      = gcc
+CC      = cc
 AR      = ar
 CFLAGS  = -Wall -Wextra -Werror -Iinc -Ilibft
 LDFLAGS = -Llibft -lft
