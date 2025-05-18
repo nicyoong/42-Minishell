@@ -209,6 +209,8 @@ void	setup_child_process(t_command *cmd,
 			t_pipe_info *pinfo, t_executor_ctx *ctx);
 void	wait_for_children(pid_t last_pid, t_executor_ctx *ctx);
 
+t_pipeline	*build_pipeline(t_list *tokens, t_executor_ctx *ctx);
+
 //utils
 int		ft_strcmp(const char *s1, const char *s2);
 int		is_builtin(const char *cmd);

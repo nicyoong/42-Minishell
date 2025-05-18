@@ -53,3 +53,13 @@ int	duplicate_fd(int fd, t_redirect_type type)
 	close(fd);
 	return (0);
 }
+
+t_pipeline	*build_pipeline(t_list *tokens, t_executor_ctx *ctx)
+{
+	t_pipeline	*pipeline;
+
+	pipeline = parse(tokens);
+	if (!pipeline)
+		ctx->last_exit_status = 2;
+	return (pipeline);
+}
