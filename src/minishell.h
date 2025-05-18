@@ -6,7 +6,7 @@
 /*   By: tching <tching@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/18 08:15:13 by tching            #+#    #+#             */
-/*   Updated: 2025/05/18 08:39:05 by tching           ###   ########.fr       */
+/*   Updated: 2025/05/18 09:54:27 by tiara            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,7 +92,9 @@ typedef struct s_export
 {
 	char					*name;
 	bool					assigned;
-	struct s_export	*next;
+
+	struct s_export			*next;
+
 }	t_export;
 
 typedef struct s_pipe_info
@@ -141,7 +143,7 @@ t_token_type		get_operator(const char *input, int *i);
 
 // parser.c
 // Helper functions
-t_redirect_type				token_to_redirect(t_token_type type);
+t_redirect_type		token_to_redirect(t_token_type type);
 
 int		is_redirect(t_token_type type);
 void	free_word(void *word_ptr);
@@ -152,11 +154,11 @@ void	free_segment(void *seg_ptr);
 t_word	*copy_word(t_word *src);
 
 // Main parsing functions
-t_command	*parse_command(t_list **tokens);
+t_command		*parse_command(t_list **tokens);
 
 t_list	*split_commands(t_list *tokens);
 
-t_pipeline	*parse(t_list *tokens);
+t_pipeline		*parse(t_list *tokens);
 
 void	free_pipeline(t_pipeline *pipeline);
 
@@ -209,7 +211,7 @@ void	setup_child_process(t_command *cmd,
 			t_pipe_info *pinfo, t_executor_ctx *ctx);
 void	wait_for_children(pid_t last_pid, t_executor_ctx *ctx);
 
-t_pipeline	*build_pipeline(t_list *tokens, t_executor_ctx *ctx);
+t_pipeline		*build_pipeline(t_list *tokens, t_executor_ctx *ctx);
 
 //utils
 int		ft_strcmp(const char *s1, const char *s2);
