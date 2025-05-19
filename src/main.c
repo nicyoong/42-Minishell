@@ -6,43 +6,44 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 19:39:43 by tching            #+#    #+#             */
-/*   Updated: 2025/05/16 20:08:43 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/05/18 09:35:11 by tching           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-char *read_line()
+char	*read_line(void)
 {
-	char cwd[PATH_MAX];
-	getcwd(cwd, sizeof(cwd));
+	char	cwd[PATH_MAX];
+	char	prompt[PATH_MAX + 4];
+	char	*line;
+	size_t	cwd_len;
 
-	char prompt[PATH_MAX + 4];
-	snprintf(prompt, sizeof(prompt), "%s$ ", cwd);
-
-	char *line = readline(prompt);
+	if (!getcwd(cwd, sizeof(cwd)))
+		return (NULL);
+	cwd_len = ft_strlen(cwd);
+	if (cwd_len + 3 >= sizeof(prompt))
+		return (NULL);
+	ft_memcpy(prompt, cwd, cwd_len);
+	ft_memcpy(prompt + cwd_len, "$ ", 3);
+	line = readline(prompt);
 	if (line && *line)
 		add_history(line);
-	return line;
+	return (line);
 }
 
-t_list *tokenize_input(const char *line, t_executor_ctx *ctx)
+t_list	*tokenize_input(const char *line, t_executor_ctx *ctx)
 {
-	t_list *tokens = lex_input(line);
+	t_list	*tokens;
+
+	tokens = lex_input(line);
 	if (!tokens)
 		ctx->last_exit_status = 0;
-	return tokens;
+	return (tokens);
 }
 
-t_pipeline *build_pipeline(t_list *tokens, t_executor_ctx *ctx)
-{
-	t_pipeline *pipeline = parse(tokens);
-	if (!pipeline)
-		ctx->last_exit_status = 2;
-	return pipeline;
-}
-
-void execute_and_cleanup(char *line, t_list *tokens, t_pipeline *pipeline, t_executor_ctx *ctx)
+void	execute_and_cleanup(char *line, t_list *tokens,
+		t_pipeline *pipeline, t_executor_ctx *ctx)
 {
 	execute_pipeline(pipeline, ctx);
 	ft_lstclear(&tokens, free_token);
@@ -50,31 +51,41 @@ void execute_and_cleanup(char *line, t_list *tokens, t_pipeline *pipeline, t_exe
 	free(line);
 }
 
-int main(void)
+static void	run_shell_loop(t_executor_ctx *ctx)
 {
-	t_executor_ctx ctx = { .last_exit_status = 0 };
+	t_list		*tokens;
+	t_pipeline	*pipeline;
+	char		*full_line;
 
-	setup_signal_handlers();
 	while (1)
 	{
-		char *full_line = read_line();
+		full_line = read_line();
 		if (!full_line)
-			exit(ctx.last_exit_status);
-		t_list *tokens = tokenize_input(full_line, &ctx);
+			exit(ctx->last_exit_status);
+		tokens = tokenize_input(full_line, ctx);
 		if (!tokens)
 		{
 			free(full_line);
-			continue;
+			continue ;
 		}
-		t_pipeline *pipeline = build_pipeline(tokens, &ctx);
+		pipeline = build_pipeline(tokens, ctx);
 		if (!pipeline)
 		{
 			ft_lstclear(&tokens, free_token);
 			free(full_line);
-			continue;
+			continue ;
 		}
-		execute_and_cleanup(full_line, tokens, pipeline, &ctx);
+		execute_and_cleanup(full_line, tokens, pipeline, ctx);
 	}
+}
+
+int	main(void)
+{
+	t_executor_ctx	ctx;
+
+	ctx.last_exit_status = 0;
+	setup_signal_handlers();
+	run_shell_loop(&ctx);
 	rl_clear_history();
-	return ctx.last_exit_status;
+	return (ctx.last_exit_status);
 }

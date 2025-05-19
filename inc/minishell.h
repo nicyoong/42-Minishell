@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: tching <tching@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/18 22:19:31 by tching            #+#    #+#             */
-/*   Updated: 2025/03/18 22:46:06 by tching           ###   ########.fr       */
+/*   Created: 2025/05/18 08:15:13 by tching            #+#    #+#             */
+/*   Updated: 2025/05/18 09:54:27 by tiara            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,132 +14,221 @@
 # define MINISHELL_H
 
 # include "../libft/libft.h"
-# include <unistd.h>
-# include <stdio.h>
-# include <stdlib.h>
-# include <errno.h>
-# include <error.h>
 # include <stdbool.h>
-# include <fcntl.h>
-# include <limits.h>
+# include <stdlib.h>
+# include <stdio.h>
+# include <string.h>
 # include <signal.h>
-# include <termios.h>
-# include <sys/stat.h>
+# include <ctype.h>
+# include <unistd.h>
+# include <fcntl.h>
 # include <sys/wait.h>
-# include <sys/types.h>
-# include <dirent.h>
+# include <sys/stat.h>
+# include <errno.h>
 # include <readline/readline.h>
 # include <readline/history.h>
-# include <curses.h>
+# include <limits.h>
 
-//DEFINES
-# define MEM_FAIL	"Memory allocation failed."
-# define PIPE_FAIL	"The pipe() failed."
-# define FORK_FAIL	"The fork() failed."
-# define CLOSE_FAIL	"The close() failed."
-# define DUP_FAIL	"The dup() failed."
-# define DUP2_FAIL	"The dup2() failed."
-# define EXECVE_FAIL	"The execve() failed."
+typedef enum e_token_type
+{
+	TOKEN_WORD,
+	TOKEN_PIPE,
+	TOKEN_REDIRECT_IN,
+	TOKEN_REDIRECT_OUT,
+	TOKEN_REDIRECT_APPEND,
+	TOKEN_REDIRECT_HEREDOC
+}	t_token_type;
 
-//LEXER
+typedef enum e_segment_type
+{
+	LITERAL,
+	VARIABLE,
+	EXIT_STATUS
+}	t_segment_type;
 
-// ==============================
-// Data Structures (from earlier)
-// ==============================
-typedef enum e_segment_type {
-    LITERAL,
-    VARIABLE,
-    VAR_EXIT_STATUS
-} t_segment_type;
+typedef enum e_redirect_type
+{
+	REDIR_IN,
+	REDIR_OUT,
+	REDIR_APPEND,
+	REDIR_HEREDOC
+}	t_redirect_type;
 
-typedef struct s_segment {
-    t_segment_type type;
-    char *value;
-} t_segment;
+typedef struct s_segment
+{
+	t_segment_type	type;
+	char			*value;
+}	t_segment;
 
-typedef struct s_word {
-    t_list *segments;  // List of t_segment*
-} t_word;
+typedef struct s_word
+{
+	t_list			*segments;
+}	t_word;
 
-typedef enum e_token_type {
-    TOKEN_WORD,
-    TOKEN_PIPE,
-    TOKEN_REDIRECT_IN,
-    TOKEN_REDIRECT_OUT,
-    TOKEN_REDIRECT_APPEND,
-    TOKEN_REDIRECT_HEREDOC,
-} t_token_type;
+typedef struct s_token
+{
+	t_token_type	type;
+	t_word			*word;
+}	t_token;
 
-typedef struct s_token {
-    t_token_type type;
-    t_word *word;  // NULL for non-WORD tokens
-} t_token;
+typedef struct s_redirect
+{
+	t_redirect_type	type;
+	t_word			*filename;
+}	t_redirect;
 
-//PARSER
+typedef struct s_command
+{
+	t_list			*arguments;
+	t_list			*redirects;
+}	t_command;
 
-typedef enum e_redirect_type {
-    REDIR_IN,
-    REDIR_OUT,
-    REDIR_APPEND,
-    REDIR_HEREDOC
-} t_redirect_type;
+typedef struct s_pipeline
+{
+	t_list			*commands;
+}	t_pipeline;
 
-typedef struct s_redirect {
-    t_redirect_type type;
-    struct s_word   *filename;  // For HEREDOC, delimiter
-} t_redirect;
+typedef struct s_export
+{
+	char					*name;
+	bool					assigned;
 
-typedef struct s_command {
-    t_list          *arguments;  // List of t_word*
-    t_list          *redirects;  // List of t_redirect*
-} t_command;
+	struct s_export			*next;
 
-typedef struct s_pipeline {
-    t_list          *commands;   // List of t_command*
-} t_pipeline;
+}	t_export;
 
-// Datastruct EXECUTION
+typedef struct s_pipe_info
+{
+	int	prev_fd;
+	int	pipe_fd[2];
+	int	is_last;
+}	t_pipe_info;
+
 typedef struct s_executor_ctx
 {
-    int    last_exit_status;
-}    t_executor_ctx;
+	int	last_exit_status;
+}	t_executor_ctx;
 
-// Parser functions
-t_pipeline         *parse(t_list *tokens);
-void               free_pipeline(t_pipeline *pipeline);
+// lexer.c
+// Token functions
+t_token	*create_token(t_token_type type);
+void	add_segment(t_word *word, t_segment_type seg_type, const char *value);
+void	free_token(void *token_ptr);
 
-//TERMINAL
+// Lexer function
+void	flush_buffer(t_word *word, char *buffer, int *buf_idx);
+void	parse_exit_status(const char *input, int *i, t_word *word);
+void	parse_variable_name(const char *input, int *i, t_word *word);
+void	prepare_for_expansion(t_word *word, char *buffer,
+			int *buf_idx, int *i);
+void	expand_variable(const char *input, int *i, t_word *word);
+int		process_quoted_content(const char *input, int *i,
+			char quote_type, t_word *word);
 
+char	decode_newline(int *idx);
+char	decode_tab(int *idx);
+char	decode_backslash(int *idx);
+int		is_hex_escape(const char *s, int idx);
+char	decode_hex(const char *s, int *idx);
+char	decode_quote(int *idx);
+char	decode_default(const char *s, int *idx);
+char	decode_escape(const char *s, int *idx);
 
+void	process_ansi_c_quote(const char *input, int *i, t_word *word);
+void	process_unquoted_segment(const char *input, int *i, t_word *word);
 
+t_list	*lex_input(const char *input);
 
+t_token_type		get_operator(const char *input, int *i);
 
-//SHELL
+// parser.c
+// Helper functions
+t_redirect_type		token_to_redirect(t_token_type type);
 
+int		is_redirect(t_token_type type);
+void	free_word(void *word_ptr);
+void	free_redirect(void *redir_ptr);
+void	free_command(void *cmd_ptr);
+void	free_segment(void *seg_ptr);
 
-//EXPANSION
+t_word	*copy_word(t_word *src);
 
+// Main parsing functions
+t_command		*parse_command(t_list **tokens);
 
-//EXECUTION
+t_list	*split_commands(t_list *tokens);
 
-//SIGNALS
+t_pipeline		*parse(t_list *tokens);
 
+void	free_pipeline(t_pipeline *pipeline);
 
-//ERROR HANDLING
+// Utility/printing functions
+void	print_word(t_word *word);
+void	print_pipeline(t_pipeline *pipeline);
 
+// execution
+void	execute_pipeline(t_pipeline *pipeline, t_executor_ctx *ctx);
+void	sigint_handler(int signo);
+void	setup_signal_handlers(void);
 
-//FREE
+//process heredoc
+int		process_heredoc(t_word *delimiter_word, t_executor_ctx *ctx);
 
+//builtin function
+int		execute_pwd(char **argv, t_list *redirects, t_executor_ctx *ctx);
+int		execute_echo(char **argv, t_list *redirects, t_executor_ctx *ctx);
+int		execute_env(char **argv, t_list *redirects, t_executor_ctx *ctx);
+int		execute_export(char **argv, t_list *redirects, t_executor_ctx *ctx);
+int		execute_unset(char **argv, t_list *redirects, t_executor_ctx *ctx);
+int		handle_cd(char **argv, t_list *redirects, t_executor_ctx *ctx);
+int		execute_exit(char **argv, t_executor_ctx *ctx);
+int		execute_builtin(char **argv, t_list *redirects, t_executor_ctx *ctx);
+void	handle_builtin_command(char **argv,
+			t_command *cmd, t_executor_ctx *ctx);
+void	handle_invalid_arguments(char **argv);
+void	handle_path_errors(char *path, char **argv);
 
-//EXIT
+//redirections
+int		setup_redirections(t_list *redirects, t_executor_ctx *ctx);
+int		build_path_from_word(t_word *word, char *buffer,
+			size_t bufsize, t_executor_ctx *ctx);
+int		open_redirection_fd(t_redirect_type type, const char *path,
+			t_word *filename, t_executor_ctx *ctx);
+char	*trim_and_validate_path(const char *path);
+char	*resolve_segment_value(t_segment *s, t_executor_ctx *ctx);
+void	cleanup_redirections(int save_stdin, int save_stdout, int save_stderr);
 
-//HEREDOC
+//to be sorted
+char	*resolve_segment(t_segment *seg, t_executor_ctx *ctx);
+char	*resolve_from_path_env(char *cmd);
+char	*resolve_binary(char *cmd);
+char	**convert_arguments(t_list *args, t_executor_ctx *ctx);
+void	execute_child(t_command *cmd, t_executor_ctx *ctx);
+void	execute_pipeline_commands(t_pipeline *pipeline, t_executor_ctx *ctx);
+void	execute_pipeline(t_pipeline *pipeline, t_executor_ctx *ctx);
+void	remove_export(const char *name);
+void	setup_child_process(t_command *cmd,
+			t_pipe_info *pinfo, t_executor_ctx *ctx);
+void	wait_for_children(pid_t last_pid, t_executor_ctx *ctx);
 
-//UTILS
-void   ft_split_free(char **arr);
-int    is_builtin(const char *cmd);
+t_pipeline		*build_pipeline(t_list *tokens, t_executor_ctx *ctx);
 
-
-
+//utils
+int		ft_strcmp(const char *s1, const char *s2);
+int		is_builtin(const char *cmd);
+int		is_whitespace(char c);
+int		is_operator_char(char c);
+int		is_valid_var_char(char c);
+int		is_valid_identifier(const char *str);
+int		is_valid_integer(const char *str);
+int		create_pipe(int pipe_fd[2], t_executor_ctx *ctx);
+int		duplicate_fd(int fd, t_redirect_type type);
+int		ft_isxdigit(int c);
+long	hex_to_long(const char *hex);
+char	*ft_strcat(char *dest, const char *src);
+char	*ft_strncpy(char *dest, const char *src, size_t n);
+char	*ft_strndup(const char *s1, size_t n);
+void	ft_split_free(char **array);
+void	close_fds_after_fork(int *prev_fd, int pipe_fd[2], int is_last);
 
 #endif

@@ -6,25 +6,25 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/16 17:24:23 by nyoong            #+#    #+#             */
-/*   Updated: 2025/05/17 17:58:06 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/05/18 08:58:03 by tching           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-extern char **environ;
-t_export *g_export_list = NULL;
+extern char	**environ;
+t_export	*g_export_list = NULL;
 
-void save_stdio(int *in, int *out, int *err)
+void	save_stdio(int *in, int *out, int *err)
 {
-	*in  = dup(STDIN_FILENO);
+	*in = dup(STDIN_FILENO);
 	*out = dup(STDOUT_FILENO);
 	*err = dup(STDERR_FILENO);
 }
 
-void restore_stdio(int in, int out, int err)
+void	restore_stdio(int in, int out, int err)
 {
-	dup2(in,  STDIN_FILENO);
+	dup2(in, STDIN_FILENO);
 	dup2(out, STDOUT_FILENO);
 	dup2(err, STDERR_FILENO);
 	close(in);
@@ -32,10 +32,10 @@ void restore_stdio(int in, int out, int err)
 	close(err);
 }
 
-t_export *find_export(const char *name)
+t_export	*find_export(const char *name)
 {
 	t_export	*cur;
-	
+
 	cur = g_export_list;
 	while (cur)
 	{
@@ -57,7 +57,7 @@ void	add_export(const char *name, bool assigned)
 	{
 		ent = malloc(sizeof(*ent));
 		if (!ent)
-			return;
+			return ;
 		ent->name = ft_strdup(name);
 		ent->assigned = assigned;
 		ent->next = g_export_list;
@@ -78,14 +78,14 @@ void	init_export_list_from_environ(void)
 		if (!eq)
 		{
 			e++;
-			continue;
+			continue ;
 		}
 		namelen = eq - *e;
 		char *name = ft_strndup(*e, namelen);
 		if (!name)
 		{
 			e++;
-			continue;
+			continue ;
 		}
 		add_export(name, true);
 		free(name);
@@ -97,7 +97,7 @@ void	remove_export(const char *name)
 {
 	t_export	**prev;
 	t_export	*cur;
-	
+
 	prev = &g_export_list;
 	while (*prev)
 	{
@@ -107,7 +107,7 @@ void	remove_export(const char *name)
 			*prev = cur->next;
 			free(cur->name);
 			free(cur);
-			return;
+			return ;
 		}
 		prev = &cur->next;
 	}
@@ -118,7 +118,7 @@ void	sort_exports_insertion(t_export **arr, size_t n)
 	size_t		i;
 	t_export	*key;
 	size_t		j;
-	
+
 	i = 1;
 	while (i < n)
 	{
@@ -162,10 +162,10 @@ t_export	**list_to_array(t_export *head, size_t count)
 		head = head->next;
 		i++;
 	}
-    return (arr);
+	return (arr);
 }
 
-void print_exports(t_export **arr, size_t count)
+void	print_exports(t_export **arr, size_t count)
 {
 	size_t		i;
 	t_export	*e;
@@ -182,7 +182,7 @@ void print_exports(t_export **arr, size_t count)
 			|| ft_strcmp(n, "_") == 0)
 		{
 			i++;
-			continue;
+			continue ;
 		}
 		if (!e->assigned)
 			printf("declare -x %s\n", n);
@@ -198,17 +198,17 @@ void print_exports(t_export **arr, size_t count)
 	}
 }
 
-void print_environment(void)
+void	print_environment(void)
 {
-	size_t	count;
-	t_export **arr;
+	size_t		count;
+	t_export	**arr;
 
 	count = count_exports(g_export_list);
 	if (count == 0)
-		return;
+		return ;
 	arr = list_to_array(g_export_list, count);
 	if (!arr)
-		return;
+		return ;
 	sort_exports_insertion(arr, count);
 	print_exports(arr, count);
 	free(arr);
@@ -225,7 +225,7 @@ int	handle_setenv_and_export(const char *name, const char *value)
 	return (0);
 }
 
-int handle_single_export_arg(const char *arg)
+int	handle_single_export_arg(const char *arg)
 {
 	char		*name;
 	char		*error_part;
@@ -255,10 +255,10 @@ int handle_single_export_arg(const char *arg)
 		add_export(name, false);
 	free(name);
 	free(error_part);
-	return ret;
+	return (ret);
 }
 
-int process_export_args(char **argv)
+int	process_export_args(char **argv)
 {
 	int	ret;
 	int	i;
@@ -271,7 +271,7 @@ int process_export_args(char **argv)
 			ret = 1;
 		i++;
 	}
-	return ret;
+	return (ret);
 }
 
 int	execute_export(char **argv, t_list *redirects, t_executor_ctx *ctx)
@@ -299,4 +299,3 @@ int	execute_export(char **argv, t_list *redirects, t_executor_ctx *ctx)
 	ctx->last_exit_status = ret;
 	return (ret);
 }
-
