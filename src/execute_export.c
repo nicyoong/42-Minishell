@@ -6,7 +6,7 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/16 17:24:23 by nyoong            #+#    #+#             */
-/*   Updated: 2025/05/18 08:58:03 by tching           ###   ########.fr       */
+/*   Updated: 2025/05/19 23:56:57 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -246,7 +246,7 @@ int	handle_single_export_arg(const char *arg)
 	}
 	if (!is_valid_identifier(name))
 	{
-		fprintf(stderr, "export: '%s': not a valid identifier\n", error_part);
+		printf("export: '%s': not a valid identifier\n", error_part);
 		ret = 1;
 	}
 	else if (eq)
