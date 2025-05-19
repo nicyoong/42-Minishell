@@ -274,39 +274,6 @@ t_pipeline	*parse(t_list *tokens)
 	return (pipeline);
 }
 
-// t_pipeline	*parse(t_list *tokens)
-// {
-// 	t_pipeline	*pipeline;
-// 	t_list		*cmd_groups;
-// 	t_list		*curr_group;
-// 	t_list		**cmd_tokens;
-// 	t_command	*cmd;
-
-// 	pipeline = ft_calloc(1, sizeof(t_pipeline));
-// 	cmd_groups = split_commands(tokens);
-// 	if (!cmd_groups)
-// 	{
-// 		free(pipeline);
-// 		return (NULL);
-// 	}
-// 	curr_group = cmd_groups;
-// 	while (curr_group)
-// 	{
-// 		cmd_tokens = (t_list **)&curr_group->content;
-// 		cmd = parse_command(cmd_tokens);
-// 		if (!cmd || *cmd_tokens != NULL)
-// 		{
-// 			ft_lstclear(&pipeline->commands, free_command);
-// 			free(pipeline);
-// 			ft_lstclear(&cmd_groups, clear_token_list);
-// 			return (NULL);
-// 		}
-// 		ft_lstadd_back(&pipeline->commands, ft_lstnew(cmd));
-// 		curr_group = curr_group->next;
-// 	}
-// 	ft_lstclear(&cmd_groups, clear_token_list);
-// 	return (pipeline);
-// }
 // const char *redirect_type_str(t_redirect_type type)
 // {
 // 	const char *names[] = {
