@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tching <tching@student.42kl.edu.my>        +#+  +:+       +#+        */
+/*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/18 08:15:13 by tching            #+#    #+#             */
-/*   Updated: 2025/05/18 09:54:27 by tiara            ###   ########.fr       */
+/*   Updated: 2025/05/20 00:31:20 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -142,6 +142,24 @@ t_list	*lex_input(const char *input);
 t_token_type		get_operator(const char *input, int *i);
 
 // parser.c
+t_word	*copy_word(t_word *src);
+int	is_redirect(t_token_type type);
+t_redirect_type	token_to_redirect(t_token_type type);
+int	init_redirect(t_list **tokens, t_redirect **redir);
+int	handle_redirect(t_list **tokens, t_command *cmd);
+int	process_redirect(t_list **tokens, t_command *cmd, t_list *head);
+int	process_word(t_list **tokens, t_command *cmd, t_list *head);
+int	process_token(t_list **tokens, t_command *cmd);
+t_command	*parse_command(t_list **tokens);
+void	clear_token_list(void *content);
+void	add_token_to_current(t_list **current, t_token *token);
+int	finalize_current_command(t_list **cmds, t_list **current);
+t_list	*clear_on_error(t_list **current, t_list **cmds);
+int	finalize_command(t_list **cmds, t_list **current);
+t_list	*split_commands(t_list *tokens);
+int	parse_command_group(t_list *curr_group, t_pipeline *pipeline);
+t_pipeline	*parse(t_list *tokens);
+
 // Helper functions
 t_redirect_type		token_to_redirect(t_token_type type);
 
