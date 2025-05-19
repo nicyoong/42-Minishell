@@ -210,8 +210,8 @@ t_list	*split_commands(t_list *tokens)
 		{
 			if (!current)
 			{
-				fprintf(stderr,
-					"minishell: syntax error near unexpected token `|'\n");
+				write(2,
+					"minishell: syntax error near unexpected token `|'\n", 49);
 				return (clear_on_error(&current, &cmds));
 			}
 			if (finalize_current_command(&cmds, &current) == -1)
