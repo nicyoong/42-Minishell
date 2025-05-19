@@ -6,7 +6,7 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/20 00:18:02 by nyoong            #+#    #+#             */
-/*   Updated: 2025/05/20 00:25:28 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/05/20 00:34:11 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ int	process_token(t_list **tokens, t_command *cmd)
 
 t_command	*parse_command(t_list **tokens)
 {
-	t_command *cmd;
+	t_command	*cmd;
 
 	cmd = ft_calloc(1, sizeof(t_command));
 	if (!cmd)

@@ -6,7 +6,7 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/20 00:14:25 by nyoong            #+#    #+#             */
-/*   Updated: 2025/05/20 00:16:36 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/05/20 00:34:02 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,6 @@ int	handle_redirect(t_list **tokens, t_command *cmd)
 
 	if (!init_redirect(tokens, &redir))
 		return (0);
-
 	file_node = *tokens;
 	file_tok = file_node->content;
 	redir->filename = copy_word(file_tok->word);
@@ -83,5 +82,3 @@ int	process_redirect(t_list **tokens, t_command *cmd, t_list *head)
 	free(head);
 	return (1);
 }
-
-
