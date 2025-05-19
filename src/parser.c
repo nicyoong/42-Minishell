@@ -86,39 +86,6 @@ int	handle_redirect(t_list **tokens, t_command *cmd)
 	return (1);
 }
 
-// int	handle_redirect(t_list **tokens, t_command *cmd)
-// {
-// 	t_token		*token;
-// 	t_redirect	*redir;
-// 	t_list		*file_node;
-// 	t_token		*file_tok;
-
-// 	token = (*tokens)->content;
-// 	redir = ft_calloc(1, sizeof(*redir));
-// 	if (!redir)
-// 		return (0);
-// 	*tokens = (*tokens)->next;
-// 	redir->type = token_to_redirect(token->type);
-// 	if (!*tokens
-// 		|| ((t_token *)(*tokens)->content)->type != TOKEN_WORD)
-// 	{
-// 		free(redir);
-// 		return (0);
-// 	}
-// 	file_node = *tokens;
-// 	file_tok = file_node->content;
-// 	redir->filename = copy_word(file_tok->word);
-// 	if (!redir->filename)
-// 	{
-// 		free(redir);
-// 		return (0);
-// 	}
-// 	ft_lstadd_back(&cmd->redirects, ft_lstnew(redir));
-// 	*tokens = file_node->next;
-// 	free(file_node);
-// 	return (1);
-// }
-
 int	process_redirect(t_list **tokens, t_command *cmd, t_list *head)
 {
 	if (!handle_redirect(tokens, cmd))
