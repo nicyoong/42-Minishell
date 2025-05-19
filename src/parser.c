@@ -43,8 +43,6 @@ t_word	*copy_word(t_word *src)
 	return (dst);
 }
 
-// normed up to here
-
 int	init_redirect(t_list **tokens, t_redirect **redir)
 {
 	t_token	*token;
@@ -117,38 +115,81 @@ int	process_word(t_list **tokens, t_command *cmd, t_list *head)
 	return (1);
 }
 
+// normed up to here
+
+int	process_token(t_list **tokens, t_command *cmd)
+{
+	t_list	*head;
+	t_token	*token;
+
+	head = *tokens;
+	token = head->content;
+	if (is_redirect(token->type))
+	{
+		if (!process_redirect(tokens, cmd, head))
+			return (0);
+	}
+	else if (token->type == TOKEN_WORD)
+	{
+		if (!process_word(tokens, cmd, head))
+			return (0);
+	}
+	else
+	{
+		free(head);
+		free_command(cmd);
+		return (0);
+	}
+	return (1);
+}
+
 t_command	*parse_command(t_list **tokens)
 {
-	t_command	*cmd;
-	t_list		*head;
-	t_token		*token;
+	t_command *cmd;
 
 	cmd = ft_calloc(1, sizeof(t_command));
 	if (!cmd)
 		return (NULL);
 	while (*tokens)
 	{
-		head = *tokens;
-		token = head->content;
-		if (is_redirect(token->type))
-		{
-			if (!process_redirect(tokens, cmd, head))
-				return (NULL);
-		}
-		else if (token->type == TOKEN_WORD)
-		{
-			if (!process_word(tokens, cmd, head))
-				return (NULL);
-		}
-		else
-		{
-			free(head);
-			free_command(cmd);
+		if (!process_token(tokens, cmd))
 			return (NULL);
-		}
 	}
 	return (cmd);
 }
+
+// t_command	*parse_command(t_list **tokens)
+// {
+// 	t_command	*cmd;
+// 	t_list		*head;
+// 	t_token		*token;
+
+// 	cmd = ft_calloc(1, sizeof(t_command));
+// 	if (!cmd)
+// 		return (NULL);
+// 	while (*tokens)
+// 	{
+// 		head = *tokens;
+// 		token = head->content;
+// 		if (is_redirect(token->type))
+// 		{
+// 			if (!process_redirect(tokens, cmd, head))
+// 				return (NULL);
+// 		}
+// 		else if (token->type == TOKEN_WORD)
+// 		{
+// 			if (!process_word(tokens, cmd, head))
+// 				return (NULL);
+// 		}
+// 		else
+// 		{
+// 			free(head);
+// 			free_command(cmd);
+// 			return (NULL);
+// 		}
+// 	}
+// 	return (cmd);
+// }
 
 void	clear_token_list(void *content)
 {
