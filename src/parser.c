@@ -195,6 +195,18 @@ t_list	*clear_on_error(t_list **current, t_list **cmds)
 	return (NULL);
 }
 
+int	finalize_command(t_list **cmds, t_list **current)
+{
+	if (!*current)
+	{
+		write(2, "minishell: syntax error near unexpected token `|'\n", 49);
+		return (-1);
+	}
+	ft_lstadd_back(cmds, ft_lstnew(*current));
+	*current = NULL;
+	return (0);
+}
+
 t_list	*split_commands(t_list *tokens)
 {
 	t_list	*cmds;
@@ -208,13 +220,7 @@ t_list	*split_commands(t_list *tokens)
 		token = tokens->content;
 		if (token->type == TOKEN_PIPE)
 		{
-			if (!current)
-			{
-				write(2,
-					"minishell: syntax error near unexpected token `|'\n", 49);
-				return (clear_on_error(&current, &cmds));
-			}
-			if (finalize_current_command(&cmds, &current) == -1)
+			if (finalize_command(&cmds, &current) == -1)
 				return (clear_on_error(&current, &cmds));
 		}
 		else
@@ -225,6 +231,37 @@ t_list	*split_commands(t_list *tokens)
 		ft_lstadd_back(&cmds, ft_lstnew(current));
 	return (cmds);
 }
+
+// t_list	*split_commands(t_list *tokens)
+// {
+// 	t_list	*cmds;
+// 	t_list	*current;
+// 	t_token	*token;
+
+// 	cmds = NULL;
+// 	current = NULL;
+// 	while (tokens)
+// 	{
+// 		token = tokens->content;
+// 		if (token->type == TOKEN_PIPE)
+// 		{
+// 			if (!current)
+// 			{
+// 				write(2,
+// 					"minishell: syntax error near unexpected token `|'\n", 49);
+// 				return (clear_on_error(&current, &cmds));
+// 			}
+// 			if (finalize_current_command(&cmds, &current) == -1)
+// 				return (clear_on_error(&current, &cmds));
+// 		}
+// 		else
+// 			add_token_to_current(&current, token);
+// 		tokens = tokens->next;
+// 	}
+// 	if (current)
+// 		ft_lstadd_back(&cmds, ft_lstnew(current));
+// 	return (cmds);
+// }
 
 t_pipeline	*parse(t_list *tokens)
 {
