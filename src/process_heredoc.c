@@ -12,16 +12,23 @@
 
 #include "minishell.h"
 
-static char	*resolve_value(char *resolved, t_segment *s, t_executor_ctx *ctx)
+static char	*resolve_value(t_segment *s, t_executor_ctx *ctx)
 {
-	resolved = getenv(s->value);
-	if (!resolved)
-		return ("");
+	char	*val;
+
+	if (s->type == VARIABLE)
+	{
+		val = getenv(s->value);
+		if (!val)
+			return (ft_strdup(""));
+		return (ft_strdup(val));
+	}
 	else if (s->type == EXIT_STATUS)
 		return (ft_itoa(ctx->last_exit_status));
 	else
-		return (s->value);
+		return (ft_strdup(s->value));
 }
+
 
 char	*resolve_delimiter_word(t_word *delimiter_word, t_executor_ctx *ctx)
 {
@@ -35,19 +42,9 @@ char	*resolve_delimiter_word(t_word *delimiter_word, t_executor_ctx *ctx)
 	while (seg)
 	{
 		s = seg->content;
-		if (s->type == VARIABLE)
-		{
-			resolved = getenv(s->value);
-			if (!resolved)
-				resolved = "";
-		}
-		else if (s->type == EXIT_STATUS)
-			resolved = ft_itoa(ctx->last_exit_status);
-		else
-			resolved = s->value;
+		resolved = resolve_value(s, ctx);
 		ft_strlcat(buffer, resolved, sizeof(buffer));
-		if (s->type == EXIT_STATUS)
-			free(resolved);
+		free(resolved);
 		seg = seg->next;
 	}
 	return (ft_strdup(buffer));
