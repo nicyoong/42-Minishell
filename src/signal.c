@@ -12,13 +12,22 @@
 
 #include "minishell.h"
 
+static t_executor_ctx	*g_ctx = NULL;
+
+void	set_executor_ctx(t_executor_ctx *ctx)
+{
+	g_ctx = ctx;
+}
+
 void	sigint_handler(int signo)
 {
-	(void)signo;
-	write (STDOUT_FILENO, "\n", 1);
+	if (!g_ctx)
+		return;
+	write (1, "\n", 1);
 	rl_replace_line("", 0);
 	rl_on_new_line();
 	rl_redisplay();
+	g_ctx->last_exit_status = 128 + signo;
 }
 
 void	setup_signal_handlers(void)

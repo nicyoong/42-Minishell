@@ -180,6 +180,7 @@ void			free_pipeline(t_pipeline *pipeline);
 // execution
 void			execute_pipeline(t_pipeline *pipeline, t_executor_ctx *ctx);
 void			sigint_handler(int signo);
+void			set_executor_ctx(t_executor_ctx *ctx);
 void			setup_signal_handlers(void);
 
 //process heredoc

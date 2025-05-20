@@ -84,6 +84,7 @@ int	main(void)
 	t_executor_ctx	ctx;
 
 	ctx.last_exit_status = 0;
+	set_executor_ctx(&ctx);
 	setup_signal_handlers();
 	run_shell_loop(&ctx);
 	rl_clear_history();
