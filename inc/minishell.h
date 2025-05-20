@@ -6,7 +6,7 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/18 08:15:13 by tching            #+#    #+#             */
-/*   Updated: 2025/05/20 20:07:29 by tching           ###   ########.fr       */
+/*   Updated: 2025/05/20 21:23:24 by tiara            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -259,14 +259,16 @@ void			init_export_list_from_environ(void);
 
 t_export		*find_export(const char *name);
 
-void	remove_export(const char *name);
-void	sort_exports_insertion(t_export **arr, size_t n);
-size_t	count_exports(t_export *head);
-t_export	**list_to_array(t_export *head, size_t count);
-void	print_exports(t_export **arr, size_t count);
-void	print_environment(void);
-int	handle_setenv_and_export(const char *name, const char *value);
-int	process_export_args(char **argv);
-int	handle_single_export_arg(const char *arg);
+void			remove_export(const char *name);
+void			sort_exports_insertion(t_export **arr, size_t n);
+size_t			count_exports(t_export *head);
+
+t_export		**list_to_array(t_export *head, size_t count);
+
+void			print_exports(t_export **arr, size_t count);
+void			print_environment(void);
+int				handle_setenv_and_export(const char *name, const char *value);
+int				process_export_args(char **argv);
+int				handle_single_export_arg(const char *arg);
 
 #endif
