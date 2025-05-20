@@ -35,10 +35,17 @@ char	*resolve_delimiter_word(t_word *delimiter_word, t_executor_ctx *ctx)
 	while (seg)
 	{
 		s = seg->content;
-		resolved = NULL;
 		if (s->type == VARIABLE)
-			resolved = resolve_value(resolved, s, ctx);
-		ft_strcat(buffer, resolved);
+		{
+			resolved = getenv(s->value);
+			if (!resolved)
+				resolved = "";
+		}
+		else if (s->type == EXIT_STATUS)
+			resolved = ft_itoa(ctx->last_exit_status);
+		else
+			resolved = s->value;
+		ft_strlcat(buffer, resolved, sizeof(buffer));
 		if (s->type == EXIT_STATUS)
 			free(resolved);
 		seg = seg->next;
