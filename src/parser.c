@@ -6,7 +6,7 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/20 00:26:39 by nyoong            #+#    #+#             */
-/*   Updated: 2025/05/20 00:26:40 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/05/20 19:39:56 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ int	finalize_command(t_list **cmds, t_list **current)
 {
 	if (!*current)
 	{
-		write(2, "minishell: syntax error near unexpected token `|'\n", 49);
+		write(2, "minishell: syntax error near unexpected token `|'\n", 50);
 		return (-1);
 	}
 	ft_lstadd_back(cmds, ft_lstnew(*current));
