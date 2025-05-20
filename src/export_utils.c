@@ -6,7 +6,7 @@
 /*   By: tching <tching@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/20 13:20:14 by tching            #+#    #+#             */
-/*   Updated: 2025/05/20 13:20:30 by tching           ###   ########.fr       */
+/*   Updated: 2025/05/20 20:11:31 by tching           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,7 @@ void	init_export_list_from_environ(void)
 	char	**e;
 	char	*eq;
 	size_t	namelen;
+	char	*name;
 
 	e = environ;
 	while (*e)
@@ -81,7 +82,7 @@ void	init_export_list_from_environ(void)
 			continue ;
 		}
 		namelen = eq - *e;
-		char *name = ft_strndup(*e, namelen);
+		name = ft_strndup(*e, namelen);
 		if (!name)
 		{
 			e++;
