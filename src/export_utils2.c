@@ -6,34 +6,11 @@
 /*   By: tching <tching@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/20 13:24:39 by tching            #+#    #+#             */
-/*   Updated: 2025/05/20 13:24:48 by tching           ###   ########.fr       */
+/*   Updated: 2025/05/20 20:14:51 by tching           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-extern char	**environ;
-t_export	*g_export_list = NULL;
-
-void	remove_export(const char *name)
-{
-	t_export	**prev;
-	t_export	*cur;
-
-	prev = &g_export_list;
-	while (*prev)
-	{
-		cur = *prev;
-		if (ft_strcmp(cur->name, name) == 0)
-		{
-			*prev = cur->next;
-			free(cur->name);
-			free(cur);
-			return ;
-		}
-		prev = &cur->next;
-	}
-}
 
 void	sort_exports_insertion(t_export **arr, size_t n)
 {
@@ -46,9 +23,9 @@ void	sort_exports_insertion(t_export **arr, size_t n)
 	{
 		key = arr[i];
 		j = i;
-		while (j > 0 && ft_strcmp(arr[j-1]->name, key->name) > 0)
+		while (j > 0 && ft_strcmp(arr[j - 1]->name, key->name) > 0)
 		{
-			arr[j] = arr[j-1];
+			arr[j] = arr[j - 1];
 			--j;
 		}
 		arr[j] = key;
@@ -87,34 +64,38 @@ t_export	**list_to_array(t_export *head, size_t count)
 	return (arr);
 }
 
-void	print_exports(t_export **arr, size_t count)
+int	handle_single_export_arg(const char *arg)
 {
-	size_t		i;
-	t_export	*e;
-	const char	*n;
-	char		*value;
+	char		*name;
+	char		*error_part;
+	const char	*eq;
+	int			ret;
 
-	i = 0;
-	while (i < count)
+	eq = ft_strchr(arg, '=');
+	ret = 0;
+	if (eq)
 	{
-		e = arr[i];
-		n = e->name;
-		if (ft_strcmp(n, "LINES") == 0 || ft_strcmp(n, "COLUMNS") == 0
-			|| ft_strcmp(n, "_") == 0)
-		{
-			i++;
-			continue ;
-		}
-		if (!e->assigned)
-			printf("declare -x %s\n", n);
-		else
-		{
-			value = getenv(n);
-			if (value)
-				printf("declare -x %s=\"%s\"\n", n, value);
-			else
-				printf("declare -x %s=\"\"\n", n);
-		}
-		i++;
+		name = ft_substr(arg, 0, eq - arg);
+		error_part = ft_substr(arg, 0, (eq - arg) + 1);
 	}
+	else
+	{
+		name = ft_strdup(arg);
+		error_part = ft_strdup(arg);
+	}
+	if (!is_valid_identifier(name))
+	{
+		write(2, "export: '", 9);
+		write(2, error_part, ft_strlen(error_part));
+		write(2, "': not a valid identifier\n", 25);
+		ret = 1;
+	}
+	else if (eq)
+		handle_setenv_and_export(name, eq + 1);
+	else
+		add_export(name, false);
+	free(name);
+	free(error_part);
+	return (ret);
 }
+

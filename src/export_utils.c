@@ -13,7 +13,6 @@
 #include "minishell.h"
 
 extern char	**environ;
-t_export	*g_export_list = NULL;
 
 void	save_stdio(int *in, int *out, int *err)
 {
@@ -32,38 +31,7 @@ void	restore_stdio(int in, int out, int err)
 	close(err);
 }
 
-t_export	*find_export(const char *name)
-{
-	t_export	*cur;
 
-	cur = g_export_list;
-	while (cur)
-	{
-		if (strcmp(cur->name, name) == 0)
-			return (cur);
-		cur = cur->next;
-	}
-	return (NULL);
-}
-
-void	add_export(const char *name, bool assigned)
-{
-	t_export	*ent;
-
-	ent = find_export(name);
-	if (ent)
-		ent->assigned = ent->assigned || assigned;
-	else
-	{
-		ent = malloc(sizeof(*ent));
-		if (!ent)
-			return ;
-		ent->name = ft_strdup(name);
-		ent->assigned = assigned;
-		ent->next = g_export_list;
-		g_export_list = ent;
-	}
-}
 
 void	init_export_list_from_environ(void)
 {

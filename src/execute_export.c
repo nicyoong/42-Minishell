@@ -6,7 +6,7 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/16 17:24:23 by nyoong            #+#    #+#             */
-/*   Updated: 2025/05/20 00:00:33 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/05/20 20:25:36 by tching           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,26 @@
 
 extern char	**environ;
 t_export	*g_export_list = NULL;
+
+void	remove_export(const char *name)
+{
+	t_export	**prev;
+	t_export	*cur;
+
+	prev = &g_export_list;
+	while (*prev)
+	{
+		cur = *prev;
+		if (ft_strcmp(cur->name, name) == 0)
+		{
+			*prev = cur->next;
+			free(cur->name);
+			free(cur);
+			return ;
+		}
+		prev = &cur->next;
+	}
+}
 
 void	print_environment(void)
 {
@@ -31,66 +51,37 @@ void	print_environment(void)
 	free(arr);
 }
 
-int	handle_setenv_and_export(const char *name, const char *value)
+t_export	*find_export(const char *name)
 {
-	if (setenv(name, value, 1) < 0)
+	t_export	*cur;
+
+	cur = g_export_list;
+	while (cur)
 	{
-		perror("export");
-		return (1);
+		if (strcmp(cur->name, name) == 0)
+			return (cur);
+		cur = cur->next;
 	}
-	add_export(name, true);
-	return (0);
+	return (NULL);
 }
 
-int	handle_single_export_arg(const char *arg)
+void	add_export(const char *name, bool assigned)
 {
-	char		*name;
-	char		*error_part;
-	const char	*eq;
-	int			ret;
+	t_export	*ent;
 
-	eq = ft_strchr(arg, '=');
-	ret = 0;
-	if (eq)
-	{
-		name = ft_substr(arg, 0, eq - arg);
-		error_part = ft_substr(arg, 0, (eq - arg) + 1);
-	}
+	ent = find_export(name);
+	if (ent)
+		ent->assigned = ent->assigned || assigned;
 	else
 	{
-		name = ft_strdup(arg);
-		error_part = ft_strdup(arg);
+		ent = malloc(sizeof(*ent));
+		if (!ent)
+			return ;
+		ent->name = ft_strdup(name);
+		ent->assigned = assigned;
+		ent->next = g_export_list;
+		g_export_list = ent;
 	}
-	if (!is_valid_identifier(name))
-	{
-		write(2, "export: '", 9);
-		write(2, error_part, ft_strlen(error_part));
-		write(2, "': not a valid identifier\n", 25);
-		ret = 1;
-	}
-	else if (eq)
-		handle_setenv_and_export(name, eq + 1);
-	else
-		add_export(name, false);
-	free(name);
-	free(error_part);
-	return (ret);
-}
-
-int	process_export_args(char **argv)
-{
-	int	ret;
-	int	i;
-
-	ret = 0;
-	i = 1;
-	while (argv[i])
-	{
-		if (handle_single_export_arg(argv[i]) != 0)
-			ret = 1;
-		i++;
-	}
-	return (ret);
 }
 
 int	execute_export(char **argv, t_list *redirects, t_executor_ctx *ctx)
