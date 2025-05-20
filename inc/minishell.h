@@ -6,7 +6,7 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/18 08:15:13 by tching            #+#    #+#             */
-/*   Updated: 2025/05/20 00:43:34 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/05/20 20:07:29 by tching           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -249,5 +249,12 @@ char			*ft_strndup(const char *s1, size_t n);
 void			ft_split_free(char **array);
 void			close_fds_after_fork(int *prev_fd,
 					int pipe_fd[2], int is_last);
+
+void			save_stdio(int *in, int *out, int *err);
+void			restore_stdio(int in, int out, int err);
+void			add_export(const char *name, bool assigned);
+void			init_export_list_from_environ(void);
+
+t_export		*find_export(const char *name);
 
 #endif
