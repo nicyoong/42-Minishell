@@ -64,37 +64,33 @@ t_export	**list_to_array(t_export *head, size_t count)
 	return (arr);
 }
 
-int	handle_single_export_arg(const char *arg)
+char	*parse_export_arg(const char *arg, char **name, char **error_part)
 {
-	char		*name;
-	char		*error_part;
-	const char	*eq;
-	int			ret;
+	char	*eq;
 
 	eq = ft_strchr(arg, '=');
-	ret = 0;
 	if (eq)
 	{
-		name = ft_substr(arg, 0, eq - arg);
-		error_part = ft_substr(arg, 0, (eq - arg) + 1);
+		*name = ft_substr(arg, 0, eq - arg);
+		*error_part = ft_substr(arg, 0, (eq - arg) + 1);
 	}
 	else
 	{
-		name = ft_strdup(arg);
-		error_part = ft_strdup(arg);
+		*name = ft_strdup(arg);
+		*error_part = ft_strdup(arg);
 	}
+	return (eq);
+}
+
+int	validate_export_identifier(const char *name, const char *error_part)
+{
 	if (!is_valid_identifier(name))
 	{
 		write(2, "export: '", 9);
 		write(2, error_part, ft_strlen(error_part));
 		write(2, "': not a valid identifier\n", 25);
-		ret = 1;
+		return (0);
 	}
-	else if (eq)
-		handle_setenv_and_export(name, eq + 1);
-	else
-		add_export(name, false);
-	free(name);
-	free(error_part);
-	return (ret);
+	return (1);
 }
+

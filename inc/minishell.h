@@ -270,6 +270,10 @@ void			print_exports(t_export **arr, size_t count);
 void			print_environment(void);
 int				handle_setenv_and_export(const char *name, const char *value);
 int				process_export_args(char **argv);
+char			*parse_export_arg(const char *arg, char **name,
+					char **error_part);
+int				validate_export_identifier(const char *name,
+					const char *error_part);
 int				handle_single_export_arg(const char *arg);
 
 #endif

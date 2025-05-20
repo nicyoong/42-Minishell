@@ -60,6 +60,26 @@ int	handle_setenv_and_export(const char *name, const char *value)
 	return (0);
 }
 
+int	handle_single_export_arg(const char *arg)
+{
+	char		*name;
+	char		*error_part;
+	const char	*eq;
+	int			ret;
+
+	eq = parse_export_arg(arg, &name, &error_part);
+	ret = 0;
+	if (!validate_export_identifier(name, error_part))
+		ret = 1;
+	else if (eq)
+		handle_setenv_and_export(name, eq + 1);
+	else
+		add_export(name, false);
+	free(name);
+	free(error_part);
+	return (ret);
+}
+
 int	process_export_args(char **argv)
 {
 	int	ret;
