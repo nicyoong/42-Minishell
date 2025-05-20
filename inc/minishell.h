@@ -29,6 +29,8 @@
 # include <readline/history.h>
 # include <limits.h>
 
+//extern t_list *g_export_list;
+
 typedef enum e_token_type
 {
 	TOKEN_WORD,
@@ -256,5 +258,15 @@ void			add_export(const char *name, bool assigned);
 void			init_export_list_from_environ(void);
 
 t_export		*find_export(const char *name);
+
+void	remove_export(const char *name);
+void	sort_exports_insertion(t_export **arr, size_t n);
+size_t	count_exports(t_export *head);
+t_export	**list_to_array(t_export *head, size_t count);
+void	print_exports(t_export **arr, size_t count);
+void	print_environment(void);
+int	handle_setenv_and_export(const char *name, const char *value);
+int	process_export_args(char **argv);
+int	handle_single_export_arg(const char *arg);
 
 #endif
