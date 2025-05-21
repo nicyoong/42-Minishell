@@ -3,7 +3,7 @@
 /*                                                        :::      ::::::::   */
 /*   decode1.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
+/*   By: nyoong <nyoong@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/17 23:17:22 by nyoong            #+#    #+#             */
 /*   Updated: 2025/05/17 23:18:55 by nyoong           ###   ########.fr       */
