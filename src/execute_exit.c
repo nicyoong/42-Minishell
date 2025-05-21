@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execute_exit.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nyoong <nyoong@student.42kl.edu.my>        +#+  +:+       +#+        */
+/*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/16 17:30:57 by nyoong            #+#    #+#             */
-/*   Updated: 2025/05/17 01:38:25 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/05/21 22:38:50 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,5 +61,6 @@ int	execute_exit(char **argv, t_executor_ctx *ctx)
 		else
 			exit_code = parse_exit_code(argv[1]);
 	}
+	printf("exit\n");
 	exit(exit_code);
 }
