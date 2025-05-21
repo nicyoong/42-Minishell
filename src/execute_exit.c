@@ -3,7 +3,7 @@
 /*                                                        :::      ::::::::   */
 /*   execute_exit.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
+/*   By: nyoong <nyoong@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/16 17:30:57 by nyoong            #+#    #+#             */
 /*   Updated: 2025/05/17 01:38:25 by nyoong           ###   ########.fr       */
