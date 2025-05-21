@@ -3,7 +3,7 @@
 /*                                                        :::      ::::::::   */
 /*   token.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
+/*   By: nyoong <nyoong@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/29 14:50:10 by nyoong            #+#    #+#             */
 /*   Updated: 2025/05/17 21:42:14 by tching           ###   ########.fr       */
