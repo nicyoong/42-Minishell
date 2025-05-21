@@ -6,7 +6,7 @@
 #    By: tiara <tching@student.42kl.edu.my>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/05/18 18:33:55 by tching            #+#    #+#              #
-#    Updated: 2025/05/18 18:34:48 by tiara            ###   ########.fr        #
+#    Updated: 2025/05/18 18:34:48 by tching           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,7 +15,7 @@ CC      = cc
 AR      = ar
 CFLAGS  = -Wall -Wextra -Werror -Iinc -Ilibft
 LDFLAGS = -Llibft -lft
-EXTRAS	= -lreadline -no-pie
+EXTRAS	= -lreadline
 
 SRCDIR  = src
 OBJDIR  = obj
