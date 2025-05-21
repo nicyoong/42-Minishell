@@ -74,7 +74,7 @@ char	*ft_strndup(const char *s1, size_t n)
 		s1++;
 		length++;
 	}
-	copy = (char *)malloc((length + 1) * sizeof(char));
+	copy = malloc((length + 1) * sizeof(char));
 	if (!copy)
 		return (NULL);
 	copy_start = copy;
