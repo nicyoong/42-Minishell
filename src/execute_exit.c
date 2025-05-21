@@ -6,7 +6,7 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/16 17:30:57 by nyoong            #+#    #+#             */
-/*   Updated: 2025/05/21 22:38:50 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/05/21 22:41:07 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,13 +24,13 @@ int	count_args(char **argv)
 
 int	handle_too_many_args(void)
 {
-	ft_putstr_fd("minishell: exit: too many arguments\n", STDERR_FILENO);
+	ft_putstr_fd("minishell: exit: too many arguments\n", 2);
 	return (1);
 }
 
 int	handle_invalid_argument(void)
 {
-	ft_putstr_fd("minishell: exit: numeric argument required\n", STDERR_FILENO);
+	ft_putstr_fd("minishell: exit: numeric argument required\n", 2);
 	return (2);
 }
 
