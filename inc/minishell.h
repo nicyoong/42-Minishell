@@ -6,7 +6,7 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/18 08:15:13 by tching            #+#    #+#             */
-/*   Updated: 2025/05/20 21:23:24 by tiara            ###   ########.fr       */
+/*   Updated: 2025/05/21 14:29:04 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -252,6 +252,7 @@ char			*ft_strndup(const char *s1, size_t n);
 void			ft_split_free(char **array);
 void			close_fds_after_fork(int *prev_fd,
 					int pipe_fd[2], int is_last);
+char			*ft_strcpy(char *dst, const char *src);
 
 void			save_stdio(int *in, int *out, int *err);
 void			restore_stdio(int in, int out, int err);

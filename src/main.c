@@ -3,33 +3,80 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nyoong <nyoong@student.42kl.edu.my>        +#+  +:+       +#+        */
+/*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 19:39:43 by tching            #+#    #+#             */
-/*   Updated: 2025/05/18 09:35:11 by tching           ###   ########.fr       */
+/*   Updated: 2025/05/21 14:32:57 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
+int quotes_are_balanced(const char *s)
+{
+	int		i;
+	char	in_quote;
+
+	i = 0;
+	in_quote = 0;
+	while (s[i])
+	{
+		if ((s[i] == '"' || s[i] == '\'')
+			&& (i == 0 || s[i-1] != '\\'))
+		{
+			if (!in_quote)
+				in_quote = s[i];
+			else if (in_quote == s[i])
+				in_quote = 0;
+		}
+		i++;
+	}
+	return (!in_quote);
+}
+
+char	*read_continued_input(char *full)
+{
+	char	*line;
+	char	*tmp;
+
+	while (!quotes_are_balanced(full))
+	{
+		line = readline("> ");
+		if (!line)
+			break;
+		if (*line)
+			add_history(line);
+		tmp = ft_strjoin(full, "\n");
+		free(full);
+		full = tmp;
+		tmp = ft_strjoin(full, line);
+		free(full);
+		full = tmp;
+		free(line);
+	}
+	return (full);
+}
+
 char	*read_line(void)
 {
-	char	cwd[PATH_MAX];
-	char	prompt[PATH_MAX + 4];
+	char	cwd[1024];
+	char 	prompt[1024 + 3];
 	char	*line;
-	size_t	cwd_len;
+	char	*full;
 
 	if (!getcwd(cwd, sizeof(cwd)))
 		return (NULL);
-	cwd_len = ft_strlen(cwd);
-	if (cwd_len + 3 >= sizeof(prompt))
-		return (NULL);
-	ft_memcpy(prompt, cwd, cwd_len);
-	ft_memcpy(prompt + cwd_len, "$ ", 3);
+	ft_strcpy(prompt, cwd);
+	ft_strcat(prompt, "$ ");
 	line = readline(prompt);
-	if (line && *line)
+	if (!line)
+		return (NULL);
+	if (*line)
 		add_history(line);
-	return (line);
+	full = ft_strdup(line);
+	free(line);
+	full = read_continued_input(full);
+	return (full);
 }
 
 t_list	*tokenize_input(const char *line, t_executor_ctx *ctx)
