@@ -6,7 +6,7 @@
 /*   By: tching <tching@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/20 13:24:39 by tching            #+#    #+#             */
-/*   Updated: 2025/05/20 21:25:32 by tiara            ###   ########.fr       */
+/*   Updated: 2025/05/21 13:30:34 by tiara            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,4 +93,3 @@ int	validate_export_identifier(const char *name, const char *error_part)
 	}
 	return (1);
 }
-

@@ -6,7 +6,7 @@
 /*   By: tching <tching@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/17 00:51:38 by tching            #+#    #+#             */
-/*   Updated: 2025/05/17 01:27:51 by tching           ###   ########.fr       */
+/*   Updated: 2025/05/21 13:31:51 by tiara            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,6 @@ static char	*resolve_value(t_segment *s, t_executor_ctx *ctx)
 	else
 		return (ft_strdup(s->value));
 }
-
 
 char	*resolve_delimiter_word(t_word *delimiter_word, t_executor_ctx *ctx)
 {

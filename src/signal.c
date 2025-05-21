@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   signal.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
+/*   By: nyoong <nyoong@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/10 17:11:51 by tching            #+#    #+#             */
-/*   Updated: 2025/05/15 17:07:58 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/05/21 13:31:28 by tiara            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ void	set_executor_ctx(t_executor_ctx *ctx)
 void	sigint_handler(int signo)
 {
 	if (!g_ctx)
-		return;
+		return ;
 	write (1, "\n", 1);
 	rl_replace_line("", 0);
 	rl_on_new_line();
