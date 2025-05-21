@@ -6,7 +6,7 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/18 08:15:13 by tching            #+#    #+#             */
-/*   Updated: 2025/05/20 00:43:34 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/05/20 21:23:24 by tiara            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,8 @@
 # include <readline/readline.h>
 # include <readline/history.h>
 # include <limits.h>
+
+//extern t_list *g_export_list;
 
 typedef enum e_token_type
 {
@@ -178,6 +180,7 @@ void			free_pipeline(t_pipeline *pipeline);
 // execution
 void			execute_pipeline(t_pipeline *pipeline, t_executor_ctx *ctx);
 void			sigint_handler(int signo);
+void			set_executor_ctx(t_executor_ctx *ctx);
 void			setup_signal_handlers(void);
 
 //process heredoc
@@ -249,5 +252,28 @@ char			*ft_strndup(const char *s1, size_t n);
 void			ft_split_free(char **array);
 void			close_fds_after_fork(int *prev_fd,
 					int pipe_fd[2], int is_last);
+
+void			save_stdio(int *in, int *out, int *err);
+void			restore_stdio(int in, int out, int err);
+void			add_export(const char *name, bool assigned);
+void			init_export_list_from_environ(void);
+
+t_export		*find_export(const char *name);
+
+void			remove_export(const char *name);
+void			sort_exports_insertion(t_export **arr, size_t n);
+size_t			count_exports(t_export *head);
+
+t_export		**list_to_array(t_export *head, size_t count);
+
+void			print_exports(t_export **arr, size_t count);
+void			print_environment(void);
+int				handle_setenv_and_export(const char *name, const char *value);
+int				process_export_args(char **argv);
+char			*parse_export_arg(const char *arg, char **name,
+					char **error_part);
+int				validate_export_identifier(const char *name,
+					const char *error_part);
+int				handle_single_export_arg(const char *arg);
 
 #endif

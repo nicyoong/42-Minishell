@@ -3,7 +3,7 @@
 /*                                                        :::      ::::::::   */
 /*   process_quoted.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
+/*   By: nyoong <nyoong@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/17 23:16:16 by nyoong            #+#    #+#             */
 /*   Updated: 2025/05/17 23:16:44 by nyoong           ###   ########.fr       */

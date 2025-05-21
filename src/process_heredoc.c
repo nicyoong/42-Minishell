@@ -6,21 +6,27 @@
 /*   By: tching <tching@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/17 00:51:38 by tching            #+#    #+#             */
-/*   Updated: 2025/05/17 01:27:51 by tching           ###   ########.fr       */
+/*   Updated: 2025/05/21 13:31:51 by tching           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static char	*resolve_value(char *resolved, t_segment *s, t_executor_ctx *ctx)
+static char	*resolve_value(t_segment *s, t_executor_ctx *ctx)
 {
-	resolved = getenv(s->value);
-	if (!resolved)
-		return ("");
+	char	*val;
+
+	if (s->type == VARIABLE)
+	{
+		val = getenv(s->value);
+		if (!val)
+			return (ft_strdup(""));
+		return (ft_strdup(val));
+	}
 	else if (s->type == EXIT_STATUS)
 		return (ft_itoa(ctx->last_exit_status));
 	else
-		return (s->value);
+		return (ft_strdup(s->value));
 }
 
 char	*resolve_delimiter_word(t_word *delimiter_word, t_executor_ctx *ctx)
@@ -35,12 +41,9 @@ char	*resolve_delimiter_word(t_word *delimiter_word, t_executor_ctx *ctx)
 	while (seg)
 	{
 		s = seg->content;
-		resolved = NULL;
-		if (s->type == VARIABLE)
-			resolved = resolve_value(resolved, s, ctx);
-		ft_strcat(buffer, resolved);
-		if (s->type == EXIT_STATUS)
-			free(resolved);
+		resolved = resolve_value(s, ctx);
+		ft_strlcat(buffer, resolved, sizeof(buffer));
+		free(resolved);
 		seg = seg->next;
 	}
 	return (ft_strdup(buffer));
