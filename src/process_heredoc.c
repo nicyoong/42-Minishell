@@ -56,13 +56,13 @@ void	read_until_delimiter(const char *delim, int fd_write)
 	while (1)
 	{
 		line = readline("> ");
-		if (!line || strcmp(line, delim) == 0)
+		if (!line || ft_strcmp(line, delim) == 0)
 		{
 			if (line)
 				free(line);
 			break ;
 		}
-		write(fd_write, line, strlen(line));
+		write(fd_write, line, ft_strlen(line));
 		write(fd_write, "\n", 1);
 		free(line);
 	}
