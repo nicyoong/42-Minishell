@@ -6,13 +6,13 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 19:39:43 by tching            #+#    #+#             */
-/*   Updated: 2025/05/21 14:32:57 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/05/21 15:11:39 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int quotes_are_balanced(const char *s)
+int	quotes_are_balanced(const char *s)
 {
 	int		i;
 	char	in_quote;
@@ -22,7 +22,7 @@ int quotes_are_balanced(const char *s)
 	while (s[i])
 	{
 		if ((s[i] == '"' || s[i] == '\'')
-			&& (i == 0 || s[i-1] != '\\'))
+			&& (i == 0 || s[i - 1] != '\\'))
 		{
 			if (!in_quote)
 				in_quote = s[i];
@@ -43,7 +43,7 @@ char	*read_continued_input(char *full)
 	{
 		line = readline("> ");
 		if (!line)
-			break;
+			break ;
 		if (*line)
 			add_history(line);
 		tmp = ft_strjoin(full, "\n");
@@ -60,7 +60,7 @@ char	*read_continued_input(char *full)
 char	*read_line(void)
 {
 	char	cwd[1024];
-	char 	prompt[1024 + 3];
+	char	prompt[1024 + 3];
 	char	*line;
 	char	*full;
 
