@@ -58,7 +58,7 @@ t_export	*find_export(const char *name)
 	cur = g_export_list;
 	while (cur)
 	{
-		if (strcmp(cur->name, name) == 0)
+		if (ft_strcmp(cur->name, name) == 0)
 			return (cur);
 		cur = cur->next;
 	}
