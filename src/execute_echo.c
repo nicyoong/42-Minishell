@@ -19,7 +19,7 @@ static int	run_echo_command(char **argv)
 
 	newline = 1;
 	i = 1;
-	if (argv[i] && strcmp(argv[i], "-n") == 0)
+	if (argv[i] && ft_strcmp(argv[i], "-n") == 0)
 	{
 		newline = 0;
 		i++;
