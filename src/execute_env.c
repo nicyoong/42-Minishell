@@ -20,9 +20,9 @@ static void	print_filtered_env(void)
 	env = environ;
 	while (*env != NULL)
 	{
-		if (strncmp(*env, "_=", 2) == 0
-			|| strncmp(*env, "COLUMNS=", 8) == 0
-			|| strncmp(*env, "LINES=", 6) == 0)
+		if (ft_strncmp(*env, "_=", 2) == 0
+			|| ft_strncmp(*env, "COLUMNS=", 8) == 0
+			|| ft_strncmp(*env, "LINES=", 6) == 0)
 		{
 			env++;
 			continue ;
