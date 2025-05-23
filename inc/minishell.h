@@ -6,7 +6,7 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/18 08:15:13 by tching            #+#    #+#             */
-/*   Updated: 2025/05/21 14:29:04 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/05/24 00:56:03 by tiara            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,6 +83,8 @@ typedef struct s_command
 {
 	t_list			*arguments;
 	t_list			*redirects;
+
+	int				heredoc_fd; //#NEW#
 }	t_command;
 
 typedef struct s_pipeline
@@ -217,6 +219,8 @@ char			*trim_and_validate_path(const char *path);
 char			*resolve_segment_value(t_segment *s, t_executor_ctx *ctx);
 void			cleanup_redirections(int save_stdin,
 					int save_stdout, int save_stderr);
+int				redirect_path_msg(void);
+int				redirect_invalid_msg(void);
 
 //to be sorted
 char			*resolve_segment(t_segment *seg, t_executor_ctx *ctx);
@@ -276,5 +280,7 @@ char			*parse_export_arg(const char *arg, char **name,
 int				validate_export_identifier(const char *name,
 					const char *error_part);
 int				handle_single_export_arg(const char *arg);
+
+char			*read_continued_input(char *full);
 
 #endif
