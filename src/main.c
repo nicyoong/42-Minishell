@@ -12,51 +12,6 @@
 
 #include "minishell.h"
 
-int	quotes_are_balanced(const char *s)
-{
-	int		i;
-	char	in_quote;
-
-	i = 0;
-	in_quote = 0;
-	while (s[i])
-	{
-		if ((s[i] == '"' || s[i] == '\'')
-			&& (i == 0 || s[i - 1] != '\\'))
-		{
-			if (!in_quote)
-				in_quote = s[i];
-			else if (in_quote == s[i])
-				in_quote = 0;
-		}
-		i++;
-	}
-	return (!in_quote);
-}
-
-char	*read_continued_input(char *full)
-{
-	char	*line;
-	char	*tmp;
-
-	while (!quotes_are_balanced(full))
-	{
-		line = readline("> ");
-		if (!line)
-			break ;
-		if (*line)
-			add_history(line);
-		tmp = ft_strjoin(full, "\n");
-		free(full);
-		full = tmp;
-		tmp = ft_strjoin(full, line);
-		free(full);
-		full = tmp;
-		free(line);
-	}
-	return (full);
-}
-
 char	*read_line(void)
 {
 	char	cwd[1024];
