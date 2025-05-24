@@ -25,6 +25,7 @@ INCDIR  = inc
 
 # sources
 SRCS = $(addprefix $(SRCDIR)/, \
+			cd_utils1.c \
 			convert_arguments.c \
 			decode1.c \
 			decode2.c \
