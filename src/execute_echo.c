@@ -19,11 +19,12 @@ static int	run_echo_command(char **argv)
 
 	newline = 1;
 	i = 1;
-	if (argv[i] && ft_strcmp(argv[i], "-n") == 0)
+	while (argv[i] && ft_strcmp(argv[i], "-n") == 0)
 	{
 		newline = 0;
 		i++;
 	}
+	newline = 1;
 	while (argv[i])
 	{
 		printf("%s", argv[i]);
