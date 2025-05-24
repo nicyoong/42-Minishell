@@ -6,7 +6,7 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/18 08:15:13 by tching            #+#    #+#             */
-/*   Updated: 2025/05/24 00:56:03 by tiara            ###   ########.fr       */
+/*   Updated: 2025/05/24 18:15:16 by tiara            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -280,6 +280,11 @@ char			*parse_export_arg(const char *arg, char **name,
 int				validate_export_identifier(const char *name,
 					const char *error_part);
 int				handle_single_export_arg(const char *arg);
+int				ret_cd_error(void);
+int				ret_arg_error(void);
+int				ret_no_arg(void);
+void			restore_std_fds(int save_stdin,
+					int save_stdout, int save_stderr);
 
 char			*read_continued_input(char *full);
 
