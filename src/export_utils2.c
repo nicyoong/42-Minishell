@@ -88,7 +88,7 @@ int	validate_export_identifier(const char *name, const char *error_part)
 	{
 		write(2, "export: '", 9);
 		write(2, error_part, ft_strlen(error_part));
-		write(2, "': not a valid identifier\n", 25);
+		write(2, "': not a valid identifier\n", 26);
 		return (0);
 	}
 	return (1);
