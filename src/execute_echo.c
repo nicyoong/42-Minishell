@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execute_echo.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nyoong <nyoong@student.42kl.edu.my>        +#+  +:+       +#+        */
+/*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/15 22:48:48 by tching            #+#    #+#             */
-/*   Updated: 2025/05/16 17:57:22 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/05/24 23:00:54 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,6 @@ static int	run_echo_command(char **argv)
 		newline = 0;
 		i++;
 	}
-	newline = 1;
 	while (argv[i])
 	{
 		printf("%s", argv[i]);
