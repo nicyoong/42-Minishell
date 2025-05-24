@@ -6,72 +6,70 @@
 /*   By: nyoong <nyoong@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/16 13:44:19 by nyoong            #+#    #+#             */
-/*   Updated: 2025/05/16 23:06:24 by tching           ###   ########.fr       */
+/*   Updated: 2025/05/24 18:13:51 by tiara            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static void	restore_std_fds(int save_stdin, int save_stdout, int save_stderr)
+static int	save_standard_fds(int *stdin_fd, int *stdout_fd, int *stderr_fd)
 {
-	dup2(save_stdin, STDIN_FILENO);
-	dup2(save_stdout, STDOUT_FILENO);
-	dup2(save_stderr, STDERR_FILENO);
-	close(save_stdin);
-	close(save_stdout);
-	close(save_stderr);
+	*stdin_fd = dup(STDIN_FILENO);
+	*stdout_fd = dup(STDOUT_FILENO);
+	*stderr_fd = dup(STDERR_FILENO);
+	return (*stdin_fd == -1 || *stdout_fd == -1 || *stderr_fd == -1);
 }
 
-static int	ret_cd_error(void)
+static int	perform_cd_operation(char **argv, char **oldpwd)
 {
-	perror("cd");
-	return (1);
-}
-
-static int	ret_arg_error(void)
-{
-	write (2, "cd: too many arguments\n", 23);
-	return (1);
-}
-
-static int	ret_no_arg(void)
-{
-	char	*home;
-
-	home = getenv("HOME");
-	if (!home)
-		write (2, "cd: HOME not set\n", 17);
-	else
-		if (chdir(home) != 0)
-			perror("cd");
-	return (1);
-}
-
-int	handle_cd(char **argv, t_list *redirects, t_executor_ctx *ctx)
-{
-	int	save_stdin;
-	int	save_stdout;
-	int	save_stderr;
 	int	ret;
 
-	save_stdin = dup(STDIN_FILENO);
-	save_stdout = dup(STDOUT_FILENO);
-	save_stderr = dup(STDERR_FILENO);
-	ret = 0;
-	if (setup_redirections(redirects, ctx) < 0)
-	{
-		restore_std_fds(save_stdin, save_stdout, save_stderr);
-		ctx->last_exit_status = 1;
-		return (1);
-	}
+	*oldpwd = getcwd(NULL, 0);
+	if (!*oldpwd)
+		return (ret = ret_cd_error());
 	if (!argv[1])
 		ret = ret_no_arg();
 	else if (argv[2])
 		ret = ret_arg_error();
+	else if (chdir(argv[1]) != 0)
+		ret = ret_cd_error();
 	else
-		if (chdir(argv[1]) != 0)
-			ret = ret_cd_error();
-	restore_std_fds(save_stdin, save_stdout, save_stderr);
+		ret = 0;
+	return (ret);
+}
+
+static int	update_pwd_vars(char *oldpwd)
+{
+	char	cwd[PATH_MAX];
+	int		ret;
+
+	ret = 0;
+	setenv("OLDPWD", oldpwd, 1);
+	if (!getcwd(cwd, sizeof(cwd)))
+		return (ret = ret_cd_error());
+	setenv("PWD", cwd, 1);
+	return (ret);
+}
+
+int	handle_cd(char **argv, t_list *redirects, t_executor_ctx *ctx)
+{
+	int		save_fds[3];
+	int		ret;
+	char	*oldpwd;
+
+	if (save_standard_fds(&save_fds[0], &save_fds[1], &save_fds[2]))
+		return (1);
+	if (setup_redirections(redirects, ctx) < 0)
+	{
+		restore_std_fds(save_fds[0], save_fds[1], save_fds[2]);
+		ctx->last_exit_status = 1;
+		return (1);
+	}
+	ret = perform_cd_operation(argv, &oldpwd);
+	if (ret == 0 && update_pwd_vars(oldpwd))
+		ret = 1;
+	free(oldpwd);
+	restore_std_fds(save_fds[0], save_fds[1], save_fds[2]);
 	ctx->last_exit_status = ret;
 	return (ret);
 }
