@@ -107,3 +107,18 @@ void insert_token_sorted(t_list **head, t_list *node)
     prev->next     = node;
 }
 
+int wildcard_match(const char *pat, const char *str)
+{
+    if (*pat == '\0')
+        return *str == '\0';
+    if (*pat == '*') {
+        // match '*' as empty (pat+1, str) or consume one char (pat, str+1)
+        return wildcard_match(pat + 1, str)
+            || (*str && wildcard_match(pat, str + 1));
+    }
+    if (*pat == *str)
+        return wildcard_match(pat + 1, str + 1);
+    return 0;
+}
+
+
