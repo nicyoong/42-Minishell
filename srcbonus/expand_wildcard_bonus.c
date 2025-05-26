@@ -165,4 +165,31 @@ t_list *match_in_cwd(const char *pattern)
     return matches;  // NULL if no matches
 }
 
+t_token *copy_token(const t_token *orig)
+{
+    t_token *dup = malloc(sizeof(*dup));
+    dup->type = orig->type;
+
+    if (orig->type == TOKEN_WORD && orig->word)
+    {
+        dup->word = malloc(sizeof(*dup->word));
+        dup->word->segments = NULL;
+
+        for (t_list *s = orig->word->segments; s; s = s->next)
+        {
+            t_segment *seg = s->content;
+            t_segment_type use_type = seg->type;
+
+            // if this was a quoted literal, treat it as plain LITERAL
+            if (use_type == QUOTED_LITERAL)
+                use_type = LITERAL;
+
+            add_segment(dup->word, use_type, seg->value);
+        }
+    }
+    else
+        dup->word = NULL;
+    return dup;
+}
+
 
