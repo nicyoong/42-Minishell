@@ -192,4 +192,58 @@ t_token *copy_token(const t_token *orig)
     return dup;
 }
 
+t_list *expand_asterisk(t_list *tokens, t_executor_ctx *ctx)
+{
+    t_list *out = NULL;
+    t_list **out_tail = &out;
+
+    for (t_list *n = tokens; n; n = n->next)
+    {
+        t_token *tok = n->content;
+
+        // only expand if exactly one segment of type LITERAL containing '*'
+        bool can_expand = false;
+        if (tok->type == TOKEN_WORD
+         && tok->word
+         && tok->word->segments
+         && tok->word->segments->next == NULL)
+        {
+            t_segment *seg = tok->word->segments->content;
+            if (seg->type == LITERAL && strchr(seg->value, '*'))
+                can_expand = true;
+        }
+
+        if (can_expand)
+        {
+            char *pattern = get_word_str(tok, ctx);
+            if (!pattern)
+                pattern = strdup("");
+
+            t_list *matches = match_in_cwd(pattern);
+            free(pattern);
+
+            if (matches)
+            {
+                for (t_list *m = matches; m; m = m->next)
+                {
+                    *out_tail = ft_lstnew(m->content);
+                    out_tail = &(*out_tail)->next;
+                }
+                ft_lstclear(&matches, free_match_node);
+            }
+            else
+            {
+                *out_tail = ft_lstnew(copy_token(tok));
+                out_tail = &(*out_tail)->next;
+            }
+        }
+        else
+        {
+            *out_tail = ft_lstnew(copy_token(tok));
+            out_tail = &(*out_tail)->next;
+        }
+    }
+    return out;
+}
+
 
