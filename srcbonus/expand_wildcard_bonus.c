@@ -83,3 +83,27 @@ int token_name_cmp(const t_list *a, const t_list *b)
     char *nb = ((t_segment *)tb->word->segments->content)->value;
     return ft_strcasecmp(na, nb);
 }
+
+void insert_token_sorted(t_list **head, t_list *node)
+{
+    if (!*head
+     || token_name_cmp(node, *head) < 0)
+    {
+        // Insert at front
+        node->next = *head;
+        *head = node;
+        return;
+    }
+
+    // Find insertion point
+    t_list *prev = *head;
+    while (prev->next
+        && token_name_cmp(node, prev->next) >= 0)
+    {
+        prev = prev->next;
+    }
+    // Insert after prev
+    node->next     = prev->next;
+    prev->next     = node;
+}
+
