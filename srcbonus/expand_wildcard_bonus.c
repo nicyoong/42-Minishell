@@ -72,3 +72,14 @@ int ft_strcasecmp(const char *s1, const char *s2)
     }
     return 0;
 }
+
+int token_name_cmp(const t_list *a, const t_list *b)
+{
+    t_token *ta = a->content;
+    t_token *tb = b->content;
+    // we assume exactly one segment per word after wildcard expansion,
+    // and that segment is plain text with the filename
+    char *na = ((t_segment *)ta->word->segments->content)->value;
+    char *nb = ((t_segment *)tb->word->segments->content)->value;
+    return ft_strcasecmp(na, nb);
+}
