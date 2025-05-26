@@ -6,7 +6,7 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/17 17:57:46 by tching            #+#    #+#             */
-/*   Updated: 2025/05/27 00:21:38 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/05/27 00:32:40 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,23 +60,34 @@ void	setup_child_process(t_command *cmd, t_pipe_info *pinfo,
 	execute_child(cmd, ctx);
 }
 
-void	wait_for_children(pid_t last_pid, t_executor_ctx *ctx)
+static void	handle_signaled_child(int status, t_executor_ctx *ctx)
 {
-	int	status;
 	int	sig;
 
+	sig = WTERMSIG(status);
+	if (sig == SIGINT)
+		write(1, "\n", 1);
+	else if (sig == SIGQUIT)
+		write(2, "Quit (core dumped)\n", 19);
+	ctx->last_exit_status = 128 + sig;
+}
+
+void	wait_for_children(pid_t last_pid, t_executor_ctx *ctx)
+{
+	struct sigaction	sa_old;
+	struct sigaction	sa_ignore;
+	int					status;
+
+    sigemptyset(&sa_ignore.sa_mask);
+    sa_ignore.sa_flags   = 0;
+    sa_ignore.sa_handler = SIG_IGN;
+    sigaction(SIGINT, &sa_ignore, &sa_old);
 	waitpid(last_pid, &status, 0);
+	sigaction(SIGINT, &sa_old, NULL);
 	if (WIFEXITED(status))
 		ctx->last_exit_status = WEXITSTATUS(status);
 	else if (WIFSIGNALED(status))
-	{
-		sig = WTERMSIG(status);
-		if (sig == SIGINT)
-			write(2, "\n", 1);
-		else if (sig == SIGQUIT)
-			write(2, "Quit (core dumped)\n", 19);
-		ctx->last_exit_status = 128 + sig;
-	}
+		handle_signaled_child(status, ctx);
 	else
 		ctx->last_exit_status = 1;
 	while (wait(NULL) > 0)
