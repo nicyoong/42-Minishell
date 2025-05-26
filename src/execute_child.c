@@ -6,7 +6,7 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/17 17:57:46 by tching            #+#    #+#             */
-/*   Updated: 2025/05/27 00:34:21 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/05/27 00:36:54 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,7 @@ void	setup_child_process(t_command *cmd, t_pipe_info *pinfo,
 	execute_child(cmd, ctx);
 }
 
-static void	handle_signaled_child(int status, t_executor_ctx *ctx)
+void	handle_signaled_child(int status, t_executor_ctx *ctx)
 {
 	int	sig;
 
