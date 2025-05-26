@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execute_child.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tching <tching@student.42kl.edu.my>        +#+  +:+       +#+        */
+/*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/17 17:57:46 by tching            #+#    #+#             */
-/*   Updated: 2025/05/17 21:11:59 by tching           ###   ########.fr       */
+/*   Updated: 2025/05/27 00:13:59 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,13 @@ void	execute_child(t_command *cmd, t_executor_ctx *ctx)
 void	setup_child_process(t_command *cmd, t_pipe_info *pinfo,
 				t_executor_ctx *ctx)
 {
+	struct sigaction	sa;
+
+	sa.sa_handler = SIG_DFL;
+	sigemptyset(&sa.sa_mask);
+	sa.sa_flags = 0;
+	sigaction(SIGINT,  &sa, NULL);
+	sigaction(SIGQUIT, &sa, NULL);
 	if (pinfo->prev_fd != -1)
 	{
 		dup2(pinfo->prev_fd, STDIN_FILENO);
@@ -63,6 +70,7 @@ void	wait_for_children(pid_t last_pid, t_executor_ctx *ctx)
 		ctx->last_exit_status = WEXITSTATUS(status);
 	else if (WIFSIGNALED(status))
 	{
+		write(2, "Quit (core dumped)\n", 19);
 		sig = WTERMSIG(status);
 		ctx->last_exit_status = 128 + sig;
 	}
