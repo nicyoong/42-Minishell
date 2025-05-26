@@ -6,7 +6,7 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/17 17:57:46 by tching            #+#    #+#             */
-/*   Updated: 2025/05/27 00:13:59 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/05/27 00:21:38 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,8 +70,11 @@ void	wait_for_children(pid_t last_pid, t_executor_ctx *ctx)
 		ctx->last_exit_status = WEXITSTATUS(status);
 	else if (WIFSIGNALED(status))
 	{
-		write(2, "Quit (core dumped)\n", 19);
 		sig = WTERMSIG(status);
+		if (sig == SIGINT)
+			write(2, "\n", 1);
+		else if (sig == SIGQUIT)
+			write(2, "Quit (core dumped)\n", 19);
 		ctx->last_exit_status = 128 + sig;
 	}
 	else
