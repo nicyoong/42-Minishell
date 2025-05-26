@@ -121,4 +121,48 @@ int wildcard_match(const char *pat, const char *str)
     return 0;
 }
 
+t_list *match_in_cwd(const char *pattern)
+{
+    DIR           *d      = opendir(".");
+    struct dirent *entry;
+    t_list        *matches = NULL;
+
+    if (!d)
+        return NULL;
+
+    while ((entry = readdir(d)))
+    {
+        char *name = entry->d_name;
+
+        // skip "." and ".."
+        if (name[0] == '.' &&
+           (name[1] == '\0' ||
+           (name[1] == '.' && name[2] == '\0')))
+            continue;
+
+        // skip dot-files unless pattern starts with '.'
+        if (name[0] == '.' && pattern[0] != '.')
+            continue;
+
+        if (wildcard_match(pattern, name))
+        {
+            // build the token
+            t_token *tok = malloc(sizeof(*tok));
+            tok->type  = TOKEN_WORD;
+            tok->word  = malloc(sizeof(*tok->word));
+            tok->word->segments = NULL;
+            add_segment(tok->word, LITERAL, name);
+
+            // wrap in a list node
+            t_list *node = ft_lstnew(tok);
+
+            // insert sorted
+            insert_token_sorted(&matches, node);
+        }
+    }
+
+    closedir(d);
+    return matches;  // NULL if no matches
+}
+
 
