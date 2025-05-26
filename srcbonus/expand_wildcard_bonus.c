@@ -52,3 +52,8 @@ char *get_word_str(const t_token *tok, const t_executor_ctx *ctx)
 
     return s;
 }
+
+void free_match_node(void *content)
+{
+    (void)content;  // do nothing to the token pointer
+}
