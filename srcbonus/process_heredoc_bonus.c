@@ -6,7 +6,7 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/17 00:51:38 by tching            #+#    #+#             */
-/*   Updated: 2025/05/27 03:01:52 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/06/08 01:30:40 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,8 +51,14 @@ char	*resolve_delimiter_word(t_word *delimiter_word, t_executor_ctx *ctx)
 
 void	read_until_delimiter(const char *delim, int fd_write)
 {
-	char	*line;
+	char				*line;
+	struct sigaction	sa_q;
+	struct sigaction	sa_old;
 
+	sa_q.sa_handler = SIG_IGN;
+	sigemptyset(&sa_q.sa_mask);
+	sa_q.sa_flags = 0;
+	sigaction(SIGQUIT, &sa_q, &sa_old);
 	while (1)
 	{
 		line = readline("> ");
@@ -66,6 +72,7 @@ void	read_until_delimiter(const char *delim, int fd_write)
 		write(fd_write, "\n", 1);
 		free(line);
 	}
+	sigaction(SIGQUIT, &sa_old, NULL);
 }
 
 int	process_heredoc(t_word *delimiter_word, t_executor_ctx *ctx)
