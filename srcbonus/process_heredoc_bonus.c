@@ -6,7 +6,7 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/17 00:51:38 by tching            #+#    #+#             */
-/*   Updated: 2025/06/08 01:30:40 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/06/09 21:06:27 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,9 +51,9 @@ char	*resolve_delimiter_word(t_word *delimiter_word, t_executor_ctx *ctx)
 
 void	read_until_delimiter(const char *delim, int fd_write)
 {
-	char				*line;
 	struct sigaction	sa_q;
 	struct sigaction	sa_old;
+	char				*line;
 
 	sa_q.sa_handler = SIG_IGN;
 	sigemptyset(&sa_q.sa_mask);
