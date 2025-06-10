@@ -6,7 +6,7 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/20 00:18:02 by nyoong            #+#    #+#             */
-/*   Updated: 2025/06/11 02:07:51 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/06/11 02:43:07 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,3 +80,4 @@ int	finalize_current_command(t_list **cmds, t_list **current)
 	*current = NULL;
 	return (0);
 }
+.
