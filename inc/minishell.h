@@ -285,8 +285,10 @@ int				handle_single_export_arg(t_executor_ctx *ctx, const char *arg);
 int				ret_cd_error(void);
 int				ret_arg_error(void);
 int				ret_no_arg(void);
+int				is_valid_redirect_target(t_token *token);
 void			restore_std_fds(int save_stdin,
 					int save_stdout, int save_stderr);
+void			ret_syntax_err(t_command *cmd);
 
 char			*read_continued_input(char *full);
 
