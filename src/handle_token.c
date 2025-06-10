@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   handle_token.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nyoong <nyoong@student.42kl.edu.my>        +#+  +:+       +#+        */
+/*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/20 00:18:02 by nyoong            #+#    #+#             */
-/*   Updated: 2025/05/20 00:34:11 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/06/11 02:07:51 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,12 +21,8 @@ int	process_token(t_list **tokens, t_command *cmd)
 	token = head->content;
 	if (is_redirect(token->type))
 	{
-		if (!head->next || !is_valid_redirect_target(head->next->content)
-			|| !process_redirect(tokens, cmd, head))
-		{
-			ret_syntax_err(cmd);
+		if (!process_redirect(tokens, cmd, head))
 			return (0);
-		}
 	}
 	else if (token->type == TOKEN_WORD)
 	{
@@ -35,6 +31,7 @@ int	process_token(t_list **tokens, t_command *cmd)
 	}
 	else
 	{
+		free(head);
 		free_command(cmd);
 		return (0);
 	}
