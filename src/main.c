@@ -6,7 +6,7 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 19:39:43 by tching            #+#    #+#             */
-/*   Updated: 2025/05/21 15:11:39 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/06/10 20:50:12 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ static void	run_shell_loop(t_executor_ctx *ctx)
 	{
 		full_line = read_line();
 		if (!full_line)
-			exit(ctx->last_exit_status);
+			break ;
 		tokens = tokenize_input(full_line, ctx);
 		if (!tokens)
 		{
@@ -86,9 +86,12 @@ int	main(void)
 	t_executor_ctx	ctx;
 
 	ctx.last_exit_status = 0;
+	ctx.export_list = NULL;
+	init_export_list_from_environ(&ctx);
 	set_executor_ctx(&ctx);
 	setup_signal_handlers();
 	run_shell_loop(&ctx);
+	free_export_list(ctx.export_list);
 	rl_clear_history();
 	return (ctx.last_exit_status);
 }

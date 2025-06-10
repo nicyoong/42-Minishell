@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   export_utils3.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tching <tching@student.42kl.edu.my>        +#+  +:+       +#+        */
+/*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/20 20:15:27 by tching            #+#    #+#             */
-/*   Updated: 2025/05/20 21:24:56 by tching           ###   ########.fr       */
+/*   Updated: 2025/06/10 20:36:59 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,18 +49,19 @@ void	print_exports(t_export **arr, size_t count)
 	}
 }
 
-int	handle_setenv_and_export(const char *name, const char *value)
+int	handle_setenv_and_export(t_executor_ctx *ctx,
+								const char *name, const char *value)
 {
 	if (setenv(name, value, 1) < 0)
 	{
 		perror("export");
 		return (1);
 	}
-	add_export(name, true);
+	add_export(ctx, name, true);
 	return (0);
 }
 
-int	handle_single_export_arg(const char *arg)
+int	handle_single_export_arg(t_executor_ctx *ctx, const char *arg)
 {
 	char		*name;
 	char		*error_part;
@@ -72,15 +73,15 @@ int	handle_single_export_arg(const char *arg)
 	if (!validate_export_identifier(name, error_part))
 		ret = 1;
 	else if (eq)
-		handle_setenv_and_export(name, eq + 1);
+		handle_setenv_and_export(ctx, name, eq + 1);
 	else
-		add_export(name, false);
+		add_export(ctx, name, false);
 	free(name);
 	free(error_part);
 	return (ret);
 }
 
-int	process_export_args(char **argv)
+int	process_export_args(char **argv, t_executor_ctx *ctx)
 {
 	int	ret;
 	int	i;
@@ -89,7 +90,7 @@ int	process_export_args(char **argv)
 	i = 1;
 	while (argv[i])
 	{
-		if (handle_single_export_arg(argv[i]) != 0)
+		if (handle_single_export_arg(ctx, argv[i]) != 0)
 			ret = 1;
 		i++;
 	}

@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: tiara <tching@student.42kl.edu.my>         +#+  +:+       +#+         #
+#    By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/05/18 18:33:55 by tching            #+#    #+#              #
-#    Updated: 2025/05/18 18:34:48 by tching           ###   ########.fr        #
+#    Updated: 2025/06/10 20:55:11 by nyoong           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -66,7 +66,8 @@ SRCS = $(addprefix $(SRCDIR)/, \
 			utils3.c \
 			utils4.c \
 			utils5.c \
-			utils6.c)
+			utils6.c \
+			utils7.c)
 
 # objects
 OBJS    = $(SRCS:$(SRCDIR)/%.c=$(OBJDIR)/%.o)

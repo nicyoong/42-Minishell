@@ -1,18 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   export_utils.c                                     :+:      :+:    :+:   */
+/*   export_utils1.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tching <tching@student.42kl.edu.my>        +#+  +:+       +#+        */
+/*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/20 13:20:14 by tching            #+#    #+#             */
-/*   Updated: 2025/05/20 21:25:56 by tching           ###   ########.fr       */
+/*   Updated: 2025/06/10 20:52:40 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-extern char	**environ;
 
 void	save_stdio(int *in, int *out, int *err)
 {
@@ -31,31 +29,30 @@ void	restore_stdio(int in, int out, int err)
 	close(err);
 }
 
-void	init_export_list_from_environ(void)
+void	init_export_list_from_environ(t_executor_ctx *ctx)
 {
-	char	**e;
-	char	*eq;
-	size_t	namelen;
-	char	*name;
+	extern char	**environ;
+	size_t		i;
+	size_t		name_len;
+	char		*name;
+	char		*eq;
 
-	e = environ;
-	while (*e)
+	i = 0;
+	while (environ[i])
 	{
-		eq = ft_strchr(*e, '=');
-		if (!eq)
+		eq = ft_strchr(environ[i], '=');
+		if (eq)
 		{
-			e++;
-			continue ;
+			name_len = eq - environ[i];
+			name = ft_strndup(environ[i], name_len);
+			if (name)
+			{
+				add_export(ctx, name, true);
+				free(name);
+			}
 		}
-		namelen = eq - *e;
-		name = ft_strndup(*e, namelen);
-		if (!name)
-		{
-			e++;
-			continue ;
-		}
-		add_export(name, true);
-		free(name);
-		e++;
+		else
+			add_export(ctx, environ[i], false);
+		i++;
 	}
 }

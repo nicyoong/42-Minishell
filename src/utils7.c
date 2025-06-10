@@ -1,36 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   execute_unset.c                                    :+:      :+:    :+:   */
+/*   utils7.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/15 22:35:05 by tching            #+#    #+#             */
-/*   Updated: 2025/06/10 20:39:36 by nyoong           ###   ########.fr       */
+/*   Created: 2025/06/10 20:45:51 by nyoong            #+#    #+#             */
+/*   Updated: 2025/06/10 20:50:01 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	execute_unset(char **argv, t_list *redirects, t_executor_ctx *ctx)
+void	free_export_list(t_export *head)
 {
-	int	ret;
-	int	i;
+	t_export	*cur;
+	t_export	*next;
 
-	(void)redirects;
-	ret = 0;
-	i = 1;
-	while (argv[i])
+	cur = head;
+	while (cur)
 	{
-		if (unsetenv(argv[i]) != 0)
-		{
-			perror("unset");
-			ret = 1;
-		}
-		else
-			remove_export(ctx, argv[i]);
-		i++;
+		next = cur->next;
+		free(cur->name);
+		free(cur);
+		cur = next;
 	}
-	ctx->last_exit_status = ret;
-	return (ret);
 }

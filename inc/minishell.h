@@ -6,7 +6,7 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/18 08:15:13 by tching            #+#    #+#             */
-/*   Updated: 2025/05/24 18:15:16 by tiara            ###   ########.fr       */
+/*   Updated: 2025/06/10 20:54:45 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,8 +28,6 @@
 # include <readline/readline.h>
 # include <readline/history.h>
 # include <limits.h>
-
-//extern t_list *g_export_list;
 
 typedef enum e_token_type
 {
@@ -110,7 +108,8 @@ typedef struct s_pipe_info
 
 typedef struct s_executor_ctx
 {
-	int	last_exit_status;
+	int			last_exit_status;
+	t_export	*export_list;
 }	t_executor_ctx;
 
 // lexer.c
@@ -178,6 +177,7 @@ t_list			*split_commands(t_list *tokens);
 t_pipeline		*parse(t_list *tokens);
 
 void			free_pipeline(t_pipeline *pipeline);
+void			free_export_list(t_export *head);
 
 // execution
 void			execute_pipeline(t_pipeline *pipeline, t_executor_ctx *ctx);
@@ -231,7 +231,7 @@ void			execute_child(t_command *cmd, t_executor_ctx *ctx);
 void			execute_pipeline_commands(t_pipeline *pipeline,
 					t_executor_ctx *ctx);
 void			execute_pipeline(t_pipeline *pipeline, t_executor_ctx *ctx);
-void			remove_export(const char *name);
+void			remove_export(t_executor_ctx *ctx, const char *name);
 void			setup_child_process(t_command *cmd,
 					t_pipe_info *pinfo, t_executor_ctx *ctx);
 void			wait_for_children(pid_t last_pid, t_executor_ctx *ctx);
@@ -260,26 +260,28 @@ char			*ft_strcpy(char *dst, const char *src);
 
 void			save_stdio(int *in, int *out, int *err);
 void			restore_stdio(int in, int out, int err);
-void			add_export(const char *name, bool assigned);
-void			init_export_list_from_environ(void);
+void			add_export(t_executor_ctx *ctx,
+					const char *name, bool assigned);
+void			init_export_list_from_environ(t_executor_ctx *ctx);
 
-t_export		*find_export(const char *name);
+t_export		*find_export(t_executor_ctx *ctx, const char *name);
 
-void			remove_export(const char *name);
+void			remove_export(t_executor_ctx *ctx, const char *name);
 void			sort_exports_insertion(t_export **arr, size_t n);
 size_t			count_exports(t_export *head);
 
 t_export		**list_to_array(t_export *head, size_t count);
 
 void			print_exports(t_export **arr, size_t count);
-void			print_environment(void);
-int				handle_setenv_and_export(const char *name, const char *value);
-int				process_export_args(char **argv);
+void			print_environment(t_executor_ctx *ctx);
+int				handle_setenv_and_export(t_executor_ctx *ctx,
+					const char *name, const char *value);
+int				process_export_args(char **argv, t_executor_ctx *ctx);
 char			*parse_export_arg(const char *arg, char **name,
 					char **error_part);
 int				validate_export_identifier(const char *name,
 					const char *error_part);
-int				handle_single_export_arg(const char *arg);
+int				handle_single_export_arg(t_executor_ctx *ctx, const char *arg);
 int				ret_cd_error(void);
 int				ret_arg_error(void);
 int				ret_no_arg(void);

@@ -3,24 +3,21 @@
 /*                                                        :::      ::::::::   */
 /*   execute_export.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nyoong <nyoong@student.42kl.edu.my>        +#+  +:+       +#+        */
+/*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/16 17:24:23 by nyoong            #+#    #+#             */
-/*   Updated: 2025/05/20 20:25:36 by tching           ###   ########.fr       */
+/*   Updated: 2025/06/10 20:57:22 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-extern char	**environ;
-t_export	*g_export_list = NULL;
-
-void	remove_export(const char *name)
+void	remove_export(t_executor_ctx *ctx, const char *name)
 {
 	t_export	**prev;
 	t_export	*cur;
 
-	prev = &g_export_list;
+	prev = &ctx->export_list;
 	while (*prev)
 	{
 		cur = *prev;
@@ -35,15 +32,15 @@ void	remove_export(const char *name)
 	}
 }
 
-void	print_environment(void)
+void	print_environment(t_executor_ctx *ctx)
 {
 	size_t		count;
 	t_export	**arr;
 
-	count = count_exports(g_export_list);
+	count = count_exports(ctx->export_list);
 	if (count == 0)
 		return ;
-	arr = list_to_array(g_export_list, count);
+	arr = list_to_array(ctx->export_list, count);
 	if (!arr)
 		return ;
 	sort_exports_insertion(arr, count);
@@ -51,11 +48,11 @@ void	print_environment(void)
 	free(arr);
 }
 
-t_export	*find_export(const char *name)
+t_export	*find_export(t_executor_ctx *ctx, const char *name)
 {
 	t_export	*cur;
 
-	cur = g_export_list;
+	cur = ctx->export_list;
 	while (cur)
 	{
 		if (ft_strcmp(cur->name, name) == 0)
@@ -65,11 +62,11 @@ t_export	*find_export(const char *name)
 	return (NULL);
 }
 
-void	add_export(const char *name, bool assigned)
+void	add_export(t_executor_ctx *ctx, const char *name, bool assigned)
 {
 	t_export	*ent;
 
-	ent = find_export(name);
+	ent = find_export(ctx, name);
 	if (ent)
 		ent->assigned = ent->assigned || assigned;
 	else
@@ -78,9 +75,14 @@ void	add_export(const char *name, bool assigned)
 		if (!ent)
 			return ;
 		ent->name = ft_strdup(name);
+		if (!ent->name)
+		{
+			free(ent);
+			return ;
+		}
 		ent->assigned = assigned;
-		ent->next = g_export_list;
-		g_export_list = ent;
+		ent->next = ctx->export_list;
+		ctx->export_list = ent;
 	}
 }
 
@@ -92,8 +94,8 @@ int	execute_export(char **argv, t_list *redirects, t_executor_ctx *ctx)
 	int	ret;
 
 	ret = 0;
-	if (g_export_list == NULL)
-		init_export_list_from_environ();
+	if (ctx->export_list == NULL)
+		init_export_list_from_environ(ctx);
 	save_stdio(&save_in, &save_out, &save_err);
 	if (setup_redirections(redirects, ctx) < 0)
 	{
@@ -102,9 +104,9 @@ int	execute_export(char **argv, t_list *redirects, t_executor_ctx *ctx)
 		return (1);
 	}
 	if (!argv[1])
-		print_environment();
+		print_environment(ctx);
 	else
-		ret = process_export_args(argv);
+		ret = process_export_args(argv, ctx);
 	restore_stdio(save_in, save_out, save_err);
 	ctx->last_exit_status = ret;
 	return (ret);
