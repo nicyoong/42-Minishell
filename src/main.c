@@ -6,7 +6,7 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 19:39:43 by tching            #+#    #+#             */
-/*   Updated: 2025/06/10 20:50:12 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/06/10 23:52:35 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,13 +70,11 @@ static void	run_shell_loop(t_executor_ctx *ctx)
 			free(full_line);
 			continue ;
 		}
-		pipeline = build_pipeline(tokens, ctx);
-		if (!pipeline)
-		{
-			ft_lstclear(&tokens, free_token);
-			free(full_line);
+		if (!handle_syntax_error(tokens, full_line, ctx))
 			continue ;
-		}
+		pipeline = build_pipeline(tokens, ctx);
+		if (!handle_pipeline_failure(pipeline, tokens, full_line))
+			continue ;
 		execute_and_cleanup(full_line, tokens, pipeline, ctx);
 	}
 }

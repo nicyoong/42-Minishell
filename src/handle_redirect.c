@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   handle_redirect.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nyoong <nyoong@student.42kl.edu.my>        +#+  +:+       +#+        */
+/*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/20 00:14:25 by nyoong            #+#    #+#             */
-/*   Updated: 2025/05/20 00:34:02 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/06/11 01:24:58 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,8 @@ int	is_redirect(t_token_type type)
 	return (type == TOKEN_REDIRECT_IN
 		|| type == TOKEN_REDIRECT_OUT
 		|| type == TOKEN_REDIRECT_APPEND
-		|| type == TOKEN_REDIRECT_HEREDOC);
+		|| type == TOKEN_REDIRECT_HEREDOC
+		|| type == TOKEN_HERESTRING);
 }
 
 t_redirect_type	token_to_redirect(t_token_type type)
@@ -28,6 +29,8 @@ t_redirect_type	token_to_redirect(t_token_type type)
 		return (REDIR_OUT);
 	if (type == TOKEN_REDIRECT_APPEND)
 		return (REDIR_APPEND);
+	if (type == TOKEN_HERESTRING)
+		return (REDIR_HERESTRING);
 	return (REDIR_HEREDOC);
 }
 

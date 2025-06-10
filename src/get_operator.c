@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_operator.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nyoong <nyoong@student.42kl.edu.my>        +#+  +:+       +#+        */
+/*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/17 23:23:22 by nyoong            #+#    #+#             */
-/*   Updated: 2025/05/17 23:23:54 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/06/11 01:22:55 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,11 @@
 
 t_token_type	parse_redirect_in(const char *input, int *i)
 {
+	if (input[*i + 1] == '<' && input[*i + 2] == '<')
+	{
+		(*i) += 3;
+		return (TOKEN_HERESTRING);
+	}
 	if (input[*i + 1] == '<')
 	{
 		(*i) += 2;

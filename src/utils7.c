@@ -6,7 +6,7 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 20:45:51 by nyoong            #+#    #+#             */
-/*   Updated: 2025/06/10 20:50:01 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/06/10 23:46:47 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,4 +25,16 @@ void	free_export_list(t_export *head)
 		free(cur);
 		cur = next;
 	}
+}
+
+int	handle_pipeline_failure(t_pipeline *pipeline,
+	t_list *tokens, char *full_line)
+{
+	if (!pipeline)
+	{
+		ft_lstclear(&tokens, free_token);
+		free(full_line);
+		return (0);
+	}
+	return (1);
 }

@@ -6,7 +6,7 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/18 08:15:13 by tching            #+#    #+#             */
-/*   Updated: 2025/06/10 20:54:45 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/06/11 01:57:38 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,8 @@ typedef enum e_token_type
 	TOKEN_REDIRECT_IN,
 	TOKEN_REDIRECT_OUT,
 	TOKEN_REDIRECT_APPEND,
-	TOKEN_REDIRECT_HEREDOC
+	TOKEN_REDIRECT_HEREDOC,
+	TOKEN_HERESTRING
 }	t_token_type;
 
 typedef enum e_segment_type
@@ -51,7 +52,8 @@ typedef enum e_redirect_type
 	REDIR_IN,
 	REDIR_OUT,
 	REDIR_APPEND,
-	REDIR_HEREDOC
+	REDIR_HEREDOC,
+	REDIR_HERESTRING
 }	t_redirect_type;
 
 typedef struct s_segment
@@ -173,11 +175,23 @@ t_word			*copy_word(t_word *src);
 // Main parsing functions
 t_command		*parse_command(t_list **tokens);
 t_list			*split_commands(t_list *tokens);
+char			*token_type_to_str(t_token_type type);
+int				print_syntax_error_token(char *tok);
+int				check_redirect_end(t_token *current, t_token *next);
+int				check_redirect_redirect(t_token *current, t_token *next);
+int				check_redirect_pipe(t_token *current, t_token *next);
+int				check_pipe_end(t_token *current, t_token *next);
+int				check_pipe_follow(t_token *current, t_token *next);
+int				validate_syntax(t_list *tokens);
+int				handle_syntax_error(t_list *tokens,
+					char *full_line, t_executor_ctx *ctx);
 
 t_pipeline		*parse(t_list *tokens);
 
 void			free_pipeline(t_pipeline *pipeline);
 void			free_export_list(t_export *head);
+int				handle_pipeline_failure(t_pipeline *pipeline,
+					t_list *tokens, char *full_line);
 
 // execution
 void			execute_pipeline(t_pipeline *pipeline, t_executor_ctx *ctx);
