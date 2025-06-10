@@ -45,7 +45,8 @@ Minishell is a collaborative project at 42 that involves building a simplified U
 
 ### 7. **Error Handling**  
 - Gracefully handled syntax errors (e.g., `> file <`) and runtime failures (e.g., command not found).  
-- Maintained shell stability even with invalid user input.  
+- Maintained shell stability even with invalid user input.
+- Handled multiple redirection edge cases involving errors.
 
 ### 8. **Collaboration & Debugging**  
 - Used `git` for version control and teamwork, resolving merge conflicts and maintaining clean code history.  
