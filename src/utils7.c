@@ -26,3 +26,13 @@ void	free_export_list(t_export *head)
 		cur = next;
 	}
 }
+int	is_valid_redirect_target(t_token *token)
+{
+	return (token && token->type == TOKEN_WORD);
+}
+
+void	ret_syntax_err(t_command *cmd)
+{
+	write(2, "minishell: syntax error near unexpected token\n", 46);
+	free_command(cmd);
+}

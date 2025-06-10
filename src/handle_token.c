@@ -21,8 +21,12 @@ int	process_token(t_list **tokens, t_command *cmd)
 	token = head->content;
 	if (is_redirect(token->type))
 	{
-		if (!process_redirect(tokens, cmd, head))
+		if (!head->next || !is_valid_redirect_target(head->next->content)
+			|| !process_redirect(tokens, cmd, head))
+		{
+			ret_syntax_err(cmd);
 			return (0);
+		}
 	}
 	else if (token->type == TOKEN_WORD)
 	{
@@ -31,7 +35,6 @@ int	process_token(t_list **tokens, t_command *cmd)
 	}
 	else
 	{
-		free(head);
 		free_command(cmd);
 		return (0);
 	}
