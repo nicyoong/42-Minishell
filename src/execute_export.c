@@ -6,7 +6,7 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/16 17:24:23 by nyoong            #+#    #+#             */
-/*   Updated: 2025/06/10 20:57:22 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/06/12 01:00:59 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,26 +88,29 @@ void	add_export(t_executor_ctx *ctx, const char *name, bool assigned)
 
 int	execute_export(char **argv, t_list *redirects, t_executor_ctx *ctx)
 {
-	int	save_in;
-	int	save_out;
-	int	save_err;
-	int	ret;
+	int				save[3];
+	int				ret;
+	int				heredoc_fd;
+	t_redir_status	st;
 
 	ret = 0;
 	if (ctx->export_list == NULL)
 		init_export_list_from_environ(ctx);
-	save_stdio(&save_in, &save_out, &save_err);
-	if (setup_redirections(redirects, ctx) < 0)
+	save_stdio(&save[0], &save[1], &save[2]);
+	st = setup_redirections(redirects, ctx, &heredoc_fd);
+	if (st == HEREDOC_ABORT)
+		return (handle_heredoc_abort(save, ctx));
+	if (st == REDIR_ERROR)
 	{
-		restore_stdio(save_in, save_out, save_err);
 		ctx->last_exit_status = 1;
+		restore_stdio(save[0], save[1], save[2]);
 		return (1);
 	}
 	if (!argv[1])
 		print_environment(ctx);
 	else
 		ret = process_export_args(argv, ctx);
-	restore_stdio(save_in, save_out, save_err);
+	restore_stdio(save[0], save[1], save[2]);
 	ctx->last_exit_status = ret;
 	return (ret);
 }

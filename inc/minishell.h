@@ -6,7 +6,7 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/18 08:15:13 by tching            #+#    #+#             */
-/*   Updated: 2025/06/11 02:43:31 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/06/12 01:06:12 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,13 @@ typedef enum e_redirect_type
 	REDIR_HEREDOC,
 	REDIR_HERESTRING
 }	t_redirect_type;
+
+typedef enum e_redir_status
+{
+	REDIR_OK,
+	REDIR_ERROR,
+	HEREDOC_ABORT
+}	t_redir_status;
 
 typedef struct s_segment
 {
@@ -200,7 +207,16 @@ void			set_executor_ctx(t_executor_ctx *ctx);
 void			setup_signal_handlers(void);
 
 //process heredoc
+void			heredoc_signals_enable(struct sigaction *old_int,
+					struct sigaction *old_quit);
+void			heredoc_signals_restore(struct sigaction *old_int,
+					struct sigaction *old_quit);
+bool			fork_failed_cleanup(pid_t pid, char *delim, int fds[2]);
+void			execute_heredoc_child(const char *delim, int fds[2]);
+int				collect_heredoc_parent(pid_t pid, int fds[2], t_executor_ctx *ctx);
+void			read_until_delimiter(const char *delim, int fd_write);
 int				process_heredoc(t_word *delimiter_word, t_executor_ctx *ctx);
+int				handle_heredoc_abort(int *save_fds, t_executor_ctx *ctx);
 
 //builtin function
 int				execute_pwd(char **argv,
@@ -224,7 +240,9 @@ void			handle_invalid_arguments(char **argv);
 void			handle_path_errors(char *path, char **argv);
 
 //redirections
-int				setup_redirections(t_list *redirects, t_executor_ctx *ctx);
+t_redir_status	handle_regular_redirect(t_redirect *r, t_executor_ctx *ctx);
+t_redir_status	setup_redirections(t_list *redirects,
+					t_executor_ctx *ctx, int *heredoc_fd);
 int				build_path_from_word(t_word *word, char *buffer,
 					size_t bufsize, t_executor_ctx *ctx);
 int				open_redirection_fd(t_redirect_type type, const char *path,

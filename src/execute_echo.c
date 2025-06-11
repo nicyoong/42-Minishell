@@ -6,7 +6,7 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/15 22:48:48 by tching            #+#    #+#             */
-/*   Updated: 2025/05/24 23:00:54 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/06/12 00:49:45 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,24 +38,23 @@ static int	run_echo_command(char **argv)
 
 int	execute_echo(char **argv, t_list *redirects, t_executor_ctx *ctx)
 {
-	int	save_stdin;
-	int	save_stdout;
-	int	save_stderr;
-	int	ret;
+	int				save[3];
+	int				heredoc_fd;
+	t_redir_status	st;
 
-	save_stdin = dup(STDIN_FILENO);
-	save_stdout = dup(STDOUT_FILENO);
-	save_stderr = dup(STDERR_FILENO);
-	ret = 0;
-	if (setup_redirections(redirects, ctx) < 0)
+	save[0] = dup(STDIN_FILENO);
+	save[1] = dup(STDOUT_FILENO);
+	save[2] = dup(STDERR_FILENO);
+	st = setup_redirections(redirects, ctx, &heredoc_fd);
+	if (st == HEREDOC_ABORT)
+		return (handle_heredoc_abort(save, ctx));
+	if (st == REDIR_ERROR)
 	{
-		ret = 1;
-		cleanup_redirections(save_stdin, save_stdout, save_stderr);
-		ctx->last_exit_status = ret;
-		return (ret);
+		ctx->last_exit_status = 1;
+		cleanup_redirections(save[0], save[1], save[2]);
+		return (ctx->last_exit_status);
 	}
-	ret = run_echo_command(argv);
-	cleanup_redirections(save_stdin, save_stdout, save_stderr);
-	ctx->last_exit_status = ret;
-	return (ret);
+	ctx->last_exit_status = run_echo_command(argv);
+	cleanup_redirections(save[0], save[1], save[2]);
+	return (ctx->last_exit_status);
 }

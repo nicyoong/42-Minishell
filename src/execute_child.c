@@ -6,7 +6,7 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/17 17:57:46 by tching            #+#    #+#             */
-/*   Updated: 2025/05/27 00:36:54 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/06/12 00:49:32 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,8 @@ void	setup_child_process(t_command *cmd, t_pipe_info *pinfo,
 				t_executor_ctx *ctx)
 {
 	struct sigaction	sa;
+	t_redir_status		st;
+	int					heredoc_fd;
 
 	sa.sa_handler = SIG_DFL;
 	sigemptyset(&sa.sa_mask);
@@ -55,8 +57,9 @@ void	setup_child_process(t_command *cmd, t_pipe_info *pinfo,
 		dup2(pinfo->pipe_fd[1], STDOUT_FILENO);
 		close(pinfo->pipe_fd[1]);
 	}
-	if (setup_redirections(cmd->redirects, ctx) < 0)
-		exit(1);
+	st = setup_redirections(cmd->redirects, ctx, &heredoc_fd);
+	if (st != REDIR_OK)
+		_exit(ctx -> last_exit_status);
 	execute_child(cmd, ctx);
 }
 

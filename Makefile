@@ -6,7 +6,7 @@
 #    By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/05/18 18:33:55 by tching            #+#    #+#              #
-#    Updated: 2025/06/11 00:56:19 by nyoong           ###   ########.fr        #
+#    Updated: 2025/06/12 01:20:37 by nyoong           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -48,6 +48,7 @@ SRCS = $(addprefix $(SRCDIR)/, \
 			handle_redirect.c \
 			handle_token.c \
 			handle_word.c \
+			heredoc_utils.c \
 			lexer.c \
 			main.c \
 			parser.c \
@@ -59,6 +60,7 @@ SRCS = $(addprefix $(SRCDIR)/, \
 			redirection_utils2.c \
 			redirection_utils3.c \
 			redirection_utils4.c \
+			redirection_utils5.c \
 			resolve_binary.c \
 			resolve_segment.c \
 			signal.c \
