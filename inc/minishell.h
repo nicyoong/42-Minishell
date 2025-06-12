@@ -6,7 +6,7 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/18 08:15:13 by tching            #+#    #+#             */
-/*   Updated: 2025/06/12 22:16:25 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/06/13 00:05:55 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -257,8 +257,10 @@ int				redirect_invalid_msg(void);
 
 //to be sorted
 char			*resolve_segment(t_segment *seg, t_executor_ctx *ctx);
-char			*resolve_from_path_env(char *cmd);
-char			*resolve_binary(char *cmd);
+char			*resolve_from_path_env(const char *cmd, t_executor_ctx *ctx);
+char			*free_full_cmd(char *full_cmd, char **dirs);
+char			*free_resolve_from_path_env(char **dirs);
+char			*resolve_binary(const char *cmd, t_executor_ctx *ctx);
 char			**export_list_to_envp(t_executor_ctx *ctx);
 char			**convert_arguments(t_list *args, t_executor_ctx *ctx);
 void			execute_child(t_command *cmd, t_executor_ctx *ctx);
