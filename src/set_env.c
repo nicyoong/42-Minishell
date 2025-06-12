@@ -11,54 +11,6 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
-/*
-int set_env(const char *name, const char *value, int overwrite)
-{
-    extern char **environ;
-    size_t      len_name[3];
-    int         count;
-    char        *new_entry;
-    char        **new_environ;
-
-    count = 0;
-    len_name[0] = ft_strlen(name); //name_len
-    len_name[1] = ft_strlen(value); //entry_len
-    len_name[2] = len_name[0] + 1 + len_name[1] + 1;
-    new_entry = malloc(len[2]);
-    new_environ = malloc((count + 2) * sizeof(char *)) 
-	// allocate new env for new var
-
-    if (!name || !*name || strchr(name, '='))
-        return -1;
-    if (!new_entry)
-        return -1;
-    sprintf(new_entry, "%s=%s", name, value);
-    for (int i = 0; environ[i]; ++i) {
-        if (strncmp(environ[i], name, name_len) == 0
-		&& environ[i][name_len] == '=')
-        {
-            if (!overwrite) {
-                free(new_entry);
-                return 0;
-            }
-            environ[i] = new_entry;
-            return 0;
-        }
-    }
-    while (environ[count])
-        count++;
-    if (!new_environ)
-    {
-        free(new_entry);
-        return -1;
-    }
-    for (int i = 0; i < count; ++i)
-        new_environ[i] = environ[i];
-    new_environ[count] = new_entry;
-    new_environ[count + 1] = NULL;
-    environ = new_environ;
-    return 0;
-}*/
 
 static char	*create_env_entry(const char *name, const char *value)
 {
