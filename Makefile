@@ -6,7 +6,7 @@
 #    By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/05/18 18:33:55 by tching            #+#    #+#              #
-#    Updated: 2025/06/12 22:16:59 by nyoong           ###   ########.fr        #
+#    Updated: 2025/06/13 00:06:44 by nyoong           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -65,6 +65,7 @@ SRCS = $(addprefix $(SRCDIR)/, \
 			redirection_utils5.c \
 			resolve_binary.c \
 			resolve_segment.c \
+			resolve_utils.c \
 			shlvl.c \
 			signal.c \
 			token.c \
