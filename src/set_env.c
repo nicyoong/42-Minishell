@@ -62,7 +62,7 @@ int set_env(const char *name, const char *value, int overwrite)
 
 static char	*create_env_entry(const char *name, const char *value)
 {
-	size_t	lens[3];
+	size_t	len[3];
 	char	*new_entry;
 
 	len[0] = ft_strlen(name);
