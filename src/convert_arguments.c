@@ -3,32 +3,32 @@
 /*                                                        :::      ::::::::   */
 /*   convert_arguments.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tching <tching@student.42kl.edu.my>        +#+  +:+       +#+        */
+/*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/17 01:09:41 by tching            #+#    #+#             */
-/*   Updated: 2025/05/17 01:22:44 by tching           ###   ########.fr       */
+/*   Updated: 2025/06/12 23:33:55 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-char	*get_segment_value(t_segment *s, t_executor_ctx *ctx)
+static char	*get_segment_value(t_segment *s, t_executor_ctx *ctx)
 {
-	char	*val;
+	t_export	*e;
 
 	if (s->type == VARIABLE)
 	{
-		val = getenv(s->value);
-		if (val)
-			return (val);
-		else
-			return ("");
+		e = find_export(ctx, s->value);
+		if (e && e->assigned && e->value)
+			return (e->value);
+		return ("");
 	}
 	else if (s->type == EXIT_STATUS)
 		return (ft_itoa(ctx->last_exit_status));
 	else
 		return (s->value);
 }
+
 
 char	*concatenate_segments(t_word *word, t_executor_ctx *ctx)
 {

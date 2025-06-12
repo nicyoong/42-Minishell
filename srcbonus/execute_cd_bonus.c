@@ -6,7 +6,7 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/16 13:44:19 by nyoong            #+#    #+#             */
-/*   Updated: 2025/05/27 03:00:46 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/06/12 20:20:36 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,16 +38,16 @@ static int	perform_cd_operation(char **argv, char **oldpwd)
 	return (ret);
 }
 
-static int	update_pwd_vars(char *oldpwd)
+static int	update_pwd_vars(t_executor_ctx *ctx, char *oldpwd)
 {
 	char	cwd[PATH_MAX];
 	int		ret;
 
 	ret = 0;
-	setenv("OLDPWD", oldpwd, 1);
+	add_export(ctx, "OLDPWD", oldpwd, true);
 	if (!getcwd(cwd, sizeof(cwd)))
 		return (ret = ret_cd_error());
-	setenv("PWD", cwd, 1);
+	add_export(ctx, "PWD", cwd, true);
 	return (ret);
 }
 
