@@ -6,7 +6,7 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 20:45:51 by nyoong            #+#    #+#             */
-/*   Updated: 2025/06/11 02:05:56 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/06/12 20:32:13 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ void	free_export_list(t_export *head)
 	{
 		next = cur->next;
 		free(cur->name);
+		free(cur->value);
 		free(cur);
 		cur = next;
 	}

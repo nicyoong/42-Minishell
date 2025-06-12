@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execute_pwd.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tching <tching@student.42kl.edu.my>        +#+  +:+       +#+        */
+/*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/15 21:58:06 by tching            #+#    #+#             */
-/*   Updated: 2025/05/15 22:07:03 by tching           ###   ########.fr       */
+/*   Updated: 2025/06/12 20:53:26 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,10 +16,11 @@ int	execute_pwd(char **argv, t_list *redirects, t_executor_ctx *ctx)
 {
 	int		save_stdout;
 	char	cwd[PATH_MAX];
+	int		heredoc_fd;
 
 	(void)argv;
 	save_stdout = dup(STDOUT_FILENO);
-	if (setup_redirections(redirects, ctx) < 0)
+	if (setup_redirections(redirects, ctx, &heredoc_fd) < 0)
 	{
 		dup2(save_stdout, STDOUT_FILENO);
 		close(save_stdout);

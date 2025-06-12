@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   export_utils2.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tching <tching@student.42kl.edu.my>        +#+  +:+       +#+        */
+/*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/20 13:24:39 by tching            #+#    #+#             */
-/*   Updated: 2025/05/21 13:30:34 by tching           ###   ########.fr       */
+/*   Updated: 2025/06/12 21:47:11 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ t_export	**list_to_array(t_export *head, size_t count)
 	if (!arr)
 		return (NULL);
 	i = 0;
-	while (i < count)
+	while (head && i < count)
 	{
 		arr[i] = head;
 		head = head->next;

@@ -6,7 +6,7 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/20 20:15:27 by tching            #+#    #+#             */
-/*   Updated: 2025/06/10 20:36:59 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/06/12 21:46:29 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ void	print_exports(t_export **arr, size_t count)
 			printf("declare -x %s\n", n);
 		else
 		{
-			value = getenv(n);
+			value = e->value;
 			print_export_value(value, n);
 		}
 		i++;
@@ -52,12 +52,7 @@ void	print_exports(t_export **arr, size_t count)
 int	handle_setenv_and_export(t_executor_ctx *ctx,
 								const char *name, const char *value)
 {
-	if (setenv(name, value, 1) < 0)
-	{
-		perror("export");
-		return (1);
-	}
-	add_export(ctx, name, true);
+	add_export(ctx, name, value, true);
 	return (0);
 }
 
@@ -75,7 +70,7 @@ int	handle_single_export_arg(t_executor_ctx *ctx, const char *arg)
 	else if (eq)
 		handle_setenv_and_export(ctx, name, eq + 1);
 	else
-		add_export(ctx, name, false);
+		add_export(ctx, name, NULL, false);
 	free(name);
 	free(error_part);
 	return (ret);

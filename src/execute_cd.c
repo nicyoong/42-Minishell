@@ -6,7 +6,7 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/16 13:44:19 by nyoong            #+#    #+#             */
-/*   Updated: 2025/06/12 00:34:09 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/06/12 20:22:14 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,16 +38,16 @@ static int	perform_cd_operation(char **argv, char **oldpwd)
 	return (ret);
 }
 
-static int	update_pwd_vars(char *oldpwd)
+static int	update_pwd_vars(t_executor_ctx *ctx, char *oldpwd)
 {
 	char	cwd[PATH_MAX];
 	int		ret;
 
 	ret = 0;
-	setenv("OLDPWD", oldpwd, 1);
+	add_export(ctx, "OLDPWD", oldpwd, true);
 	if (!getcwd(cwd, sizeof(cwd)))
 		return (ret = ret_cd_error());
-	setenv("PWD", cwd, 1);
+	add_export(ctx, "PWD", cwd, true);
 	return (ret);
 }
 
@@ -77,7 +77,7 @@ int	handle_cd(char **argv, t_list *redirects, t_executor_ctx *ctx)
 		return (1);
 	}
 	ret = perform_cd_operation(argv, &oldpwd);
-	if (ret == 0 && update_pwd_vars(oldpwd))
+	if (ret == 0 && update_pwd_vars(ctx, oldpwd))
 		ret = 1;
 	free(oldpwd);
 	restore_std_fds(save_fds[0], save_fds[1], save_fds[2]);

@@ -6,7 +6,7 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/16 17:24:23 by nyoong            #+#    #+#             */
-/*   Updated: 2025/06/12 01:00:59 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/06/12 22:14:37 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ void	remove_export(t_executor_ctx *ctx, const char *name)
 		{
 			*prev = cur->next;
 			free(cur->name);
+			free(cur->value);
 			free(cur);
 			return ;
 		}
@@ -62,28 +63,30 @@ t_export	*find_export(t_executor_ctx *ctx, const char *name)
 	return (NULL);
 }
 
-void	add_export(t_executor_ctx *ctx, const char *name, bool assigned)
+void	add_export(t_executor_ctx *ctx,
+	const char *name, const char *value, bool assigned)
 {
 	t_export	*ent;
 
 	ent = find_export(ctx, name);
 	if (ent)
-		ent->assigned = ent->assigned || assigned;
-	else
-	{
-		ent = malloc(sizeof(*ent));
-		if (!ent)
-			return ;
-		ent->name = ft_strdup(name);
-		if (!ent->name)
-		{
-			free(ent);
-			return ;
-		}
-		ent->assigned = assigned;
-		ent->next = ctx->export_list;
-		ctx->export_list = ent;
-	}
+    {
+        if (ent->value)
+            free(ent->value);
+        ent->value    = dup_value_or_empty(value);
+        ent->assigned = ent->assigned || assigned;
+    }
+    else
+    {
+        ent = ft_calloc(1, sizeof(*ent));
+        if (!ent)
+			return;
+        ent->name     = ft_strdup(name);
+        ent->value    = dup_value_or_empty(value);
+        ent->assigned = assigned;
+        ent->next     = ctx->export_list;
+        ctx->export_list = ent;
+    }
 }
 
 int	execute_export(char **argv, t_list *redirects, t_executor_ctx *ctx)

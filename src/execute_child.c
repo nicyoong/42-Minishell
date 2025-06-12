@@ -6,18 +6,32 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/17 17:57:46 by tching            #+#    #+#             */
-/*   Updated: 2025/06/12 00:49:32 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/06/12 22:07:07 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	execute_binary(char *path, char **argv)
+void execute_binary(char *path, char **argv, t_executor_ctx *ctx)
 {
-	extern char	**environ;
+	char	**envp;
+	char	**p;
 
-	execve(path, argv, environ);
+	envp = export_list_to_envp(ctx);
+	if (!envp)
+	{
+		perror("export_list_to_envp");
+		exit(126);
+	}
+	execve(path, argv, envp);
 	perror("execve");
+	p = envp;
+	while (*p)
+	{
+		free(*p);
+		p++;
+	}
+	free(envp);
 	exit(126);
 }
 
@@ -31,7 +45,7 @@ void	execute_child(t_command *cmd, t_executor_ctx *ctx)
 	handle_builtin_command(argv, cmd, ctx);
 	path = resolve_binary(argv[0]);
 	handle_path_errors(path, argv);
-	execute_binary(path, argv);
+	execute_binary(path, argv, ctx);
 }
 
 void	setup_child_process(t_command *cmd, t_pipe_info *pinfo,

@@ -6,7 +6,7 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/18 08:15:13 by tching            #+#    #+#             */
-/*   Updated: 2025/06/12 01:06:12 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/06/12 22:16:25 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,7 +103,7 @@ typedef struct s_export
 {
 	char					*name;
 	bool					assigned;
-
+	char					*value;
 	struct s_export			*next;
 
 }	t_export;
@@ -213,7 +213,8 @@ void			heredoc_signals_restore(struct sigaction *old_int,
 					struct sigaction *old_quit);
 bool			fork_failed_cleanup(pid_t pid, char *delim, int fds[2]);
 void			execute_heredoc_child(const char *delim, int fds[2]);
-int				collect_heredoc_parent(pid_t pid, int fds[2], t_executor_ctx *ctx);
+int				collect_heredoc_parent(pid_t pid,
+					int fds[2], t_executor_ctx *ctx);
 void			read_until_delimiter(const char *delim, int fd_write);
 int				process_heredoc(t_word *delimiter_word, t_executor_ctx *ctx);
 int				handle_heredoc_abort(int *save_fds, t_executor_ctx *ctx);
@@ -258,6 +259,7 @@ int				redirect_invalid_msg(void);
 char			*resolve_segment(t_segment *seg, t_executor_ctx *ctx);
 char			*resolve_from_path_env(char *cmd);
 char			*resolve_binary(char *cmd);
+char			**export_list_to_envp(t_executor_ctx *ctx);
 char			**convert_arguments(t_list *args, t_executor_ctx *ctx);
 void			execute_child(t_command *cmd, t_executor_ctx *ctx);
 void			execute_pipeline_commands(t_pipeline *pipeline,
@@ -292,9 +294,11 @@ char			*ft_strcpy(char *dst, const char *src);
 
 void			save_stdio(int *in, int *out, int *err);
 void			restore_stdio(int in, int out, int err);
+char			*dup_value_or_empty(const char *value);
 void			add_export(t_executor_ctx *ctx,
-					const char *name, bool assigned);
+					const char *name, const char *value, bool assigned);
 void			init_export_list_from_environ(t_executor_ctx *ctx);
+void			init_shell_level(t_executor_ctx *ctx);
 
 t_export		*find_export(t_executor_ctx *ctx, const char *name);
 

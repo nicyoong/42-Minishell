@@ -6,7 +6,7 @@
 #    By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/05/18 18:33:55 by tching            #+#    #+#              #
-#    Updated: 2025/06/12 01:20:37 by nyoong           ###   ########.fr        #
+#    Updated: 2025/06/12 22:16:59 by nyoong           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -29,6 +29,7 @@ SRCS = $(addprefix $(SRCDIR)/, \
 			convert_arguments.c \
 			decode1.c \
 			decode2.c \
+			env_utils.c \
 			execute_builtin.c \
 			execute_cd.c \
 			execute_child.c \
@@ -43,6 +44,7 @@ SRCS = $(addprefix $(SRCDIR)/, \
 			export_utils1.c \
 			export_utils2.c \
 			export_utils3.c \
+			export_utils4.c \
 			get_operator.c \
 			handle_child_error.c \
 			handle_redirect.c \
@@ -63,6 +65,7 @@ SRCS = $(addprefix $(SRCDIR)/, \
 			redirection_utils5.c \
 			resolve_binary.c \
 			resolve_segment.c \
+			shlvl.c \
 			signal.c \
 			token.c \
 			utils1.c \

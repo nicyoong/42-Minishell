@@ -6,7 +6,7 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/20 13:20:14 by tching            #+#    #+#             */
-/*   Updated: 2025/06/10 20:52:40 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/06/12 20:38:51 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,30 +29,66 @@ void	restore_stdio(int in, int out, int err)
 	close(err);
 }
 
+void	handle_env_entry(t_executor_ctx *ctx, const char *env_entry)
+{
+	char	*name;
+	char	*value;
+	char	*eq;
+	size_t	name_len;
+
+	eq = ft_strchr(env_entry, '=');
+	if (eq)
+	{
+		name_len = eq - env_entry;
+		name = ft_strndup(env_entry, name_len);
+		value = eq + 1;
+		if (name)
+		{
+			add_export(ctx, name, value, true);
+			free(name);
+		}
+	}
+	else
+		add_export(ctx, env_entry, NULL, false);
+}
+
 void	init_export_list_from_environ(t_executor_ctx *ctx)
 {
 	extern char	**environ;
 	size_t		i;
-	size_t		name_len;
-	char		*name;
-	char		*eq;
 
 	i = 0;
 	while (environ[i])
 	{
-		eq = ft_strchr(environ[i], '=');
-		if (eq)
-		{
-			name_len = eq - environ[i];
-			name = ft_strndup(environ[i], name_len);
-			if (name)
-			{
-				add_export(ctx, name, true);
-				free(name);
-			}
-		}
-		else
-			add_export(ctx, environ[i], false);
+		handle_env_entry(ctx, environ[i]);
 		i++;
 	}
 }
+
+// void	init_export_list_from_environ(t_executor_ctx *ctx)
+// {
+// 	extern char	**environ;
+// 	size_t		i;
+// 	size_t		name_len;
+// 	char		*name;
+// 	char		*eq;
+
+// 	i = 0;
+// 	while (environ[i])
+// 	{
+// 		eq = ft_strchr(environ[i], '=');
+// 		if (eq)
+// 		{
+// 			name_len = eq - environ[i];
+// 			name = ft_strndup(environ[i], name_len);
+// 			if (name)
+// 			{
+// 				add_export(ctx, name, true);
+// 				free(name);
+// 			}
+// 		}
+// 		else
+// 			add_export(ctx, environ[i], false);
+// 		i++;
+// 	}
+// }

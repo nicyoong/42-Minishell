@@ -6,7 +6,7 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 19:39:43 by tching            #+#    #+#             */
-/*   Updated: 2025/06/10 23:52:35 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/06/12 20:58:45 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,6 +86,7 @@ int	main(void)
 	ctx.last_exit_status = 0;
 	ctx.export_list = NULL;
 	init_export_list_from_environ(&ctx);
+	init_shell_level(&ctx);
 	set_executor_ctx(&ctx);
 	setup_signal_handlers();
 	run_shell_loop(&ctx);

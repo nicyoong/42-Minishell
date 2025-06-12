@@ -1,37 +1,40 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   execute_unset.c                                    :+:      :+:    :+:   */
+/*   shlvl.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/15 22:35:05 by tching            #+#    #+#             */
-/*   Updated: 2025/06/12 20:25:25 by nyoong           ###   ########.fr       */
+/*   Created: 2025/06/12 01:35:14 by nyoong            #+#    #+#             */
+/*   Updated: 2025/06/12 22:08:56 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	execute_unset(char **argv, t_list *redirects, t_executor_ctx *ctx)
+int	get_current_shlvl(t_executor_ctx *ctx)
 {
-	int	ret;
-	int	i;
+	t_export	*e;
 
-	(void)redirects;
-	ret = 0;
-	i = 1;
-	while (argv[i])
-	{
-		if (find_export(ctx, argv[i]))
-			remove_export(ctx, argv[i]);
-		else
-		{
-			ft_putstr_fd("unset: no such variable: ", STDERR_FILENO);
-			ft_putendl_fd(argv[i], STDERR_FILENO);
-			ret = 1;
-		}
-		i++;
-	}
-	ctx->last_exit_status = ret;
-	return (ret);
+	e = find_export(ctx, "SHLVL");
+	if (!e || !e->assigned || !e->value)
+		return (0);
+	return (ft_atoi(e->value));
+}
+
+void	set_shlvl(t_executor_ctx *ctx, int new_level)
+{
+	char	*buf;
+
+	buf = ft_itoa(new_level);
+	add_export(ctx, "SHLVL", buf, true);
+	free(buf);
+}
+
+void	init_shell_level(t_executor_ctx *ctx)
+{
+	int	lvl;
+
+	lvl = get_current_shlvl(ctx);
+	set_shlvl(ctx, lvl + 1);
 }

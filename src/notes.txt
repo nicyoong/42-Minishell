@@ -1,0 +1,15 @@
+// echo hi'$USERfl - fixed
+
+// export should be sorted and have declare, it should look the same as bash export - fixed
+
+// export test1 test2= test3=hi, it should not show up in env and test2 should have "" - fixed
+
+// | ls should have error, cannot start with pipe - fixed
+
+// continue norming from execute export - fixed
+
+// ctrl c should have exit 130. after ctrl c, echo $? - fixed
+
+// cat << eof << eof - fixed
+
+// sleep 5 followed by Ctrl \ should be core dumped - fixed
