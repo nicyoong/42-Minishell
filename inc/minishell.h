@@ -6,7 +6,7 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/18 08:15:13 by tching            #+#    #+#             */
-/*   Updated: 2025/06/11 02:43:31 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/06/12 22:11:35 by tching           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -304,7 +304,6 @@ void			restore_std_fds(int save_stdin,
 
 char			*read_continued_input(char *full);
 
-int set_env(const char *name, const char *value, int overwrite);
-
+int				set_env(const char *name, const char *value, int overwrite);
 
 #endif
