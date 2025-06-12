@@ -6,12 +6,11 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/15 23:02:59 by tching            #+#    #+#             */
-/*   Updated: 2025/06/12 21:22:43 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/06/12 22:33:25 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
 
 static void	print_internal_env(t_export *head)
 {
@@ -19,7 +18,7 @@ static void	print_internal_env(t_export *head)
 	{
 		if (head->assigned
 			&& ft_strcmp(head->name, "COLUMNS") != 0
-			&& ft_strcmp(head->name, "LINES")   != 0)
+			&& ft_strcmp(head->name, "LINES") != 0)
 			printf("%s=%s\n", head->name, head->value);
 		head = head->next;
 	}

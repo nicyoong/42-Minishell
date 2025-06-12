@@ -6,13 +6,13 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/17 17:57:46 by tching            #+#    #+#             */
-/*   Updated: 2025/06/12 22:07:07 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/06/12 22:37:15 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void execute_binary(char *path, char **argv, t_executor_ctx *ctx)
+void	execute_binary(char *path, char **argv, t_executor_ctx *ctx)
 {
 	char	**envp;
 	char	**p;

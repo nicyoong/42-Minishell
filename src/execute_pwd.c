@@ -6,11 +6,24 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/15 21:58:06 by tching            #+#    #+#             */
-/*   Updated: 2025/06/12 20:53:26 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/06/12 22:37:00 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+int	handle_redirections_or_fail(t_list *redirects,
+	t_executor_ctx *ctx, int save_stdout, int *heredoc_fd)
+{
+	if (setup_redirections(redirects, ctx, heredoc_fd) < 0)
+	{
+		dup2(save_stdout, STDOUT_FILENO);
+		close(save_stdout);
+		ctx->last_exit_status = 1;
+		return (1);
+	}
+	return (0);
+}
 
 int	execute_pwd(char **argv, t_list *redirects, t_executor_ctx *ctx)
 {
@@ -20,13 +33,8 @@ int	execute_pwd(char **argv, t_list *redirects, t_executor_ctx *ctx)
 
 	(void)argv;
 	save_stdout = dup(STDOUT_FILENO);
-	if (setup_redirections(redirects, ctx, &heredoc_fd) < 0)
-	{
-		dup2(save_stdout, STDOUT_FILENO);
-		close(save_stdout);
-		ctx->last_exit_status = 1;
+	if (handle_redirections_or_fail(redirects, ctx, save_stdout, &heredoc_fd))
 		return (1);
-	}
 	if (getcwd(cwd, sizeof(cwd)))
 	{
 		printf("%s\n", cwd);

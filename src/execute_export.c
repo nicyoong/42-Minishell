@@ -6,7 +6,7 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/16 17:24:23 by nyoong            #+#    #+#             */
-/*   Updated: 2025/06/12 22:14:37 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/06/12 22:34:19 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,23 +70,23 @@ void	add_export(t_executor_ctx *ctx,
 
 	ent = find_export(ctx, name);
 	if (ent)
-    {
-        if (ent->value)
-            free(ent->value);
-        ent->value    = dup_value_or_empty(value);
-        ent->assigned = ent->assigned || assigned;
-    }
-    else
-    {
-        ent = ft_calloc(1, sizeof(*ent));
-        if (!ent)
-			return;
-        ent->name     = ft_strdup(name);
-        ent->value    = dup_value_or_empty(value);
-        ent->assigned = assigned;
-        ent->next     = ctx->export_list;
-        ctx->export_list = ent;
-    }
+	{
+		if (ent->value)
+			free(ent->value);
+		ent->value = dup_value_or_empty(value);
+		ent->assigned = ent->assigned || assigned;
+	}
+	else
+	{
+		ent = ft_calloc(1, sizeof(*ent));
+		if (!ent)
+			return ;
+		ent->name = ft_strdup(name);
+		ent->value = dup_value_or_empty(value);
+		ent->assigned = assigned;
+		ent->next = ctx->export_list;
+		ctx->export_list = ent;
+	}
 }
 
 int	execute_export(char **argv, t_list *redirects, t_executor_ctx *ctx)
