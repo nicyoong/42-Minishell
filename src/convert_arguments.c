@@ -6,7 +6,7 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/17 01:09:41 by tching            #+#    #+#             */
-/*   Updated: 2025/06/12 23:33:55 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/06/13 00:08:37 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,6 @@ static char	*get_segment_value(t_segment *s, t_executor_ctx *ctx)
 	else
 		return (s->value);
 }
-
 
 char	*concatenate_segments(t_word *word, t_executor_ctx *ctx)
 {

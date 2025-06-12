@@ -6,7 +6,7 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/17 17:57:46 by tching            #+#    #+#             */
-/*   Updated: 2025/06/12 22:37:15 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/06/12 23:48:12 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ void	execute_child(t_command *cmd, t_executor_ctx *ctx)
 	argv = convert_arguments(cmd->arguments, ctx);
 	handle_invalid_arguments(argv);
 	handle_builtin_command(argv, cmd, ctx);
-	path = resolve_binary(argv[0]);
+	path = resolve_binary(argv[0], ctx);
 	handle_path_errors(path, argv);
 	execute_binary(path, argv, ctx);
 }
