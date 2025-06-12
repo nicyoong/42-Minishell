@@ -24,12 +24,12 @@ int	execute_unset(char **argv, t_list *redirects, t_executor_ctx *ctx)
 	{
 		if (find_export(ctx, argv[i]))
 			remove_export(ctx, argv[i]);
-		else
+		/*else
 		{
 			ft_putstr_fd("unset: no such variable: ", STDERR_FILENO);
 			ft_putendl_fd(argv[i], STDERR_FILENO);
 			ret = 1;
-		}
+		}*/
 		i++;
 	}
 	ctx->last_exit_status = ret;
