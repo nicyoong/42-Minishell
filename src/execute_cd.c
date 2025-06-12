@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execute_cd.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
+/*   By: nyoong <nyoong@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/16 13:44:19 by nyoong            #+#    #+#             */
-/*   Updated: 2025/06/12 00:34:09 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/05/24 18:13:51 by tiara            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,33 +44,22 @@ static int	update_pwd_vars(char *oldpwd)
 	int		ret;
 
 	ret = 0;
-	setenv("OLDPWD", oldpwd, 1);
+	set_env("OLDPWD", oldpwd, 1);
 	if (!getcwd(cwd, sizeof(cwd)))
 		return (ret = ret_cd_error());
-	setenv("PWD", cwd, 1);
+	set_env("PWD", cwd, 1);
 	return (ret);
-}
-
-int	handle_heredoc_abort(int *save_fds, t_executor_ctx *ctx)
-{
-	restore_std_fds(save_fds[0], save_fds[1], save_fds[2]);
-	return (ctx->last_exit_status);
 }
 
 int	handle_cd(char **argv, t_list *redirects, t_executor_ctx *ctx)
 {
-	int				save_fds[3];
-	int				ret;
-	int				heredoc_fd;
-	char			*oldpwd;
-	t_redir_status	st;
+	int		save_fds[3];
+	int		ret;
+	char	*oldpwd;
 
 	if (save_standard_fds(&save_fds[0], &save_fds[1], &save_fds[2]))
 		return (1);
-	st = setup_redirections(redirects, ctx, &heredoc_fd);
-	if (st == HEREDOC_ABORT)
-		return (handle_heredoc_abort(save_fds, ctx));
-	if (st == REDIR_ERROR)
+	if (setup_redirections(redirects, ctx) < 0)
 	{
 		restore_std_fds(save_fds[0], save_fds[1], save_fds[2]);
 		ctx->last_exit_status = 1;

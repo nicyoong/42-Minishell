@@ -6,7 +6,7 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/17 00:51:38 by tching            #+#    #+#             */
-/*   Updated: 2025/06/12 00:35:48 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/06/09 21:06:56 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,11 +51,14 @@ char	*resolve_delimiter_word(t_word *delimiter_word, t_executor_ctx *ctx)
 
 void	read_until_delimiter(const char *delim, int fd_write)
 {
-	struct sigaction	old_int;
-	struct sigaction	old_quit;
+	struct sigaction	sa_q;
+	struct sigaction	sa_old;
 	char				*line;
 
-	heredoc_signals_enable(&old_int, &old_quit);
+	sa_q.sa_handler = SIG_IGN;
+	sigemptyset(&sa_q.sa_mask);
+	sa_q.sa_flags = 0;
+	sigaction(SIGQUIT, &sa_q, &sa_old);
 	while (1)
 	{
 		line = readline("> ");
@@ -69,25 +72,18 @@ void	read_until_delimiter(const char *delim, int fd_write)
 		write(fd_write, "\n", 1);
 		free(line);
 	}
-	heredoc_signals_restore(&old_int, &old_quit);
+	sigaction(SIGQUIT, &sa_old, NULL);
 }
 
 int	process_heredoc(t_word *delimiter_word, t_executor_ctx *ctx)
 {
 	int		fds[2];
-	pid_t	pid;
 	char	*delim;
-	int		result_fd;
 
-	if (pipe(fds) < 0)
-		return (-1);
+	pipe(fds);
 	delim = resolve_delimiter_word(delimiter_word, ctx);
-	pid = fork();
-	if (fork_failed_cleanup(pid, delim, fds))
-		return (-1);
-	if (pid == 0)
-		execute_heredoc_child(delim, fds);
+	read_until_delimiter(delim, fds[1]);
 	free(delim);
-	result_fd = collect_heredoc_parent(pid, fds, ctx);
-	return (result_fd);
+	close(fds[1]);
+	return (fds[0]);
 }

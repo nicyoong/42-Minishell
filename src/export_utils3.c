@@ -52,7 +52,7 @@ void	print_exports(t_export **arr, size_t count)
 int	handle_setenv_and_export(t_executor_ctx *ctx,
 								const char *name, const char *value)
 {
-	if (setenv(name, value, 1) < 0)
+	if (set_env(name, value, 1) < 0)
 	{
 		perror("export");
 		return (1);
