@@ -6,27 +6,16 @@
 /*   By: nyoong <nyoong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/15 22:48:48 by tching            #+#    #+#             */
-/*   Updated: 2025/06/12 23:23:49 by nyoong           ###   ########.fr       */
+/*   Updated: 2025/06/14 01:38:10 by nyoong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static const char	*get_variable_value(t_executor_ctx *ctx, const char *name)
-{
-	t_export	*e;
-
-	e = find_export(ctx, name);
-	if (e && e->assigned && e->value)
-		return (e->value);
-	return ("");
-}
-
-static int	run_echo_command(char **argv, t_executor_ctx *ctx)
+static int	run_echo_command(char **argv)
 {
 	int			newline;
 	int			i;
-	const char	*out;
 
 	newline = 1;
 	i = 1;
@@ -37,11 +26,7 @@ static int	run_echo_command(char **argv, t_executor_ctx *ctx)
 	}
 	while (argv[i])
 	{
-		if (argv[i][0] == '$' && argv[i][1] != '\0')
-			out = get_variable_value(ctx, argv[i] + 1);
-		else
-			out = argv[i];
-		printf("%s", out);
+		printf("%s", argv[i]);
 		if (argv[i + 1])
 			printf(" ");
 		i++;
@@ -69,7 +54,7 @@ int	execute_echo(char **argv, t_list *redirects, t_executor_ctx *ctx)
 		cleanup_redirections(save[0], save[1], save[2]);
 		return (ctx->last_exit_status);
 	}
-	ctx->last_exit_status = run_echo_command(argv, ctx);
+	ctx->last_exit_status = run_echo_command(argv);
 	cleanup_redirections(save[0], save[1], save[2]);
 	return (ctx->last_exit_status);
 }
